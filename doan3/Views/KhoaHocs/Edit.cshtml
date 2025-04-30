@@ -1,0 +1,64 @@
+﻿@model doan3.Models.KhoaHoc
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>KhoaHoc</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="KhoahocId" />
+            <div class="form-group">
+                <label asp-for="HangId" class="control-label"></label>
+                <select asp-for="HangId" class="form-control" asp-items="ViewBag.HangId"></select>
+                <span asp-validation-for="HangId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tenkhoahoc" class="control-label"></label>
+                <input asp-for="Tenkhoahoc" class="form-control" />
+                <span asp-validation-for="Tenkhoahoc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ngaybatdau" class="control-label"></label>
+                <input asp-for="Ngaybatdau" class="form-control" />
+                <span asp-validation-for="Ngaybatdau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ngayketthuc" class="control-label"></label>
+                <input asp-for="Ngayketthuc" class="form-control" />
+                <span asp-validation-for="Ngayketthuc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SlToida" class="control-label"></label>
+                <input asp-for="SlToida" class="form-control" />
+                <span asp-validation-for="SlToida" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Trangthai" class="control-label"></label>
+                <input asp-for="Trangthai" class="form-control" />
+                <span asp-validation-for="Trangthai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mota" class="control-label"></label>
+                <input asp-for="Mota" class="form-control" />
+                <span asp-validation-for="Mota" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

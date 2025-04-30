@@ -1,0 +1,54 @@
+﻿@model doan3.Models.BaiThi
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BaiThi</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Tenbaithi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Tenbaithi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Thutu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Thutu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Thoigian)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Thoigian)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Hoso)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Hoso.HosoId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Kythi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Kythi.KythiId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Loaibai)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Loaibai.LoaibaiId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.BaithiId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

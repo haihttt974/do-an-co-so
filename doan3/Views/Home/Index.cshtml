@@ -1,0 +1,235 @@
+﻿@model doan3.ViewModel.HomeViewModel
+
+@{
+    ViewData["Title"] = "Driving School - Home";
+}
+
+<!-- Hero Section -->
+<section class="hero-section text-white position-relative">
+    <div class="container py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-7 text-center text-lg-start">
+                <h1 class="display-4 fw-bold mb-4">Trở Thành Tài Xế Tự Tin Với Driving School</h1>
+                <p class="lead mb-4">Học lái xe an toàn, chuyên nghiệp với các khóa học được thiết kế riêng và đội ngũ giảng viên giàu kinh nghiệm. Đăng ký ngay để bắt đầu hành trình của bạn!</p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    <a href="/KhoaHocs" class="btn btn-primary btn-lg"><i class="fas fa-car me-2"></i> Khám Phá Khóa Học</a>
+                    <a href="/Account/Register" class="btn btn-outline-light btn-lg"><i class="fas fa-user-plus me-2"></i> Đăng Ký Ngay</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <img src="/images/hero-car.png" class="img-fluid" alt="Driving School Car" style="max-height: 400px; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Courses Section -->
+<section class="courses-section py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Khóa Học Lái Xe</h2>
+            <p class="text-muted lead">Tìm khóa học phù hợp để nâng cao kỹ năng lái xe của bạn</p>
+        </div>
+        <div class="row g-4">
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                @foreach (var course in Model.Courses.Take(3)) // Limit to 3 courses for the home page
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow border-0">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">@course.Tenkhoahoc</h5>
+                                <p class="card-text">@course.Mota</p>
+                                <p class="card-text text-muted small">
+                                    <strong>Ngày bắt đầu:</strong>
+                                    @course.Ngaybatdau.ToString("dd/MM/yyyy")
+                                </p>
+                                <p class="card-text text-muted small">
+                                    <strong>Ngày kết thúc:</strong>
+                                    @course.Ngayketthuc.ToString("dd/MM/yyyy")
+                                </p>
+                                <p class="card-text text-muted small">
+                                    <strong>Số lượng tối đa:</strong> @course.SlToida học viên
+                                </p>
+                                <p class="card-text text-primary small">
+                                    <strong>Trạng thái:</strong> @course.Trangthai
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 p-3">
+                                <a href="/KhoaHocs/Details/@course.KhoahocId" class="btn btn-outline-primary w-100"><i class="fas fa-info-circle me-2"></i> Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">Hiện tại chưa có thông tin khóa học.</p>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-5">
+            <a href="/KhoaHocs" class="btn btn-primary btn-lg"><i class="fas fa-list me-2"></i> Xem Tất Cả Khóa Học</a>
+        </div>
+    </div>
+</section>
+
+<!-- Instructors Section -->
+<section class="instructors-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Đội Ngũ Giảng Viên</h2>
+            <p class="text-muted lead">Gặp gỡ các chuyên gia sẽ hướng dẫn bạn trên hành trình lái xe</p>
+        </div>
+        <div class="row g-4">
+            @if (Model.Instructors != null && Model.Instructors.Any())
+            {
+                @foreach (var instructor in Model.Instructors.Take(4)) // Limit to 4 instructors for the home page
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow border-0 text-center">
+                            <img src="@(string.IsNullOrEmpty(instructor.ImgGv) ? "/images/default-instructor.jpg" : instructor.ImgGv)" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="@instructor.Tengiaovien">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">@instructor.Tengiaovien</h5>
+                                <p class="card-text text-muted">@instructor.Chuyenmon</p>
+                                <p class="card-text text-primary">Hạng đào tạo: @instructor.HangDaotao</p>
+                                <p class="card-text text-muted small">
+                                    Kinh nghiệm:
+                                    @(instructor.Ngaybatdaulamviec.HasValue
+                                        ? (DateTime.Today.Year - instructor.Ngaybatdaulamviec.Value.Year).ToString()
+                                        : "N/A") năm
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pb-3">
+                                <a href="/GiaoViens/Details/@instructor.GiaovienId" class="btn btn-outline-primary btn-sm"><i class="fas fa-user me-2"></i> Xem Hồ Sơ</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">Hiện tại chưa có thông tin giảng viên.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Ý Kiến Học Viên</h2>
+            <p class="text-muted lead">Cảm nhận từ những người đã học tại Driving School</p>
+        </div>
+        <div class="row g-4">
+            @if (Model.Testimonials != null && Model.Testimonials.Any())
+            {
+                @foreach (var testimonial in Model.Testimonials)
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow border-0">
+                            <div class="card-body text-center">
+                                <i class="fas fa-quote-left text-primary mb-3" style="font-size: 2rem;"></i>
+                                <p class="card-text">"@testimonial.Noidung"</p>
+                                <h6 class="fw-bold mt-4">@testimonial.Hocvien.Tenhocvien</h6>
+                                <p class="text-muted small">Học viên</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">Hiện tại chưa có ý kiến học viên.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section py-5 text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold display-5 mb-4">Sẵn Sàng Chinh Phục Đường Lộ?</h2>
+        <p class="lead mb-4">Đăng ký ngay hôm nay để nhận tư vấn và ưu đãi đặc biệt từ Driving School!</p>
+        <a href="/Account/Register" class="btn btn-primary btn-lg"><i class="fas fa-user-plus me-2"></i> Bắt Đầu Ngay</a>
+    </div>
+</section>
+
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/hero-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+
+    .courses-section .card,
+    .instructors-section .card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .courses-section .card:hover,
+        .instructors-section .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+
+    .instructors-section .card-img-top {
+        transition: transform 0.3s;
+    }
+
+    .instructors-section .card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+
+    .testimonials-section .card {
+        background: #fff;
+    }
+
+    .dark-mode .testimonials-section .card {
+        background: #333;
+    }
+
+    .cta-section {
+        background: linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('/images/cta-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 80px 0;
+    }
+
+    {
+        min-height: 400px;
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section .btn {
+        width: 100%;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Add smooth scroll for internal links
+            $('a[href*="#"]').on('click', function (e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $($(this).attr('href')).offset().top
+                }, 500);
+            });
+        });
+    </script>
+}

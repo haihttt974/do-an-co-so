@@ -1,0 +1,383 @@
+﻿@model doan3.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Include Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Statistics -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>@Model.CoursesCount</h3>
+                        <p>Khóa học</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <a href="/KhoaHocs" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@Model.DocumentsCount</h3>
+                        <p>Tài liệu</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <a href="/TaiLieux" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>@Model.ExamsCount</h3>
+                        <p>Kỳ thi</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-pen-alt"></i>
+                    </div>
+                    <a href="/KyThis" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@Model.ExamSchedulesCount</h3>
+                        <p>Lịch thi</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <a href="/LichThis" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@Model.SupervisorAssignmentsCount</h3>
+                        <p>Phân công giám sát</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <a href="/PhanCongGiamSats" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3>@Model.DrivingSchedulesCount</h3>
+                        <p>Lịch tập lái</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <a href="/LichTapLais" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-dark">
+                    <div class="inner">
+                        <h3>@Model.FeedbackCount</h3>
+                        <p>Phản hồi</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <a href="/PhanHois" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>@Model.TeachersCount</h3>
+                        <p>Giáo viên</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <a href="/GiaoViens" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@Model.StudentsCount</h3>
+                        <p>Học viên</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="/HocViens" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@Model.CandidateProfilesCount</h3>
+                        <p>Hồ sơ thí sinh</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <a href="/HoSoThiSinhs" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Activity -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card bg-gradient-primary mb-4">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fas fa-signal mr-2"></i>
+                            System Activity
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <p>Lịch thi hôm nay</p>
+                                <h1>@Model.TodayExamSchedulesCount</h1>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <p>Thanh toán hôm nay</p>
+                                <h1>@Model.TodayPaymentsCount</h1>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <p>Doanh thu hôm nay</p>
+                                <h1>@string.Format("{0:n0}", @Model.TodayRevenue) ₫</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Payments and Top Courses -->
+        <div class="row">
+            <!-- Recent Payments -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header border-transparent">
+                        <h3 class="card-title">Thanh toán hôm nay</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <thead>
+                                    <tr>
+                                        <th>Mã thanh toán</th>
+                                        <th>Hồ sơ</th>
+                                        <th>Loại phí</th>
+                                        <th>Thời gian</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.RecentPayments != null && Model.RecentPayments.Any())
+                                    {
+                                        foreach (var payment in Model.RecentPayments)
+                                        {
+                                            <tr>
+                                                <td><a href="/CTPhieuThanhToans/Details/@payment.CT_PHIEUTT_ID">#@payment.CT_PHIEUTT_ID</a></td>
+                                                <td>@payment.HOSO_ID</td>
+                                                <td>@payment.LOAIPHI</td>
+                                                <td>@payment.THOIGIANTHANHTOAN?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="text-center">Không có thanh toán hôm nay</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer clearfix">
+                        <a href="/CTPhieuThanhToans" class="btn btn-sm btn-info float-start">Xem tất cả thanh toán</a>
+                        <a href="/CTPhieuThanhToans/Create" class="btn btn-sm btn-primary float-end">Tạo thanh toán mới</a>
+                    </div>
+                </div>
+            </div>
+
+            @* <!-- Top Courses --> *@
+            @* <div class="col-md-4"> *@
+            @*     <div class="card"> *@
+            @*         <div class="card-header"> *@
+            @*             <h3 class="card-title">Khóa học hàng đầu</h3> *@
+            @*         </div> *@
+            @*         <div class="card-body p-0"> *@
+            @*             <ul class="products-list product-list-in-card pl-2 pr-2"> *@
+            @*                 @if (Model.TopCourses != null && Model.TopCourses.Any()) *@
+            @*                 { *@
+            @*                     foreach (var course in Model.TopCourses) *@
+            @*                     { *@
+            @*                         <li class="item"> *@
+            @*                             <div class="product-img"> *@
+            @*                                 <img src="@(string.IsNullOrEmpty(course.Image) ? "/images/no-image.png" : course.Image)" *@
+            @*                                      alt="@course.Name" class="img-size-50"> *@
+            @*                             </div> *@
+            @*                             <div class="product-info"> *@
+            @*                                 <a href="/KhoaHocs/Details/@course.Id" class="product-title"> *@
+            @*                                     @course.Name *@
+            @*                                     <span class="badge bg-success float-end"> *@
+            @*                                         @course.EnrolledStudents học viên *@
+            @*                                     </span> *@
+            @*                                 </a> *@
+            @*                                 <span class="product-description"> *@
+            @*                                     @(course.IsActive ? "Đang hoạt động" : "Không hoạt động") *@
+            @*                                 </span> *@
+            @*                             </div> *@
+            @*                         </li> *@
+            @*                     } *@
+            @*                 } *@
+            @*                 else *@
+            @*                 { *@
+            @*                     <li class="item"> *@
+            @*                         <div class="product-info text-center p-3"> *@
+            @*                             Không có dữ liệu khóa học hàng đầu *@
+            @*                         </div> *@
+            @*                     </li> *@
+            @*                 } *@
+            @*             </ul> *@
+            @*         </div> *@
+            @*         <div class="card-footer text-center"> *@
+            @*             <a href="/KhoaHocs" class="uppercase">Xem tất cả khóa học</a> *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
+        </div>
+    </div>
+</section>
+
+<style>
+    .small-box {
+        border-radius: 0.25rem;
+        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+
+        .small-box .inner {
+            padding: 10px;
+        }
+
+        .small-box h3 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            white-space: nowrap;
+            padding: 0;
+        }
+
+        .small-box p {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .small-box .icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 50px;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .small-box:hover .icon {
+            opacity: 0.5;
+        }
+
+        .small-box .small-box-footer {
+            position: relative;
+            text-align: center;
+            padding: 8px 0;
+            color: rgba(255,255,255,0.8);
+            display: block;
+            background: rgba(0,0,0,0.1);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+            .small-box .small-box-footer:hover {
+                background: rgba(0,0,0,0.2);
+                color: #fff;
+            }
+
+    .products-list .item {
+        padding: 10px 0;
+    }
+
+    .products-list .product-img img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+
+    .products-list .product-info {
+        margin-left: 60px;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+</style>

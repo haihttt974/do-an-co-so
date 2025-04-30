@@ -1,0 +1,42 @@
+﻿@model doan3.Models.KetQuaThi
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>KetQuaThi</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Ketqua)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ketqua)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Ghichu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ghichu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Diem)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Diem)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Baithi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Baithi.BaithiId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.KetquaId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

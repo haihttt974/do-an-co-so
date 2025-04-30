@@ -1,0 +1,59 @@
+﻿@model IEnumerable<doan3.Models.LichHoc>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TgBatdau)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TgKetthuc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hinhthuchoc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Noidung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lop)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TgBatdau)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TgKetthuc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hinhthuchoc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Noidung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lop.LopId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.LichhocId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.LichhocId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.LichhocId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

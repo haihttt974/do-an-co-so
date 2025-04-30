@@ -1,0 +1,59 @@
+﻿@model IEnumerable<doan3.Models.GiaoVien>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tengiaovien)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Chuyenmon)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HangDaotao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ngaybatdaulamviec)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImgGv)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tengiaovien)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Chuyenmon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HangDaotao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ngaybatdaulamviec)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImgGv)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.GiaovienId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.GiaovienId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.GiaovienId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

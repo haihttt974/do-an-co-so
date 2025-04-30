@@ -1,0 +1,8 @@
+﻿@model doan3.Models.User
+<h2>Chỉnh sửa trang cá nhân</h2>
+<form asp-action="EditProfile" method="post">
+    <div><label>Email</label><input asp-for="Email" class="form-control" /></div>
+    <div><label>SĐT</label><input asp-for="Sdt" class="form-control" /></div>
+    <div><label>Địa chỉ</label><input asp-for="Diachi" class="form-control" /></div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>

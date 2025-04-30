@@ -1,0 +1,113 @@
+﻿@model IEnumerable<doan3.Models.KetQuaHocTap>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nhanxet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sobuoiodahoc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sobuoitoithieu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KmHoanthanh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GioBandem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HtLythuyet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HtMophong)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HtSahinh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HtDuongtruong)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DauTn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DuDkThisat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Thoigiancapnhat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hoso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lop)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nhanxet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sobuoiodahoc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sobuoitoithieu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.KmHoanthanh)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GioBandem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HtLythuyet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HtMophong)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HtSahinh)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HtDuongtruong)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DauTn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DuDkThisat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Thoigiancapnhat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hoso.HosoId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lop.LopId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.KetquaId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.KetquaId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.KetquaId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,10 @@
+﻿@model doan3.Models.User
+
+<h2>Trang cá nhân</h2>
+<ul>
+    <li><strong>Username:</strong> @Model.Username</li>
+    <li><strong>Email:</strong> @Model.Email</li>
+    <li><strong>SĐT:</strong> @Model.Sdt</li>
+    <li><strong>Địa chỉ:</strong> @Model.Diachi</li>
+</ul>
+<a asp-action="EditProfile" class="btn btn-primary">Chỉnh sửa</a>

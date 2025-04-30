@@ -1,0 +1,42 @@
+﻿@model doan3.Models.CtPhieuThanhToan
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>CtPhieuThanhToan</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Thoigianthanhtoan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Thoigianthanhtoan)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Loaiphi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Loaiphi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Hoso)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Hoso.HosoId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Thanhtoan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Thanhtoan.ThanhtoanId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.CtPhieuttId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

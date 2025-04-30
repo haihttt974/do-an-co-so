@@ -1,0 +1,53 @@
+﻿@model IEnumerable<doan3.Models.LopHoc>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tenlop)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoaiLop)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Giaovien)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Khoahoc)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tenlop)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoaiLop)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Giaovien.GiaovienId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Khoahoc.KhoahocId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.LopId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.LopId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.LopId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
