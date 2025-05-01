@@ -141,6 +141,7 @@
             background-color: #2c2c2c;
             border-color: #444;
             color: #f5f5f5;
+            width: 100%;
         }
 
         .dark-mode-toggle {
@@ -262,7 +263,7 @@
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="/" class="brand-link d-flex align-items-center justify-content-center p-2">
-                <i class="fas fa-car brand-logo"></i>
+                <img src="img/logo.png" alt="Logo" class="brand-logo" style="height: 30px;">
                 <span class="brand-text font-weight-light ms-2">Driving School</span>
             </a>
 
@@ -411,48 +412,52 @@
                     background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
                     color: #fff;
                     width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    width: auto;
+                    flex-grow: 1;
                 }
 
-                    .main-footer .footer-link {
-                        transition: color 0.3s ease;
-                        font-size: 0.85rem;
-                    }
+                .main-footer .footer-link {
+                    transition: color 0.3s ease;
+                    font-size: 0.85rem;
+                }
 
-                        .main-footer .footer-link:hover {
-                            color: #00b7ff !important;
-                            text-decoration: none;
-                        }
+                .main-footer .footer-link:hover {
+                    color: #00b7ff !important;
+                    text-decoration: none;
+                }
 
-                    .main-footer .footer-icon {
-                        font-size: 1.2rem;
-                        transition: transform 0.3s ease, color 0.3s ease;
-                    }
+                .main-footer .footer-icon {
+                    font-size: 1.2rem;
+                    transition: transform 0.3s ease, color 0.3s ease;
+                }
 
-                        .main-footer .footer-icon:hover {
-                            transform: scale(1.2);
-                            color: #00b7ff !important;
-                        }
+                .main-footer .footer-icon:hover {
+                    transform: scale(1.2);
+                    color: #00b7ff !important;
+                }
 
-                    .main-footer .social-icons a {
-                        text-decoration: none;
-                    }
+                .main-footer .social-icons a {
+                    text-decoration: none;
+                }
 
-                    .main-footer p, .main-footer h4, .main-footer h5 {
-                        margin-bottom: 0.5rem;
-                    }
+                .main-footer p, .main-footer h4, .main-footer h5 {
+                    margin-bottom: 0.5rem;
+                }
 
-                    .main-footer h4 {
-                        font-size: 1.3rem;
-                    }
+                .main-footer h4 {
+                    font-size: 1.3rem;
+                }
 
-                    .main-footer h5 {
-                        font-size: 1rem;
-                        letter-spacing: 1px;
-                    }
+                .main-footer h5 {
+                    font-size: 1rem;
+                    letter-spacing: 1px;
+                }
 
-                    .main-footer .border-top {
-                        border-color: rgba(255, 255, 255, 0.1) !important;
-                    }
+                .main-footer .border-top {
+                    border-color: rgba(255, 255, 255, 0.1) !important;
+                }
 
                 /* Dark Mode Adjustments */
                 .dark-mode .main-footer {
@@ -462,8 +467,6 @@
                 .main-footer .social-icons {
                     justify-content: center;
                     display: flex;
-                }
-
                 }
             </style>
         </footer>
