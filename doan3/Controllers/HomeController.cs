@@ -21,16 +21,42 @@ namespace DrivingSchool.Web.Controllers
             {
                 Instructors = await _context.GiaoViens
                     .OrderBy(g => g.Tengiaovien)
-                    .Take(4) // Limit to 4 instructors for the home page
+                    .Take(4)
+                    .Select(g => new GiaoVien
+                    {
+                        GiaovienId = g.GiaovienId,
+                        Tengiaovien = g.Tengiaovien,
+                        Chuyenmon = g.Chuyenmon,
+                        HangDaotao = g.HangDaotao,
+                        Ngaybatdaulamviec = g.Ngaybatdaulamviec,
+                        ImgGv = g.ImgGv ?? "/img/logo.png"
+                    })
                     .ToListAsync(),
                 Courses = await _context.KhoaHocs
                     .OrderBy(k => k.Tenkhoahoc)
-                    .Take(3) // Limit to 3 courses for the home page
+                    .Take(3)
+                    .Select(k => new KhoaHoc
+                    {
+                        KhoahocId = k.KhoahocId,
+                        HangId = k.HangId,
+                        Tenkhoahoc = k.Tenkhoahoc,
+                        Ngaybatdau = k.Ngaybatdau,
+                        Ngayketthuc = k.Ngayketthuc,
+                        SlToida = k.SlToida,
+                        Trangthai = k.Trangthai,
+                        Mota = k.Mota,
+                        SoLuongConLai = k.SlToida - (from lh in _context.LopHocs
+                                                     join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                                     where lh.KhoahocId == k.KhoahocId
+                                                     select kq.HosoId)
+                                                      .Distinct()
+                                                      .Count()
+                    })
                     .ToListAsync(),
                 Testimonials = await _context.Phanhois
-                    .Include(p => p.Hocvien) // Include HocVien to get student name
-                    .OrderByDescending(p => p.Thoigianph) // Most recent first
-                    .Take(3) // Limit to 3 testimonials for the home page
+                    .Include(p => p.Hocvien)
+                    .OrderByDescending(p => p.Thoigianph)
+                    .Take(3)
                     .ToListAsync()
             };
             return View(model);

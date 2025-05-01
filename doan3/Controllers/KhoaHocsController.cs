@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using doan3.Models;
+using doan3.ViewModel;
 
 namespace doan3.Controllers
 {
@@ -36,10 +37,20 @@ namespace doan3.Controllers
             var khoaHoc = await _context.KhoaHocs
                 .Include(k => k.Hang)
                 .FirstOrDefaultAsync(m => m.KhoahocId == id);
+
             if (khoaHoc == null)
             {
                 return NotFound();
             }
+
+            // Calculate SoLuongConLai
+            var registeredStudents = await (from lh in _context.LopHocs
+                                            join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                            where lh.KhoahocId == khoaHoc.KhoahocId
+                                            select kq.HosoId)
+                                           .Distinct()
+                                           .CountAsync();
+            khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
 
             return View(khoaHoc);
         }
@@ -159,5 +170,140 @@ namespace doan3.Controllers
         {
             return _context.KhoaHocs.Any(e => e.KhoahocId == id);
         }
+        // GET: KhoaHocs/Register/1
+        public async Task<IActionResult> Register(int id)
+        {
+            var khoaHoc = await _context.KhoaHocs
+                .Select(kh => new KhoaHoc
+                {
+                    KhoahocId = kh.KhoahocId,
+                    Tenkhoahoc = kh.Tenkhoahoc,
+                    HangId = kh.HangId,
+                    Ngaybatdau = kh.Ngaybatdau,
+                    SlToida = kh.SlToida
+                })
+                .FirstOrDefaultAsync(kh => kh.KhoahocId == id);
+
+            if (khoaHoc == null)
+            {
+                return NotFound();
+            }
+
+            // Calculate SoLuongConLai
+            var registeredStudents = await (from lh in _context.LopHocs
+                                            join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                            where lh.KhoahocId == khoaHoc.KhoahocId
+                                            select kq.HosoId)
+                                           .Distinct()
+                                           .CountAsync();
+            khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
+
+            // Check if the course is eligible for registration
+            var currentDate = DateOnly.FromDateTime(DateTime.Today);
+            var registrationDeadline = currentDate.AddDays(15);
+            if (khoaHoc.SoLuongConLai <= 0 || khoaHoc.Ngaybatdau <= registrationDeadline)
+            {
+                TempData["ErrorMessage"] = khoaHoc.SoLuongConLai <= 0
+                    ? "Khóa học đã đủ số lượng học viên."
+                    : $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var lopHocs = await _context.LopHocs
+                .Where(lh => lh.KhoahocId == id)
+                .Select(lh => new LopHocViewModel
+                {
+                    LopId = lh.LopId,
+                    Tenlop = lh.Tenlop,
+                    LoaiLop = lh.LoaiLop
+                })
+                .ToListAsync();
+
+            var model = new RegisterViewModel
+            {
+                KhoaHocId = id,
+                KhoaHoc = khoaHoc,
+                LopHocs = lopHocs
+            };
+
+            return View(model);
+        }
+
+        // POST: KhoaHocs/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Reload the view with validation errors
+                model.KhoaHoc = await _context.KhoaHocs
+                    .Select(kh => new KhoaHoc { KhoahocId = kh.KhoahocId, Tenkhoahoc = kh.Tenkhoahoc })
+                    .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
+                model.LopHocs = await _context.LopHocs
+                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
+                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
+                    .ToListAsync();
+                return View(model);
+            }
+
+            // Retrieve the KhoaHoc to get HangId
+            var khoaHoc = await _context.KhoaHocs
+                .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
+
+            if (khoaHoc == null)
+            {
+                // Handle the case where the KhoaHoc is not found
+                ModelState.AddModelError(string.Empty, "Khóa học không tồn tại.");
+                model.KhoaHoc = new KhoaHoc { KhoahocId = model.KhoaHocId };
+                model.LopHocs = await _context.LopHocs
+                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
+                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
+                    .ToListAsync();
+                return View(model);
+            }
+
+            // Create a new HO_SO_THI_SINH record
+            var hoSo = new HoSoThiSinh
+            {
+                HocvienId = 1, // Replace with the actual logged-in user's HocvienId (e.g., using ASP.NET Identity)
+                ImgThisinh = null, // Add image upload logic if needed
+                LoaiHoso = model.LoaiHoSo,
+                HangId = khoaHoc.HangId ?? 0, // Handle nullable HangId with a fallback value (e.g., 0)
+                Ngaydk = DateOnly.FromDateTime(DateTime.Today),
+                Khamsuckhoe = model.KhamSucKhoe,
+                Ghichu = model.GhiChu
+            };
+
+            _context.HoSoThiSinhs.Add(hoSo);
+            await _context.SaveChangesAsync();
+
+            // Create a KET_QUA_HOC_TAP record for the selected class
+            var ketQua = new KetQuaHocTap
+            {
+                LopId = model.LopId,
+                HosoId = hoSo.HosoId,
+                Nhanxet = null,
+                Sobuoiodahoc = 0,
+                Sobuoitoithieu = 0, // Set based on course requirements
+                KmHoanthanh = 0,
+                GioBandem = 0,
+                HtLythuyet = "Chưa hoàn thành",
+                HtMophong = "Chưa hoàn thành",
+                HtSahinh = "Chưa hoàn thành",
+                HtDuongtruong = "Chưa hoàn thành",
+                DauTn = "Không đạt",
+                DuDkThisat = "Không đủ",
+                Thoigiancapnhat = DateTime.Now
+            };
+
+            _context.KetQuaHocTaps.Add(ketQua);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Đăng ký khóa học thành công!";
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Other actions (e.g., Details) can remain as previously updated
     }
 }

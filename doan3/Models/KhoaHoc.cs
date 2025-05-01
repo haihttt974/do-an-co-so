@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace doan3.Models;
 
@@ -22,6 +23,9 @@ public partial class KhoaHoc
     public string? Mota { get; set; }
 
     public virtual HangGplx? Hang { get; set; }
+
+    [NotMapped]
+    public int SoLuongConLai { get; set; }
 
     public virtual ICollection<LopHoc> LopHocs { get; set; } = new List<LopHoc>();
 }

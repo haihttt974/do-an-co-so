@@ -1,0 +1,67 @@
+﻿@model doan3.ViewModel.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng Ký Khóa Học";
+}
+
+<section class="register-section py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">Đăng Ký Khóa Học: @Model.KhoaHoc.Tenkhoahoc</h2>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <form asp-action="Register" method="post">
+            <input type="hidden" asp-for="KhoaHocId" />
+            <div class="mb-3">
+                <label class="form-label">Chọn Lớp Học</label>
+                <select asp-for="LopId" class="form-select" required>
+                    <option value="">-- Chọn lớp học --</option>
+                    @foreach (var lop in Model.LopHocs)
+                    {
+                        <option value="@lop.LopId">@lop.Tenlop (@lop.LoaiLop)</option>
+                    }
+                </select>
+                <span asp-validation-for="LopId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Loại Hồ Sơ</label>
+                <select asp-for="LoaiHoSo" class="form-select" required>
+                    <option value="">-- Chọn loại hồ sơ --</option>
+                    <option value="Đăng ký mới">Đăng ký mới</option>
+                    <option value="Nâng hạng">Nâng hạng</option>
+                </select>
+                <span asp-validation-for="LoaiHoSo" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Kết Quả Khám Sức Khỏe</label>
+                <input asp-for="KhamSucKhoe" class="form-control" placeholder="Kết quả khám sức khỏe" required />
+                <span asp-validation-for="KhamSucKhoe" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ghi Chú</label>
+                <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="GhiChu" class="text-danger"></span>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+                <a href="/KhoaHocs" class="btn btn-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

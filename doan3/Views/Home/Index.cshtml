@@ -6,18 +6,39 @@
 
 <!-- Hero Section -->
 <section class="hero-section text-white position-relative">
-    <div class="container py-5">
-        <div class="row align-items-center py-5">
-            <div class="col-lg-7 text-center text-lg-start">
-                <h1 class="display-4 fw-bold mb-4">Trở Thành Tài Xế Tự Tin Với Driving School</h1>
-                <p class="lead mb-4">Học lái xe an toàn, chuyên nghiệp với các khóa học được thiết kế riêng và đội ngũ giảng viên giàu kinh nghiệm. Đăng ký ngay để bắt đầu hành trình của bạn!</p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-                    <a href="/KhoaHocs" class="btn btn-primary btn-lg"><i class="fas fa-car me-2"></i> Khám Phá Khóa Học</a>
-                    <a href="/Account/Register" class="btn btn-outline-light btn-lg"><i class="fas fa-user-plus me-2"></i> Đăng Ký Ngay</a>
-                </div>
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <!-- Carousel Inner -->
+        <div class="carousel-inner">
+            <!-- First Image -->
+            <div class="carousel-item active">
+                <div class="hero-bg" style="background-image: url('/img/driving-school-car-1.jpg');"></div>
+                <img src="/img/driving-school-car-1.jpg" alt="Debug Image 1" style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; z-index: 5; opacity: 0.5;">
             </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <img src="/images/hero-car.png" class="img-fluid" alt="Driving School Car" style="max-height: 400px; object-fit: contain;">
+            <!-- Second Image -->
+            <div class="carousel-item">
+                <div class="hero-bg" style="background-image: url('/img/driving-school-car-2.jpg');"></div>
+                <img src="/img/driving-school-car-2.jpg" alt="Debug Image 2" style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; z-index: 5; opacity: 0.5;">
+            </div>
+        </div>
+
+        <!-- Carousel Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+
+        <!-- Overlay Content -->
+        <div class="container d-flex align-items-center justify-content-center h-100">
+            <div class="text-center">
+                <h1 class="display-3 fw-bold mb-4">Trở Thành Tài Xế Tự Tin Với Driving School</h1>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="/KhoaHocs" class="btn btn-learn-more btn-lg">Khám Phá Khóa Học</a>
+                    <a href="/Account/Register" class="btn btn-our-courses btn-lg">Đăng Ký Ngay</a>
+                </div>
             </div>
         </div>
     </div>
@@ -33,8 +54,13 @@
         <div class="row g-4">
             @if (Model.Courses != null && Model.Courses.Any())
             {
-                @foreach (var course in Model.Courses.Take(3)) // Limit to 3 courses for the home page
+                @foreach (var course in Model.Courses.Take(3))
                 {
+                    // Calculate if the course is eligible for registration
+                    var currentDate = DateOnly.FromDateTime(DateTime.Today);
+                    var registrationDeadline = currentDate.AddDays(15); // 15 days from today, now a DateOnly
+                    var canRegister = course.SoLuongConLai > 0 && course.Ngaybatdau > registrationDeadline;
+
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 shadow border-0">
                             <div class="card-body">
@@ -51,12 +77,52 @@
                                 <p class="card-text text-muted small">
                                     <strong>Số lượng tối đa:</strong> @course.SlToida học viên
                                 </p>
+                                <p class="card-text text-muted small">
+                                    <strong>Số lượng còn lại:</strong> @course.SoLuongConLai học viên
+                                </p>
                                 <p class="card-text text-primary small">
                                     <strong>Trạng thái:</strong> @course.Trangthai
                                 </p>
                             </div>
                             <div class="card-footer bg-transparent border-0 p-3">
-                                <a href="/KhoaHocs/Details/@course.KhoahocId" class="btn btn-outline-primary w-100"><i class="fas fa-info-circle me-2"></i> Xem Chi Tiết</a>
+                                <div class="d-flex gap-2">
+                                    <a href="/KhoaHocs/Details/@course.KhoahocId" class="btn btn-outline-primary w-50"><i class="fas fa-info-circle me-2"></i> Xem Chi Tiết</a>
+                                    @if (canRegister)
+                                    {
+                                        <a href="/KhoaHocs/Register/@course.KhoahocId" class="btn btn-primary w-50"><i class="fas fa-user-plus me-2"></i> Đăng Ký</a>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-secondary w-50" data-bs-toggle="modal" data-bs-target="#reasonModal-@course.KhoahocId">
+                                            <i class="fas fa-user-plus me-2"></i> Đăng Ký
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal for Registration Ineligibility Reason -->
+                    <div class="modal fade" id="reasonModal-@course.KhoahocId" tabindex="-1" aria-labelledby="reasonModalLabel-@course.KhoahocId" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reasonModalLabel-@course.KhoahocId">Không Thể Đăng Ký</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    @if (course.SoLuongConLai <= 0)
+                                    {
+                                        <p>Khóa học đã đủ số lượng học viên.</p>
+                                    }
+                                    else if (course.Ngaybatdau <= registrationDeadline)
+                                    {
+                                        <p>Khóa học sắp bắt đầu (trước ngày @registrationDeadline.ToString("dd/MM/yyyy")), không thể đăng ký.</p>
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -89,7 +155,7 @@
                 {
                     <div class="col-md-6 col-lg-3">
                         <div class="card h-100 shadow border-0 text-center">
-                            <img src="@(string.IsNullOrEmpty(instructor.ImgGv) ? "/images/default-instructor.jpg" : instructor.ImgGv)" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="@instructor.Tengiaovien">
+                            <img src="@(string.IsNullOrEmpty(instructor.ImgGv) ? "/img/default-instructor.jpg" : instructor.ImgGv)" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="@instructor.Tengiaovien">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">@instructor.Tengiaovien</h5>
                                 <p class="card-text text-muted">@instructor.Chuyenmon</p>
@@ -163,13 +229,129 @@
 
 <style>
     .hero-section {
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/hero-bg.jpg');
-        background-size: cover;
-        background-position: center;
+        position: relative;
         min-height: 600px;
         display: flex;
         align-items: center;
+        overflow: hidden;
+        background-color: #f0f0f0; /* Fallback background color if image doesn't load */
     }
+
+        .hero-section .carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-section .carousel-item {
+            height: 100%;
+        }
+
+        .hero-section .hero-bg {
+            width: 100%;
+            height: 100%;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-color: #ccc !important; /* Fallback color to confirm the element is rendering */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .hero-section .carousel-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .hero-section .container {
+            z-index: 3;
+            height: 100%;
+        }
+
+        .hero-section .carousel-control-prev,
+        .hero-section .carousel-control-next {
+            width: 5%;
+            z-index: 3;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            height: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hero-section .carousel-control-prev-icon,
+        .hero-section .carousel-control-next-icon {
+            background-image: none;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2rem;
+        }
+
+            .hero-section .carousel-control-prev-icon::before,
+            .hero-section .carousel-control-next-icon::before {
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+            }
+
+            .hero-section .carousel-control-prev-icon::before {
+                content: "\f053";
+            }
+
+            .hero-section .carousel-control-next-icon::before {
+                content: "\f054";
+            }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-section .btn-learn-more {
+            background-color: #ffc107;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
+        }
+
+            .hero-section .btn-learn-more:hover {
+                background-color: #e0a800;
+                color: #000;
+            }
+
+        .hero-section .btn-our-courses {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
+        }
+
+            .hero-section .btn-our-courses:hover {
+                background-color: #f0f0f0;
+                color: #000;
+            }
 
     .courses-section .card,
     .instructors-section .card {
@@ -199,14 +381,15 @@
     }
 
     .cta-section {
-        background: linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('/images/cta-bg.jpg');
+        background: linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('/img/cta-bg.jpg');
         background-size: cover;
         background-position: center;
         padding: 80px 0;
+        min-height: 400px;
     }
 
     {
-        min-height: 400px;
+        min-height: 500px;
     }
 
     .hero-section h1 {
@@ -215,6 +398,8 @@
 
     .hero-section .btn {
         width: 100%;
+        padding: 10px 20px;
+        font-size: 1rem;
     }
 </style>
 
