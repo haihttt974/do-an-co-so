@@ -21,6 +21,30 @@
     <link rel="stylesheet" href="~/doan3.styles.css" asp-append-version="true" />
 
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the wrapper fills the viewport height */
+        }
+
+        .content-wrapper {
+            flex-grow: 1; /* Make the content wrapper grow to fill available space */
+        }
+
+        .main-footer {
+            flex-shrink: 0; /* Prevent the footer from shrinking */
+        }
+
         .brand-link {
             height: 3.5rem;
             display: flex;
@@ -316,8 +340,132 @@
         </div>
 
         <!-- Footer -->
-        <footer class="main-footer text-center">
-            <i class="fas fa-copyright me-1"></i> 2025 - Driving School - <a asp-controller="Home" asp-action="Privacy"><i class="fas fa-shield-alt me-1"></i> Privacy</a>
+        <footer class="main-footer py-3 text-white">
+            <div class="container">
+                <div class="row g-3">
+                    <!-- Branding Section -->
+                    <div class="col-md-4 text-center text-md-start">
+                        <h4 class="fw-bold mb-2">
+                            <i class="fas fa-car me-2"></i> Driving School
+                        </h4>
+                        <p class="text-muted small">
+                            Học lái xe an toàn và chuyên nghiệp với đội ngũ giảng viên giàu kinh nghiệm.
+                        </p>
+                    </div>
+
+                    <!-- Quick Links Section -->
+                    <div class="col-md-4 text-center">
+                        <h5 class="fw-bold mb-2">Liên Kết Nhanh</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <a asp-controller="Courses" asp-action="Index" class="text-white text-decoration-none footer-link">
+                                    <i class="fas fa-car me-1"></i> Khóa Học
+                                </a>
+                            </li>
+                            <li class="mb-1">
+                                <a asp-controller="Instructors" asp-action="Index" class="text-white text-decoration-none footer-link">
+                                    <i class="fas fa-user-tie me-1"></i> Giảng Viên
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Home" asp-action="Privacy" class="text-white text-decoration-none footer-link">
+                                    <i class="fas fa-shield-alt me-1"></i> Chính Sách Bảo Mật
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info and Social Media Section -->
+                    <div class="col-md-4 text-center text-md-end">
+                        <h5 class="fw-bold mb-2">Liên Hệ</h5>
+                        <p class="mb-1 small">
+                            <i class="fas fa-envelope me-2"></i> <a href="mailto:support@drivingschool.com" class="text-white text-decoration-none footer-link">support@drivingschool.com</a>
+                        </p>
+                        <p class="mb-2 small">
+                            <i class="fas fa-phone me-2"></i> <a href="tel:+84234567890" class="text-white text-decoration-none footer-link">+84 234 567 890</a>
+                        </p>
+                        <div class="social-icons">
+                            <a href="https://facebook.com" target="_blank" class="text-white me-3 footer-icon">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com" target="_blank" class="text-white me-3 footer-icon">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://instagram.com" target="_blank" class="text-white footer-icon">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copyright Section -->
+                <div class="text-center mt-3 pt-3 border-top border-secondary">
+                    <p class="mb-0 small">
+                        <i class="fas fa-copyright me-1"></i> 2025 - Driving School. All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+
+            <style>
+                .main-footer {
+                    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+                    color: #fff;
+                    width: 100%;
+                }
+
+                    .main-footer .footer-link {
+                        transition: color 0.3s ease;
+                        font-size: 0.85rem;
+                    }
+
+                        .main-footer .footer-link:hover {
+                            color: #00b7ff !important;
+                            text-decoration: none;
+                        }
+
+                    .main-footer .footer-icon {
+                        font-size: 1.2rem;
+                        transition: transform 0.3s ease, color 0.3s ease;
+                    }
+
+                        .main-footer .footer-icon:hover {
+                            transform: scale(1.2);
+                            color: #00b7ff !important;
+                        }
+
+                    .main-footer .social-icons a {
+                        text-decoration: none;
+                    }
+
+                    .main-footer p, .main-footer h4, .main-footer h5 {
+                        margin-bottom: 0.5rem;
+                    }
+
+                    .main-footer h4 {
+                        font-size: 1.3rem;
+                    }
+
+                    .main-footer h5 {
+                        font-size: 1rem;
+                        letter-spacing: 1px;
+                    }
+
+                    .main-footer .border-top {
+                        border-color: rgba(255, 255, 255, 0.1) !important;
+                    }
+
+                /* Dark Mode Adjustments */
+                .dark-mode .main-footer {
+                    background: linear-gradient(135deg, #0d0d0d 0%, #1a252f 100%);
+                }
+
+                .main-footer .social-icons {
+                    justify-content: center;
+                    display: flex;
+                }
+
+                }
+            </style>
         </footer>
     </div>
 
@@ -354,18 +502,13 @@
                     $('#darkModeToggle i').removeClass('fa-moon').addClass('fa-sun');
                 }
 
-                $('#darkModeToggle').click(function() {
-                    $('body').toggleClass('dark-mode');
-                    var isDark = $('body').hasClass('dark-mode');
+                        $('#darkModeToggle').click(function() {
+                            $('body').toggleClass('dark-mode');
+                            var isDark = $('body').hasClass('dark-mode');
+                            $('#darkModeToggle i').toggleClass('fa-moon fa-sun');
+                            localStorage.setItem('darkMode', isDark);
+                        });
 
-                    if (isDark) {
-                        $('#darkModeToggle i').removeClass('fa-moon').addClass('fa-sun');
-                    } else {
-                        $('#darkModeToggle i').removeClass('fa-sun').addClass('fa-moon');
-                    }
-
-                    localStorage.setItem('darkMode', isDark);
-                });
             }
 
             initDarkMode();
