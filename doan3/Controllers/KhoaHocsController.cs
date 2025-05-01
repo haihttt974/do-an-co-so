@@ -58,7 +58,7 @@ namespace doan3.Controllers
         // GET: KhoaHocs/Create
         public IActionResult Create()
         {
-            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "HangId");
+            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "Tenhang");
             return View();
         }
 
@@ -67,17 +67,21 @@ namespace doan3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("KhoahocId,HangId,Tenkhoahoc,Ngaybatdau,Ngayketthuc,SlToida,Trangthai,Mota")] KhoaHoc khoaHoc)
+        public async Task<IActionResult> Create([Bind("HangId,Tenkhoahoc,Ngaybatdau,Ngayketthuc,SlToida,Mota")] KhoaHoc khoaHoc)
         {
             if (ModelState.IsValid)
             {
+                khoaHoc.Trangthai = "Sắp mở";
                 _context.Add(khoaHoc);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "HangId", khoaHoc.HangId);
+
+            // ✅ Gán lại ViewBag.HangId nếu model không hợp lệ
+            ViewBag.HangId = new SelectList(_context.HangGplxes, "HangId", "Tenhang", khoaHoc.HangId);
             return View(khoaHoc);
         }
+
 
         // GET: KhoaHocs/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -209,6 +213,7 @@ namespace doan3.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+#pragma warning disable CS8601 // Possible null reference assignment.
             var lopHocs = await _context.LopHocs
                 .Where(lh => lh.KhoahocId == id)
                 .Select(lh => new LopHocViewModel
@@ -218,6 +223,7 @@ namespace doan3.Controllers
                     LoaiLop = lh.LoaiLop
                 })
                 .ToListAsync();
+#pragma warning restore CS8601 // Possible null reference assignment.
 
             var model = new RegisterViewModel
             {

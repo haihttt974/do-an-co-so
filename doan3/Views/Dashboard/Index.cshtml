@@ -43,6 +43,21 @@
             </div>
 
             <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@Model.ClassCount</h3>
+                        <p>Lớp học</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <a href="/LopHocs" class="small-box-footer">
+                        View Details <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
                 <div class="small-box bg-success">
                     <div class="inner">
                         <h3>@Model.DocumentsCount</h3>
@@ -133,7 +148,7 @@
             </div>
 
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-primary">
+                <div class="small-box bg-purple">
                     <div class="inner">
                         <h3>@Model.TeachersCount</h3>
                         <p>Giáo viên</p>
@@ -208,10 +223,9 @@
             </div>
         </div>
 
-        <!-- Recent Payments and Top Courses -->
+        <!-- Recent Payments -->
         <div class="row">
-            <!-- Recent Payments -->
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header border-transparent">
                         <h3 class="card-title">Thanh toán hôm nay</h3>
@@ -256,53 +270,6 @@
                     </div>
                 </div>
             </div>
-
-            @* <!-- Top Courses --> *@
-            @* <div class="col-md-4"> *@
-            @*     <div class="card"> *@
-            @*         <div class="card-header"> *@
-            @*             <h3 class="card-title">Khóa học hàng đầu</h3> *@
-            @*         </div> *@
-            @*         <div class="card-body p-0"> *@
-            @*             <ul class="products-list product-list-in-card pl-2 pr-2"> *@
-            @*                 @if (Model.TopCourses != null && Model.TopCourses.Any()) *@
-            @*                 { *@
-            @*                     foreach (var course in Model.TopCourses) *@
-            @*                     { *@
-            @*                         <li class="item"> *@
-            @*                             <div class="product-img"> *@
-            @*                                 <img src="@(string.IsNullOrEmpty(course.Image) ? "/images/no-image.png" : course.Image)" *@
-            @*                                      alt="@course.Name" class="img-size-50"> *@
-            @*                             </div> *@
-            @*                             <div class="product-info"> *@
-            @*                                 <a href="/KhoaHocs/Details/@course.Id" class="product-title"> *@
-            @*                                     @course.Name *@
-            @*                                     <span class="badge bg-success float-end"> *@
-            @*                                         @course.EnrolledStudents học viên *@
-            @*                                     </span> *@
-            @*                                 </a> *@
-            @*                                 <span class="product-description"> *@
-            @*                                     @(course.IsActive ? "Đang hoạt động" : "Không hoạt động") *@
-            @*                                 </span> *@
-            @*                             </div> *@
-            @*                         </li> *@
-            @*                     } *@
-            @*                 } *@
-            @*                 else *@
-            @*                 { *@
-            @*                     <li class="item"> *@
-            @*                         <div class="product-info text-center p-3"> *@
-            @*                             Không có dữ liệu khóa học hàng đầu *@
-            @*                         </div> *@
-            @*                     </li> *@
-            @*                 } *@
-            @*             </ul> *@
-            @*         </div> *@
-            @*         <div class="card-footer text-center"> *@
-            @*             <a href="/KhoaHocs" class="uppercase">Xem tất cả khóa học</a> *@
-            @*         </div> *@
-            @*     </div> *@
-            @* </div> *@
         </div>
     </div>
 </section>
@@ -317,51 +284,51 @@
         margin-bottom: 20px;
     }
 
-        .small-box .inner {
-            padding: 10px;
-        }
+    .small-box .inner {
+        padding: 10px;
+    }
 
-        .small-box h3 {
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin: 0 0 10px 0;
-            white-space: nowrap;
-            padding: 0;
-        }
+    .small-box h3 {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin: 0 0 10px 0;
+        white-space: nowrap;
+        padding: 0;
+    }
 
-        .small-box p {
-            font-size: 1rem;
-            margin: 0;
-        }
+    .small-box p {
+        font-size: 1rem;
+        margin: 0;
+    }
 
-        .small-box .icon {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 50px;
-            opacity: 0.3;
-            transition: all 0.3s;
-        }
+    .small-box .icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 50px;
+        opacity: 0.3;
+        transition: all 0.3s;
+    }
 
-        .small-box:hover .icon {
-            opacity: 0.5;
-        }
+    .small-box:hover .icon {
+        opacity: 0.5;
+    }
 
-        .small-box .small-box-footer {
-            position: relative;
-            text-align: center;
-            padding: 8px 0;
-            color: rgba(255,255,255,0.8);
-            display: block;
-            background: rgba(0,0,0,0.1);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
+    .small-box .small-box-footer {
+        position: relative;
+        text-align: center;
+        padding: 8px 0;
+        color: rgba(255,255,255,0.8);
+        display: block;
+        background: rgba(0,0,0,0.1);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
 
-            .small-box .small-box-footer:hover {
-                background: rgba(0,0,0,0.2);
-                color: #fff;
-            }
+    .small-box .small-box-footer:hover {
+        background: rgba(0,0,0,0.2);
+        color: #fff;
+    }
 
     .products-list .item {
         padding: 10px 0;

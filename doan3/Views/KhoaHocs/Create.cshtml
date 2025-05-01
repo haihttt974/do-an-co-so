@@ -14,8 +14,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="HangId" class="control-label"></label>
-                <select asp-for="HangId" class ="form-control" asp-items="ViewBag.HangId"></select>
+                <select asp-for="HangId" class="form-control" asp-items="ViewBag.HangId"></select>
             </div>
+
             <div class="form-group">
                 <label asp-for="Tenkhoahoc" class="control-label"></label>
                 <input asp-for="Tenkhoahoc" class="form-control" />
@@ -36,11 +37,11 @@
                 <input asp-for="SlToida" class="form-control" />
                 <span asp-validation-for="SlToida" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Trangthai" class="control-label"></label>
-                <input asp-for="Trangthai" class="form-control" />
-                <span asp-validation-for="Trangthai" class="text-danger"></span>
-            </div>
+            @* <div class="form-group"> *@
+            @*     <label asp-for="Trangthai" class="control-label"></label> *@
+            @*     <input asp-for="Trangthai" class="form-control" /> *@
+            @*     <span asp-validation-for="Trangthai" class="text-danger"></span> *@
+            @* </div> *@
             <div class="form-group">
                 <label asp-for="Mota" class="control-label"></label>
                 <input asp-for="Mota" class="form-control" />

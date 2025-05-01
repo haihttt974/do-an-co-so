@@ -20,6 +20,7 @@ namespace doan3
 
             // Localization setup
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+            builder.Services.AddHostedService<KhoaHocStatusUpdater>();
 
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {

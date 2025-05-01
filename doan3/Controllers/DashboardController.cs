@@ -28,7 +28,8 @@ namespace doan3.Controllers
                 FeedbackCount = await _context.Phanhois.CountAsync(),
                 TeachersCount = await _context.GiaoViens.CountAsync(),
                 StudentsCount = await _context.HocViens.CountAsync(),
-                CandidateProfilesCount = await _context.HoSoThiSinhs.CountAsync()
+                CandidateProfilesCount = await _context.HoSoThiSinhs.CountAsync(),
+                ClassCount = await _context.LopHocs.CountAsync()
             };
 
             return View(dashboardData);

@@ -13,6 +13,7 @@
         public int TeachersCount { get; set; }
         public int StudentsCount { get; set; }
         public int CandidateProfilesCount { get; set; }
+        public int ClassCount { get; set; }
 
         // New properties for System Activity
         public int TodayExamSchedulesCount { get; set; }

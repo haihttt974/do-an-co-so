@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace doan3.Models;
@@ -12,8 +13,12 @@ public partial class KhoaHoc
 
     public string Tenkhoahoc { get; set; } = null!;
 
+    [Required(ErrorMessage = "Vui lòng nhập ngày bắt đầu.")]
+    [CustomValidation(typeof(KhoaHocValidator), nameof(KhoaHocValidator.ValidateNgayBatDau))]
     public DateOnly Ngaybatdau { get; set; }
 
+    [Required(ErrorMessage = "Vui lòng nhập ngày kết thúc.")]
+    [CustomValidation(typeof(KhoaHocValidator), nameof(KhoaHocValidator.ValidateNgayKetThuc))]
     public DateOnly Ngayketthuc { get; set; }
 
     public int SlToida { get; set; }
