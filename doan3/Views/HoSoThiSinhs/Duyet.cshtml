@@ -1,0 +1,38 @@
+﻿@model IEnumerable<doan3.Models.HoSoThiSinh>
+@{
+    ViewData["Title"] = "Duyệt Hồ Sơ";
+}
+
+<h2>Hồ sơ chờ duyệt</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Học viên</th>
+            <th>Loại hồ sơ</th>
+            <th>Hạng</th>
+            <th>Ngày ĐK</th>
+            <th>Khám sức khỏe</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.HocvienId</td>
+                <td>@item.LoaiHoso</td>
+                <td>@item.HangId</td>
+                <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
+                <td>@item.Khamsuckhoe</td>
+                <td>
+                    <form asp-action="DuyetHoSo" method="post">
+                        <input type="hidden" name="id" value="@item.HosoId" />
+                        <button type="submit" name="passed" value="true" class="btn btn-success">Duyệt</button>
+                        <button type="submit" name="passed" value="false" class="btn btn-danger">Từ chối</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

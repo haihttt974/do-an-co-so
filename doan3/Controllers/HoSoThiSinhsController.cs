@@ -58,18 +58,23 @@ namespace doan3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HosoId,HocvienId,ImgThisinh,LoaiHoso,HangId,Ngaydk,Khamsuckhoe,Ghichu")] HoSoThiSinh hoSoThiSinh)
+        public async Task<IActionResult> Create([Bind("HocvienId,ImgThisinh,LoaiHoso,HangId,Khamsuckhoe")] HoSoThiSinh hoSoThiSinh)
         {
+            hoSoThiSinh.Ghichu = "Chưa được duyệt";
+            hoSoThiSinh.Ngaydk = DateOnly.FromDateTime(DateTime.Now);
+
             if (ModelState.IsValid)
             {
                 _context.Add(hoSoThiSinh);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyHoSo), new { hocVienId = hoSoThiSinh.HocvienId });
             }
+
             ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "HangId", hoSoThiSinh.HangId);
             ViewData["HocvienId"] = new SelectList(_context.HocViens, "HocvienId", "HocvienId", hoSoThiSinh.HocvienId);
             return View(hoSoThiSinh);
         }
+
 
         // GET: HoSoThiSinhs/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -165,5 +170,38 @@ namespace doan3.Controllers
         {
             return _context.HoSoThiSinhs.Any(e => e.HosoId == id);
         }
+        public async Task<IActionResult> MyHoSo(int hocVienId)
+        {
+            ViewBag.HocVienId = hocVienId;
+            var hoSos = await _context.HoSoThiSinhs
+                .Where(h => h.HocvienId == hocVienId)
+                .ToListAsync();
+
+            return View("MyHoSo", hoSos);
+        }
+        // GET: Duyet
+        public async Task<IActionResult> Duyet()
+        {
+            var hoSos = await _context.HoSoThiSinhs
+                .Include(h => h.Hocvien)
+                .Where(h => h.Ghichu == "Chưa được duyệt")
+                .ToListAsync();
+
+            return View(hoSos);
+        }
+
+        // POST: DuyetHoSo
+        [HttpPost]
+        public async Task<IActionResult> DuyetHoSo(int id, bool passed)
+        {
+            var hoSo = await _context.HoSoThiSinhs.FindAsync(id);
+            if (hoSo == null) return NotFound();
+
+            hoSo.Ghichu = passed ? "Duyệt" : "Không đủ điều kiện";
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Duyet));
+        }
+
     }
 }

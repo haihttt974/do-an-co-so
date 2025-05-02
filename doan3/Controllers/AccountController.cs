@@ -1,10 +1,13 @@
 ﻿using doan3.Models;
+using doan3.ViewModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace doan3.Controllers
 {
@@ -36,11 +39,11 @@ namespace doan3.Controllers
             }
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.RoleId.ToString())
-            };
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Role, user.RoleId.ToString())
+                };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -50,6 +53,8 @@ namespace doan3.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
+
         // GET: /Account/Register
         public IActionResult Register()
         {
@@ -58,25 +63,50 @@ namespace doan3.Controllers
 
         // POST: /Account/Register
         [HttpPost]
-        public async Task<IActionResult> Register(User model)
+        public IActionResult Register(RegisterViewModel model)
         {
-            if (_context.Users.Any(u => u.Username == model.Username || u.Email == model.Email || u.Sdt == model.Sdt))
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Tên đăng nhập, email hoặc SĐT đã tồn tại.");
-                return View(model);
+                // Tạo học viên mới
+                var hocVien = new HocVien
+                {
+                    Tenhocvien = model.TenHocVien,
+                    Socccd = model.SoCCCD,
+                    Gioitinh = model.GioiTinh,
+                    Ngaysinh = model.NgaySinh
+                };
+
+                _context.HocViens.Add(hocVien);
+                _context.SaveChanges();
+
+                // Hash mật khẩu bằng BCrypt
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+                // Tạo user mới
+                var user = new User
+                {
+                    Username = model.Username,
+                    Password = hashedPassword,
+                    RoleId = 3, // giả sử 3 là role học viên
+                    Referenceld = hocVien.HocvienId,
+                    Email = model.Email,
+                    Sdt = model.SDT,
+                    Diachi = model.DiaChi,
+                    Createat = DateTime.Now,
+                    Updateat = DateTime.Now,
+                    Isactive = true
+                };
+
+                _context.Users.Add(user);
+                _context.SaveChanges();
+
+                return RedirectToAction("Login");
             }
 
-            model.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            model.Createat = DateTime.Now;
-            model.Updateat = DateTime.Now;
-            model.Isactive = true;
-            model.RoleId = 3; // Gán mặc định học viên
-
-            _context.Users.Add(model);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Login");
+            return View(model);
         }
+
+
 
         // GET: /Account/Logout
         public async Task<IActionResult> Logout()
@@ -135,5 +165,15 @@ namespace doan3.Controllers
             _context.SaveChanges();
             return RedirectToAction("Profile");
         }
+        private string HashPassword(string password)
+        {
+            using (var sha = SHA256.Create())
+            {
+                var asBytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha.ComputeHash(asBytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
+
     }
 }

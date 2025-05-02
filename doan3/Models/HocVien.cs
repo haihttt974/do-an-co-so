@@ -13,7 +13,7 @@ public partial class HocVien
 
     public string Gioitinh { get; set; } = null!;
 
-    public DateOnly Ngaysinh { get; set; }
+    public DateTime? Ngaysinh { get; set; }
 
     public virtual ICollection<HoSoThiSinh> HoSoThiSinhs { get; set; } = new List<HoSoThiSinh>();
 

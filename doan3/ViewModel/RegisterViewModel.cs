@@ -1,15 +1,36 @@
-﻿using doan3.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace doan3.ViewModel
 {
     public class RegisterViewModel
     {
-        public int KhoaHocId { get; set; }
-        public KhoaHoc KhoaHoc { get; set; } // KhoaHoc includes SoLuongConLai
-        public List<LopHocViewModel> LopHocs { get; set; }
-        public int LopId { get; set; }
-        public string LoaiHoSo { get; set; }
-        public string KhamSucKhoe { get; set; }
-        public string GhiChu { get; set; }
+        // Thông tin học viên
+        [Required]
+        public string TenHocVien { get; set; }
+
+        [Required]
+        public string SoCCCD { get; set; }
+
+        [Required]
+        public string GioiTinh { get; set; }
+
+
+        [DataType(DataType.Date)]
+        public DateTime? NgaySinh { get; set; }
+
+        // Thông tin tài khoản
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        public string Email { get; set; }
+
+        public string DiaChi { get; set; }
+
+        public string SDT { get; set; }
     }
+
 }

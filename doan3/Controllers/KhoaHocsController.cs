@@ -242,7 +242,7 @@ namespace doan3.Controllers
                 })
                 .ToListAsync();
 
-            var model = new RegisterViewModel
+            var model = new RegisterKHViewModel
             {
                 KhoaHocId = id,
                 KhoaHoc = khoaHoc,
@@ -255,7 +255,7 @@ namespace doan3.Controllers
         // POST: KhoaHocs/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterKHViewModel model)
         {
             if (!ModelState.IsValid)
             {

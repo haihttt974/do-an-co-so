@@ -1,0 +1,37 @@
+﻿@model IEnumerable<doan3.Models.HoSoThiSinh>
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+    var hocVienId = ViewBag.HocVienId;
+}
+
+<h2>Hồ sơ của tôi</h2>
+
+@if (!Model.Any())
+{
+    <p>Bạn chưa có hồ sơ nào.</p>
+    <a asp-action="Create" asp-route-hocVienId="@hocVienId" class="btn btn-primary">Tạo hồ sơ</a>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Loại hồ sơ</th>
+                <th>Hạng</th>
+                <th>Ngày đăng ký</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.LoaiHoso</td>
+                    <td>@item.HangId</td>
+                    <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Ghichu</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
