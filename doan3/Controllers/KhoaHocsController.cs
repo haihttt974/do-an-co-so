@@ -22,8 +22,23 @@ namespace doan3.Controllers
         // GET: KhoaHocs
         public async Task<IActionResult> Index()
         {
-            var dacsGplxContext = _context.KhoaHocs.Include(k => k.Hang);
-            return View(await dacsGplxContext.ToListAsync());
+            var khoaHocs = await _context.KhoaHocs
+                .Include(k => k.Hang)
+                .ToListAsync();
+
+            // Calculate SoLuongConLai for each course
+            foreach (var khoaHoc in khoaHocs)
+            {
+                var registeredStudents = await (from lh in _context.LopHocs
+                                                join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                                where lh.KhoahocId == khoaHoc.KhoahocId
+                                                select kq.HosoId)
+                                              .Distinct()
+                                              .CountAsync();
+                khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
+            }
+
+            return View(khoaHocs);
         }
 
         // GET: KhoaHocs/Details/5
@@ -48,8 +63,8 @@ namespace doan3.Controllers
                                             join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
                                             where lh.KhoahocId == khoaHoc.KhoahocId
                                             select kq.HosoId)
-                                           .Distinct()
-                                           .CountAsync();
+                                          .Distinct()
+                                          .CountAsync();
             khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
 
             return View(khoaHoc);
@@ -63,8 +78,6 @@ namespace doan3.Controllers
         }
 
         // POST: KhoaHocs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HangId,Tenkhoahoc,Ngaybatdau,Ngayketthuc,SlToida,Mota")] KhoaHoc khoaHoc)
@@ -72,16 +85,15 @@ namespace doan3.Controllers
             if (ModelState.IsValid)
             {
                 khoaHoc.Trangthai = "Sắp mở";
+                khoaHoc.SoLuongConLai = khoaHoc.SlToida; // Initialize SoLuongConLai
                 _context.Add(khoaHoc);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            // ✅ Gán lại ViewBag.HangId nếu model không hợp lệ
-            ViewBag.HangId = new SelectList(_context.HangGplxes, "HangId", "Tenhang", khoaHoc.HangId);
+            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "Tenhang", khoaHoc.HangId);
             return View(khoaHoc);
         }
-
 
         // GET: KhoaHocs/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -96,13 +108,11 @@ namespace doan3.Controllers
             {
                 return NotFound();
             }
-            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "HangId", khoaHoc.HangId);
+            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "Tenhang", khoaHoc.HangId);
             return View(khoaHoc);
         }
 
         // POST: KhoaHocs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("KhoahocId,HangId,Tenkhoahoc,Ngaybatdau,Ngayketthuc,SlToida,Trangthai,Mota")] KhoaHoc khoaHoc)
@@ -116,6 +126,14 @@ namespace doan3.Controllers
             {
                 try
                 {
+                    // Recalculate SoLuongConLai to ensure consistency
+                    var registeredStudents = await (from lh in _context.LopHocs
+                                                    join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                                    where lh.KhoahocId == khoaHoc.KhoahocId
+                                                    select kq.HosoId)
+                                                  .Distinct()
+                                                  .CountAsync();
+                    khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
                     _context.Update(khoaHoc);
                     await _context.SaveChangesAsync();
                 }
@@ -132,7 +150,7 @@ namespace doan3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "HangId", khoaHoc.HangId);
+            ViewData["HangId"] = new SelectList(_context.HangGplxes, "HangId", "Tenhang", khoaHoc.HangId);
             return View(khoaHoc);
         }
 
@@ -174,6 +192,7 @@ namespace doan3.Controllers
         {
             return _context.KhoaHocs.Any(e => e.KhoahocId == id);
         }
+
         // GET: KhoaHocs/Register/1
         public async Task<IActionResult> Register(int id)
         {
@@ -198,8 +217,8 @@ namespace doan3.Controllers
                                             join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
                                             where lh.KhoahocId == khoaHoc.KhoahocId
                                             select kq.HosoId)
-                                           .Distinct()
-                                           .CountAsync();
+                                          .Distinct()
+                                          .CountAsync();
             khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
 
             // Check if the course is eligible for registration
@@ -213,7 +232,6 @@ namespace doan3.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-#pragma warning disable CS8601 // Possible null reference assignment.
             var lopHocs = await _context.LopHocs
                 .Where(lh => lh.KhoahocId == id)
                 .Select(lh => new LopHocViewModel
@@ -223,7 +241,6 @@ namespace doan3.Controllers
                     LoaiLop = lh.LoaiLop
                 })
                 .ToListAsync();
-#pragma warning restore CS8601 // Possible null reference assignment.
 
             var model = new RegisterViewModel
             {
@@ -253,15 +270,39 @@ namespace doan3.Controllers
                 return View(model);
             }
 
-            // Retrieve the KhoaHoc to get HangId
+            // Retrieve the KhoaHoc to get HangId and verify eligibility
             var khoaHoc = await _context.KhoaHocs
                 .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
 
             if (khoaHoc == null)
             {
-                // Handle the case where the KhoaHoc is not found
                 ModelState.AddModelError(string.Empty, "Khóa học không tồn tại.");
                 model.KhoaHoc = new KhoaHoc { KhoahocId = model.KhoaHocId };
+                model.LopHocs = await _context.LopHocs
+                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
+                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
+                    .ToListAsync();
+                return View(model);
+            }
+
+            // Recalculate SoLuongConLai to ensure accuracy
+            var registeredStudents = await (from lh in _context.LopHocs
+                                            join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
+                                            where lh.KhoahocId == khoaHoc.KhoahocId
+                                            select kq.HosoId)
+                                          .Distinct()
+                                          .CountAsync();
+            khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
+
+            // Check eligibility again to prevent race conditions
+            var currentDate = DateOnly.FromDateTime(DateTime.Today);
+            var registrationDeadline = currentDate.AddDays(15);
+            if (khoaHoc.SoLuongConLai <= 0 || khoaHoc.Ngaybatdau <= registrationDeadline)
+            {
+                ModelState.AddModelError(string.Empty, khoaHoc.SoLuongConLai <= 0
+                    ? "Khóa học đã đủ số lượng học viên."
+                    : $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.");
+                model.KhoaHoc = khoaHoc;
                 model.LopHocs = await _context.LopHocs
                     .Where(lh => lh.KhoahocId == model.KhoaHocId)
                     .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
@@ -272,10 +313,10 @@ namespace doan3.Controllers
             // Create a new HO_SO_THI_SINH record
             var hoSo = new HoSoThiSinh
             {
-                HocvienId = 1, // Replace with the actual logged-in user's HocvienId (e.g., using ASP.NET Identity)
-                ImgThisinh = null, // Add image upload logic if needed
+                HocvienId = 1, // Replace with actual logged-in user's HocvienId
+                ImgThisinh = null,
                 LoaiHoso = model.LoaiHoSo,
-                HangId = khoaHoc.HangId ?? 0, // Handle nullable HangId with a fallback value (e.g., 0)
+                HangId = khoaHoc.HangId ?? 0,
                 Ngaydk = DateOnly.FromDateTime(DateTime.Today),
                 Khamsuckhoe = model.KhamSucKhoe,
                 Ghichu = model.GhiChu
@@ -291,7 +332,7 @@ namespace doan3.Controllers
                 HosoId = hoSo.HosoId,
                 Nhanxet = null,
                 Sobuoiodahoc = 0,
-                Sobuoitoithieu = 0, // Set based on course requirements
+                Sobuoitoithieu = 0,
                 KmHoanthanh = 0,
                 GioBandem = 0,
                 HtLythuyet = "Chưa hoàn thành",
@@ -306,10 +347,13 @@ namespace doan3.Controllers
             _context.KetQuaHocTaps.Add(ketQua);
             await _context.SaveChangesAsync();
 
+            // Update SoLuongConLai in KhoaHoc
+            khoaHoc.SoLuongConLai--;
+            _context.Update(khoaHoc);
+            await _context.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "Đăng ký khóa học thành công!";
             return RedirectToAction("Index", "Home");
         }
-
-        // Other actions (e.g., Details) can remain as previously updated
     }
 }
