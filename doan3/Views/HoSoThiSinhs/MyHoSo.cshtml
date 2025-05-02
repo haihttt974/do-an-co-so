@@ -9,6 +9,7 @@
 @if (!Model.Any())
 {
     <div class="alert alert-info">Bạn chưa có hồ sơ nào được duyệt.</div>
+    <a class="btn btn-primary mt-3" asp-action="CreateUser">Thêm hồ sơ mới</a>
 }
 else
 {

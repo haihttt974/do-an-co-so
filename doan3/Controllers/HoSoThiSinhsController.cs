@@ -215,14 +215,26 @@ namespace doan3.Controllers
         [HttpPost]
         public async Task<IActionResult> DuyetHoSo(int id, bool passed)
         {
-            var hoSo = await _context.HoSoThiSinhs.FindAsync(id);
-            if (hoSo == null) return NotFound();
+            var hoso = await _context.HoSoThiSinhs.FindAsync(id);
+            if (hoso == null)
+            {
+                return NotFound();
+            }
 
-            hoSo.Ghichu = passed ? "Duyệt" : "Không đủ điều kiện";
+            if (passed)
+            {
+                hoso.Ghichu = "Duyệt";
+                _context.Update(hoso);
+            }
+            else
+            {
+                _context.HoSoThiSinhs.Remove(hoso);
+            }
+
             await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Duyet));
+            return RedirectToAction("Duyet"); // hoặc tên view phù hợp
         }
+
 
         [Authorize]
         public IActionResult CreateUser()
@@ -243,10 +255,19 @@ namespace doan3.Controllers
                 return View(model);
             }
 
-            // Lấy ID học viên từ User
-            var hocVienId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            // Lấy UserId từ claim
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            // Tạo hồ sơ trước, chưa có ảnh
+            // Lấy người dùng và kiểm tra RoleId = 3 (học viên)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == 3);
+            if (user == null || user.Referenceld == null)
+            {
+                return Unauthorized(); // hoặc có thể chuyển hướng đến trang lỗi
+            }
+
+            var hocVienId = user.Referenceld.Value;
+
+            // Tạo hồ sơ ban đầu
             var hoSo = new HoSoThiSinh
             {
                 HocvienId = hocVienId,
@@ -257,7 +278,7 @@ namespace doan3.Controllers
             };
 
             _context.HoSoThiSinhs.Add(hoSo);
-            await _context.SaveChangesAsync(); // để có HoSoId
+            await _context.SaveChangesAsync(); // để có HosoId
 
             // Lưu ảnh
             var imgFileName = $"img{hoSo.HosoId}.jpg";
@@ -285,5 +306,6 @@ namespace doan3.Controllers
 
             return RedirectToAction("MyHoSo");
         }
+
     }
 }
