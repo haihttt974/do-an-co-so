@@ -298,6 +298,18 @@
                                 <p>Giáo viên</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="/Account/Profile" class="nav-link">
+                                <i class="nav-icon fas fa-id-card"></i>
+                                <p>Hồ sơ của tôi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Account/Manage" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Manage hồ sơ</p>
+                            </a>
+                        </li>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <li class="nav-item">
