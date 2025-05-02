@@ -39,11 +39,21 @@ namespace doan3.Controllers
             }
 
             var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                    new Claim(ClaimTypes.Role, user.RoleId.ToString())
-                };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Role, user.RoleId.ToString())
+            };
+
+            // Nếu là học viên thì dùng ReferenceId làm NameIdentifier
+            if (user.RoleId == 3) // giả sử 3 là học viên
+            {
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Referenceld.ToString())); // Đây là HocvienId
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())); // Giáo viên/admin
+            }
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -52,7 +62,6 @@ namespace doan3.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
 
 
         // GET: /Account/Register
@@ -165,15 +174,5 @@ namespace doan3.Controllers
             _context.SaveChanges();
             return RedirectToAction("Profile");
         }
-        private string HashPassword(string password)
-        {
-            using (var sha = SHA256.Create())
-            {
-                var asBytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha.ComputeHash(asBytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
     }
 }

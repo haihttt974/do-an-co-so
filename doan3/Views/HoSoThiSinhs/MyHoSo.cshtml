@@ -1,35 +1,46 @@
 ﻿@model IEnumerable<doan3.Models.HoSoThiSinh>
+
 @{
     ViewData["Title"] = "Hồ sơ của tôi";
-    var hocVienId = ViewBag.HocVienId;
 }
 
-<h2>Hồ sơ của tôi</h2>
+<h2 class="mb-4">Hồ sơ của tôi</h2>
 
 @if (!Model.Any())
 {
-    <p>Bạn chưa có hồ sơ nào.</p>
-    <a asp-action="Create" asp-route-hocVienId="@hocVienId" class="btn btn-primary">Tạo hồ sơ</a>
+    <div class="alert alert-info">Bạn chưa có hồ sơ nào được duyệt.</div>
 }
 else
 {
-    <table class="table">
-        <thead>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
                 <th>Loại hồ sơ</th>
                 <th>Hạng</th>
                 <th>Ngày đăng ký</th>
                 <th>Ghi chú</th>
+                <th>Ảnh thí sinh</th>
+                <th>Giấy khám sức khỏe</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
+                var hosoId = item.HosoId;
+                var imgPath = Url.Content($"~/img/hoso/img{hosoId}.jpg");
+                var kskPath = Url.Content($"~/img/hoso/ksk{hosoId}.jpg");
+
                 <tr>
                     <td>@item.LoaiHoso</td>
-                    <td>@item.HangId</td>
+                    <td>@item.Hang?.Tenhang</td>
                     <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
                     <td>@item.Ghichu</td>
+                    <td>
+                        <img src="@imgPath" alt="Ảnh thí sinh" width="100" />
+                    </td>
+                    <td>
+                        <img src="@kskPath" alt="Giấy khám sức khỏe" width="100" />
+                    </td>
                 </tr>
             }
         </tbody>

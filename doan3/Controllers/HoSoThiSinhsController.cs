@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using doan3.Models;
+using doan3.ViewModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace doan3.Controllers
 {
@@ -170,15 +173,33 @@ namespace doan3.Controllers
         {
             return _context.HoSoThiSinhs.Any(e => e.HosoId == id);
         }
-        public async Task<IActionResult> MyHoSo(int hocVienId)
+
+        [Authorize(Roles = "3")]
+        public async Task<IActionResult> MyHoSo()
         {
-            ViewBag.HocVienId = hocVienId;
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Unauthorized("Không có thông tin người dùng");
+
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null || user.RoleId != 3)
+                return Content("Không tìm thấy thông tin người dùng hoặc không phải học viên.");
+
+            if (user.Referenceld == null)
+                return Content("Không tìm thấy thông tin học viên.");
+
             var hoSos = await _context.HoSoThiSinhs
-                .Where(h => h.HocvienId == hocVienId)
+                .Include(h => h.Hang)
+                .Where(h => h.HocvienId == user.Referenceld && h.Ghichu == "Duyệt")
                 .ToListAsync();
 
             return View("MyHoSo", hoSos);
         }
+
+
         // GET: Duyet
         public async Task<IActionResult> Duyet()
         {
@@ -203,5 +224,66 @@ namespace doan3.Controllers
             return RedirectToAction(nameof(Duyet));
         }
 
+        [Authorize]
+        public IActionResult CreateUser()
+        {
+            var hangList = _context.HangGplxes.ToList();
+            ViewBag.HangList = new SelectList(hangList, "HangId", "Tenhang");
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUser(CreateHoSoViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.HangList = new SelectList(_context.HangGplxes, "HangId", "Tenhang");
+                return View(model);
+            }
+
+            // Lấy ID học viên từ User
+            var hocVienId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            // Tạo hồ sơ trước, chưa có ảnh
+            var hoSo = new HoSoThiSinh
+            {
+                HocvienId = hocVienId,
+                LoaiHoso = model.LoaiHoso,
+                HangId = model.HangId,
+                Ngaydk = DateOnly.FromDateTime(DateTime.Now),
+                Ghichu = "Chưa được duyệt"
+            };
+
+            _context.HoSoThiSinhs.Add(hoSo);
+            await _context.SaveChangesAsync(); // để có HoSoId
+
+            // Lưu ảnh
+            var imgFileName = $"img{hoSo.HosoId}.jpg";
+            var kskFileName = $"ksk{hoSo.HosoId}.jpg";
+
+            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/hoso", imgFileName);
+            var kskPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/hoso", kskFileName);
+
+            using (var stream = new FileStream(imgPath, FileMode.Create))
+            {
+                await model.ImgThisinhFile.CopyToAsync(stream);
+            }
+
+            using (var stream = new FileStream(kskPath, FileMode.Create))
+            {
+                await model.KhamsuckhoeFile.CopyToAsync(stream);
+            }
+
+            // Cập nhật lại đường dẫn ảnh
+            hoSo.ImgThisinh = $"/img/hoso/{imgFileName}";
+            hoSo.Khamsuckhoe = $"/img/hoso/{kskFileName}";
+
+            _context.HoSoThiSinhs.Update(hoSo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("MyHoSo");
+        }
     }
 }
