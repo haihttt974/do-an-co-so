@@ -29,7 +29,7 @@ namespace DrivingSchool.Web.Controllers
                         Chuyenmon = g.Chuyenmon,
                         HangDaotao = g.HangDaotao,
                         Ngaybatdaulamviec = g.Ngaybatdaulamviec,
-                        ImgGv = g.ImgGv ?? "/img/logo.png"
+                        ImgGv = g.ImgGv ?? "~/img/content/logo.png"
                     })
                     .ToListAsync(),
                 Courses = await _context.KhoaHocs

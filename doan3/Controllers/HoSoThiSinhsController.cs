@@ -284,8 +284,8 @@ namespace doan3.Controllers
             var imgFileName = $"img{hoSo.HosoId}.jpg";
             var kskFileName = $"ksk{hoSo.HosoId}.jpg";
 
-            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/hoso", imgFileName);
-            var kskPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/hoso", kskFileName);
+            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), "~/wwwroot/img/Profile", imgFileName);
+            var kskPath = Path.Combine(Directory.GetCurrentDirectory(), "~/wwwroot/img/Profile", kskFileName);
 
             using (var stream = new FileStream(imgPath, FileMode.Create))
             {
@@ -298,8 +298,8 @@ namespace doan3.Controllers
             }
 
             // Cập nhật lại đường dẫn ảnh
-            hoSo.ImgThisinh = $"/img/hoso/{imgFileName}";
-            hoSo.Khamsuckhoe = $"/img/hoso/{kskFileName}";
+            hoSo.ImgThisinh = $"~/img/Profile/{imgFileName}";
+            hoSo.Khamsuckhoe = $"~/img/Profile/{kskFileName}";
 
             _context.HoSoThiSinhs.Update(hoSo);
             await _context.SaveChangesAsync();

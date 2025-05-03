@@ -28,8 +28,8 @@ else
             @foreach (var item in Model)
             {
                 var hosoId = item.HosoId;
-                var imgPath = Url.Content($"~/img/hoso/img{hosoId}.jpg");
-                var kskPath = Url.Content($"~/img/hoso/ksk{hosoId}.jpg");
+                var imgPath = Url.Content($"/img/Profile/img{hosoId}.jpg");
+                var kskPath = Url.Content($"/img/Profile/ksk{hosoId}.jpg");
 
                 <tr>
                     <td>@item.LoaiHoso</td>
