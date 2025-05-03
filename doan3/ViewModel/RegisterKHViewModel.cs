@@ -15,12 +15,4 @@ namespace doan3.ViewModel
         public string GhiChu { get; set; }
         public int LichHocId { get; set; }
     }
-    public class LichHocViewModel
-    {
-        public int LichHocId { get; set; }
-        public DateTime TgBatDau { get; set; }
-        public DateTime TgKetThuc { get; set; }
-        public string HinhThucHoc { get; set; }
-        public string NoiDung { get; set; }
-    }
 }
