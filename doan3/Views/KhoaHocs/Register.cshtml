@@ -2,66 +2,131 @@
 
 @{
     ViewData["Title"] = "Đăng Ký Khóa Học";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<section class="register-section py-5">
-    <div class="container">
-        <h2 class="text-center fw-bold mb-5">Đăng Ký Khóa Học: @Model.KhoaHoc.Tenkhoahoc</h2>
+<h1 class="text-center mb-5 fw-bold display-5">Đăng Ký Khóa Học</h1>
 
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger" role="alert">
-                @TempData["ErrorMessage"]
-            </div>
-        }
+<div class="container">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success" role="alert">
-                @TempData["SuccessMessage"]
-            </div>
-        }
+    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(x => x.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-        <form asp-action="Register" method="post">
-            <input type="hidden" asp-for="KhoaHocId" />
-            <div class="mb-3">
-                <label class="form-label">Chọn Lớp Học</label>
-                <select asp-for="LopId" class="form-select" required>
-                    <option value="">-- Chọn lớp học --</option>
-                    @foreach (var lop in Model.LopHocs)
-                    {
-                        <option value="@lop.LopId">@lop.Tenlop (@lop.LoaiLop)</option>
-                    }
-                </select>
-                <span asp-validation-for="LopId" class="text-danger"></span>
+    <h3 class="mb-4">Khóa học: @Model.KhoaHoc.Tenkhoahoc</h3>
+
+    <form asp-action="Register" method="post">
+        <input type="hidden" asp-for="KhoaHocId" />
+
+        <div class="mb-4">
+            <h5>Chọn lớp học và lịch học</h5>
+            @if (Model.LopHocs != null && Model.LopHocs.Any())
+            {
+                @foreach (var lop in Model.LopHocs)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <input type="radio" name="LopId" value="@lop.LopId" id="lop-@lop.LopId" required />
+                                <label for="lop-@lop.LopId" class="ms-2">@lop.Tenlop (@lop.LoaiLop)</label>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            @if (lop.LichHocs != null && lop.LichHocs.Any())
+                            {
+                                <ul class="list-group">
+                                    @foreach (var lich in lop.LichHocs)
+                                    {
+                                        <li class="list-group-item">
+                                            <input type="radio" name="LichHocId" value="@lich.LichHocId" id="lich-@lich.LichHocId" required
+                                                   data-lop-id="@lop.LopId" class="lich-radio" />
+                                            <label for="lich-@lich.LichHocId" class="ms-2">
+                                                Ngày: @lich.TgBatDau.ToString("dd/MM/yyyy"),
+                                                Giờ: @lich.TgBatDau.ToString("HH:mm") - @lich.TgKetThuc.ToString("HH:mm"),
+                                                Hình thức: @lich.HinhThucHoc,
+                                                Nội dung: @lich.NoiDung
+                                            </label>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Chưa có lịch học cho lớp này.</p>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Chưa có lớp học nào cho khóa học này.</p>
+            }
+        </div>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                <i class="fas fa-user-plus me-2"></i> Đăng Ký
+            </button>
+            <a asp-action="Index" class="btn btn-secondary btn-lg">Quay lại</a>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Xác Nhận Đăng Ký</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>- Chắc chắn rằng lịch học đã phù hợp với bạn. Nếu lịch học không đáp ứng được thời gian của bạn thì có thể chọn lịch khác.</p>
+                        <p>- Khóa học của bạn sẽ bị hủy nếu thanh toán học phí sau ngày <strong>@Model.KhoaHoc.Ngaybatdau.AddDays(-5).ToString("dd/MM/yyyy")</strong>.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Xác Nhận</button>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Loại Hồ Sơ</label>
-                <select asp-for="LoaiHoSo" class="form-select" required>
-                    <option value="">-- Chọn loại hồ sơ --</option>
-                    <option value="Đăng ký mới">Đăng ký mới</option>
-                    <option value="Nâng hạng">Nâng hạng</option>
-                </select>
-                <span asp-validation-for="LoaiHoSo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Kết Quả Khám Sức Khỏe</label>
-                <input asp-for="KhamSucKhoe" class="form-control" placeholder="Kết quả khám sức khỏe" required />
-                <span asp-validation-for="KhamSucKhoe" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Ghi Chú</label>
-                <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="GhiChu" class="text-danger"></span>
-            </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Đăng Ký</button>
-                <a href="/KhoaHocs" class="btn btn-secondary">Hủy</a>
-            </div>
-        </form>
-    </div>
-</section>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Ensure only lich hocs of selected lop are selectable
+            $('input[name="LopId"]').change(function () {
+                var selectedLopId = $(this).val();
+                $('.lich-radio').each(function () {
+                    var lichLopId = $(this).data('lop-id');
+                    if (lichLopId == selectedLopId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true).prop('checked', false);
+                    }
+                });
+            });
+
+            // Trigger change on page load to set initial state
+            $('input[name="LopId"]:checked').trigger('change');
+        });
+    </script>
 }

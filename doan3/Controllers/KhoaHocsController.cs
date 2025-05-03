@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using doan3.Models;
 using doan3.ViewModel;
+using System.Security.Claims;
 
 namespace doan3.Controllers
 {
@@ -22,11 +23,23 @@ namespace doan3.Controllers
         // GET: KhoaHocs
         public async Task<IActionResult> Index()
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized();
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            var hocVien = await _context.HocViens.FirstOrDefaultAsync(hv => hv.HocvienId == user.Referenceld);
+            var hoSo = hocVien != null
+                ? await _context.HoSoThiSinhs.FirstOrDefaultAsync(h => h.HocvienId == hocVien.HocvienId)
+                : null;
+
             var khoaHocs = await _context.KhoaHocs
                 .Include(k => k.Hang)
                 .ToListAsync();
 
-            // Calculate SoLuongConLai for each course
+            var registrationDeadline = DateOnly.FromDateTime(DateTime.Today.AddDays(3));
+
             foreach (var khoaHoc in khoaHocs)
             {
                 var registeredStudents = await (from lh in _context.LopHocs
@@ -35,11 +48,28 @@ namespace doan3.Controllers
                                                 select kq.HosoId)
                                               .Distinct()
                                               .CountAsync();
+
                 khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
+                khoaHoc.Trangthai = (
+                    hocVien != null &&
+                    hoSo != null &&
+                    khoaHoc.HangId == hoSo.HangId &&
+                    khoaHoc.SoLuongConLai > 0 &&
+                    khoaHoc.Ngaybatdau > registrationDeadline
+                ) ? "Có thể đăng ký" : "Không thể đăng ký";
             }
 
-            return View(khoaHocs);
+            // Tạo ViewModel để truyền cả khoaHocs và hoSo
+            var viewModel = new KhoaHocViewModel
+            {
+                KhoaHocs = khoaHocs,
+                HoSo = hoSo,
+                HocVien = hocVien
+            };
+
+            return View(viewModel);
         }
+
 
         // GET: KhoaHocs/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -196,15 +226,31 @@ namespace doan3.Controllers
         // GET: KhoaHocs/Register/1
         public async Task<IActionResult> Register(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Register", "KhoaHoc", new { id }) });
+            }
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            var hocVien = await _context.HocViens.FirstOrDefaultAsync(hv => hv.HocvienId == user.Referenceld);
+            var hoSo = hocVien != null
+                ? await _context.HoSoThiSinhs.FirstOrDefaultAsync(h => h.HocvienId == hocVien.HocvienId)
+                : null;
+
+            if (hocVien == null || hoSo == null)
+            {
+                TempData["ErrorMessage"] = "Bạn cần tạo hồ sơ trước khi đăng ký khóa học.";
+                return RedirectToAction("Index");
+            }
+
             var khoaHoc = await _context.KhoaHocs
-                .Select(kh => new KhoaHoc
-                {
-                    KhoahocId = kh.KhoahocId,
-                    Tenkhoahoc = kh.Tenkhoahoc,
-                    HangId = kh.HangId,
-                    Ngaybatdau = kh.Ngaybatdau,
-                    SlToida = kh.SlToida
-                })
+                .Include(kh => kh.Hang)
                 .FirstOrDefaultAsync(kh => kh.KhoahocId == id);
 
             if (khoaHoc == null)
@@ -221,15 +267,23 @@ namespace doan3.Controllers
                                           .CountAsync();
             khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
 
-            // Check if the course is eligible for registration
+            // Check eligibility
             var currentDate = DateOnly.FromDateTime(DateTime.Today);
             var registrationDeadline = currentDate.AddDays(15);
-            if (khoaHoc.SoLuongConLai <= 0 || khoaHoc.Ngaybatdau <= registrationDeadline)
+            if (khoaHoc.SoLuongConLai <= 0)
             {
-                TempData["ErrorMessage"] = khoaHoc.SoLuongConLai <= 0
-                    ? "Khóa học đã đủ số lượng học viên."
-                    : $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.";
-                return RedirectToAction("Index", "Home");
+                TempData["ErrorMessage"] = "Khóa học đã đủ số lượng học viên.";
+                return RedirectToAction("Index");
+            }
+            if (khoaHoc.Ngaybatdau <= registrationDeadline)
+            {
+                TempData["ErrorMessage"] = $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.";
+                return RedirectToAction("Index");
+            }
+            if (khoaHoc.HangId != hoSo.HangId)
+            {
+                TempData["ErrorMessage"] = "Khóa học này không phù hợp với hạng trong hồ sơ của bạn.";
+                return RedirectToAction("Index");
             }
 
             var lopHocs = await _context.LopHocs
@@ -238,7 +292,18 @@ namespace doan3.Controllers
                 {
                     LopId = lh.LopId,
                     Tenlop = lh.Tenlop,
-                    LoaiLop = lh.LoaiLop
+                    LoaiLop = lh.LoaiLop,
+                    LichHocs = _context.LichHocs
+                        .Where(lich => lich.LopId == lh.LopId)
+                        .Select(lich => new LichHocViewModel
+                        {
+                            LichHocId = lich.LichhocId,
+                            TgBatDau = lich.TgBatdau,
+                            TgKetThuc = lich.TgKetthuc,
+                            HinhThucHoc = lich.Hinhthuchoc,
+                            NoiDung = lich.Noidung
+                        })
+                        .ToList()
                 })
                 .ToListAsync();
 
@@ -257,35 +322,41 @@ namespace doan3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterKHViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!User.Identity.IsAuthenticated)
             {
-                // Reload the view with validation errors
-                model.KhoaHoc = await _context.KhoaHocs
-                    .Select(kh => new KhoaHoc { KhoahocId = kh.KhoahocId, Tenkhoahoc = kh.Tenkhoahoc })
-                    .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
-                model.LopHocs = await _context.LopHocs
-                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
-                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
-                    .ToListAsync();
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Register", "KhoaHoc", new { id = model.KhoaHocId }) });
+            }
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            var hocVien = await _context.HocViens.FirstOrDefaultAsync(hv => hv.HocvienId == user.Referenceld);
+            var hoSo = hocVien != null
+                ? await _context.HoSoThiSinhs.FirstOrDefaultAsync(h => h.HocvienId == hocVien.HocvienId)
+                : null;
+
+            if (hocVien == null || hoSo == null)
+            {
+                ModelState.AddModelError(string.Empty, "Bạn cần tạo hồ sơ trước khi đăng ký khóa học.");
+                await ReloadModel(model);
                 return View(model);
             }
 
-            // Retrieve the KhoaHoc to get HangId and verify eligibility
             var khoaHoc = await _context.KhoaHocs
                 .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
 
             if (khoaHoc == null)
             {
                 ModelState.AddModelError(string.Empty, "Khóa học không tồn tại.");
-                model.KhoaHoc = new KhoaHoc { KhoahocId = model.KhoaHocId };
-                model.LopHocs = await _context.LopHocs
-                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
-                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
-                    .ToListAsync();
+                await ReloadModel(model);
                 return View(model);
             }
 
-            // Recalculate SoLuongConLai to ensure accuracy
+            // Recalculate SoLuongConLai
             var registeredStudents = await (from lh in _context.LopHocs
                                             join kq in _context.KetQuaHocTaps on lh.LopId equals kq.LopId
                                             where lh.KhoahocId == khoaHoc.KhoahocId
@@ -294,38 +365,39 @@ namespace doan3.Controllers
                                           .CountAsync();
             khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
 
-            // Check eligibility again to prevent race conditions
+            // Check eligibility
             var currentDate = DateOnly.FromDateTime(DateTime.Today);
             var registrationDeadline = currentDate.AddDays(15);
-            if (khoaHoc.SoLuongConLai <= 0 || khoaHoc.Ngaybatdau <= registrationDeadline)
+            if (khoaHoc.SoLuongConLai <= 0)
             {
-                ModelState.AddModelError(string.Empty, khoaHoc.SoLuongConLai <= 0
-                    ? "Khóa học đã đủ số lượng học viên."
-                    : $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.");
-                model.KhoaHoc = khoaHoc;
-                model.LopHocs = await _context.LopHocs
-                    .Where(lh => lh.KhoahocId == model.KhoaHocId)
-                    .Select(lh => new LopHocViewModel { LopId = lh.LopId, Tenlop = lh.Tenlop, LoaiLop = lh.LoaiLop })
-                    .ToListAsync();
+                ModelState.AddModelError(string.Empty, "Khóa học đã đủ số lượng học viên.");
+                await ReloadModel(model);
+                return View(model);
+            }
+            if (khoaHoc.Ngaybatdau <= registrationDeadline)
+            {
+                ModelState.AddModelError(string.Empty, $"Khóa học sắp bắt đầu (trước ngày {registrationDeadline.ToString("dd/MM/yyyy")}), không thể đăng ký.");
+                await ReloadModel(model);
+                return View(model);
+            }
+            if (khoaHoc.HangId != hoSo.HangId)
+            {
+                ModelState.AddModelError(string.Empty, "Khóa học này không phù hợp với hạng trong hồ sơ của bạn.");
+                await ReloadModel(model);
                 return View(model);
             }
 
-            // Create a new HO_SO_THI_SINH record
-            var hoSo = new HoSoThiSinh
+            // Validate LopId and LichHocId
+            var lopHoc = await _context.LopHocs.FirstOrDefaultAsync(lh => lh.LopId == model.LopId && lh.KhoahocId == model.KhoaHocId);
+            var lichHoc = await _context.LichHocs.FirstOrDefaultAsync(lich => lich.LichhocId == model.LichHocId && lich.LopId == model.LopId);
+            if (lopHoc == null || lichHoc == null)
             {
-                HocvienId = 1, // Replace with actual logged-in user's HocvienId
-                ImgThisinh = null,
-                LoaiHoso = model.LoaiHoSo,
-                HangId = khoaHoc.HangId ?? 0,
-                Ngaydk = DateOnly.FromDateTime(DateTime.Today),
-                Khamsuckhoe = model.KhamSucKhoe,
-                Ghichu = model.GhiChu
-            };
+                ModelState.AddModelError(string.Empty, "Lớp học hoặc lịch học không hợp lệ.");
+                await ReloadModel(model);
+                return View(model);
+            }
 
-            _context.HoSoThiSinhs.Add(hoSo);
-            await _context.SaveChangesAsync();
-
-            // Create a KET_QUA_HOC_TAP record for the selected class
+            // Create KetQuaHocTap record
             var ketQua = new KetQuaHocTap
             {
                 LopId = model.LopId,
@@ -335,25 +407,57 @@ namespace doan3.Controllers
                 Sobuoitoithieu = 0,
                 KmHoanthanh = 0,
                 GioBandem = 0,
-                HtLythuyet = "Chưa hoàn thành",
-                HtMophong = "Chưa hoàn thành",
-                HtSahinh = "Chưa hoàn thành",
-                HtDuongtruong = "Chưa hoàn thành",
-                DauTn = "Không đạt",
-                DuDkThisat = "Không đủ",
+                HtLythuyet = "Chưa học",
+                HtMophong = "Chưa học",
+                HtSahinh = "Chưa học",
+                HtDuongtruong = "Chưa học",
+                DauTn = "Chưa thi",
+                DuDkThisat = "Chưa xét",
                 Thoigiancapnhat = DateTime.Now
             };
 
             _context.KetQuaHocTaps.Add(ketQua);
-            await _context.SaveChangesAsync();
 
-            // Update SoLuongConLai in KhoaHoc
+            // Update SoLuongConLai
             khoaHoc.SoLuongConLai--;
             _context.Update(khoaHoc);
+
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Đăng ký khóa học thành công!";
+            // Calculate payment deadline (5 days before course start)
+            var paymentDeadline = khoaHoc.Ngaybatdau.AddDays(-5);
+
+            TempData["SuccessMessage"] = $"Đăng ký khóa học thành công! Vui lòng lưu ý:\n" +
+                                        $"- Chắc chắn rằng lịch học đã phù hợp với bạn. Nếu lịch học không đáp ứng được thời gian của bạn thì có thể chọn lịch khác.\n" +
+                                        $"- Khóa học của bạn sẽ bị hủy nếu thanh toán học phí sau ngày {paymentDeadline.ToString("dd/MM/yyyy")}.";
             return RedirectToAction("Index", "Home");
+        }
+
+        private async Task ReloadModel(RegisterKHViewModel model)
+        {
+            model.KhoaHoc = await _context.KhoaHocs
+                .Select(kh => new KhoaHoc { KhoahocId = kh.KhoahocId, Tenkhoahoc = kh.Tenkhoahoc })
+                .FirstOrDefaultAsync(kh => kh.KhoahocId == model.KhoaHocId);
+            model.LopHocs = await _context.LopHocs
+                .Where(lh => lh.KhoahocId == model.KhoaHocId)
+                .Select(lh => new LopHocViewModel
+                {
+                    LopId = lh.LopId,
+                    Tenlop = lh.Tenlop,
+                    LoaiLop = lh.LoaiLop,
+                    LichHocs = _context.LichHocs
+                        .Where(lich => lich.LopId == lh.LopId)
+                        .Select(lich => new LichHocViewModel
+                        {
+                            LichHocId = lich.LichhocId,
+                            TgBatDau = lich.TgBatdau,
+                            TgKetThuc = lich.TgKetthuc,
+                            HinhThucHoc = lich.Hinhthuchoc,
+                            NoiDung = lich.Noidung
+                        })
+                        .ToList()
+                })
+                .ToListAsync();
         }
     }
 }
