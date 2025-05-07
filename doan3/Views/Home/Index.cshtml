@@ -444,6 +444,46 @@
     .back-to-top i {
         font-size: 1.5rem;
     }
+
+    #backToTop {
+        position: fixed;
+        bottom: 95px; /* Điều chỉnh: Tăng khoảng cách từ cạnh dưới */
+        right: 30px; /* Điều chỉnh: Tăng khoảng cách từ cạnh phải */
+        z-index: 1000; /* Đảm bảo nút nằm trên các phần tử khác */
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: #fff;
+        text-align: center;
+        line-height: 40px;
+        cursor: pointer;
+        display: none; /* Ẩn mặc định */
+        transition: opacity 0.3s, background-color 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #backToTop.show {
+        display: block; /* Hiển thị khi có class show */
+        opacity: 1;
+    }
+
+    #backToTop:hover {
+        background-color: #0056b3;
+    }
+
+    #backToTop i {
+        font-size: 20px;
+    }
+
+    /* Hỗ trợ dark mode */
+    .dark-mode #backToTop {
+        background-color: #1a73e8;
+    }
+
+    .dark-mode #backToTop:hover {
+        background-color: #1557b0;
+    }
 </style>
 
 @section Scripts {
