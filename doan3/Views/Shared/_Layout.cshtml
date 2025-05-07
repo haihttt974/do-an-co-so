@@ -542,6 +542,28 @@
         });
     </script>
 
+    <script src="https://app.tudongchat.com/js/chatbox.js"></script>
+    <script>
+        const tudong_chatbox = new TuDongChat('KAzawNdt6a0NnSlwTnBNH')
+        tudong_chatbox.initial()
+    </script>
+
+    @* <!-- Nhúng Chat AI tự động - tudongchat --> *@
+    @* <script> *@
+    @*     (function(t,u,d,o,n,g,c,h,a,t){ *@
+    @*       t['TudongChatObject']=n;t[n]=t[n]||function(){ *@
+    @*       (t[n].q=t[n].q||[]).push(arguments)}; *@
+    @*       t[n].l=1*new Date();g=u.createElement(d), *@
+    @*       c=u.getElementsByTagName(d)[0];g.async=1;g.src=o; *@
+    @*       c.parentNode.insertBefore(g,c) *@
+    @*     })(window,document,'script','https://cdn.tudongchat.com/js/chatbox.js','tdc'); *@
+
+    @*     tdc('init', { *@
+    @*       bot_id: 'KAzawNdt6a0NnSlwTnBNH', *@
+    @*       token: 'swat:HS256.api:681aaba62dc57a0518e3d097:1746578355:.MZ/NKC4CZ6L3jQHZScL/ohCl+1lP4Yi/6gbpGngj7sA', *@
+    @*     }); *@
+    @* </script> *@
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
