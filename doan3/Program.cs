@@ -28,18 +28,12 @@ namespace doan3
                 {
                     new CultureInfo("vi"),      // Vietnamese
                     new CultureInfo("en"),      // English
-                    new CultureInfo("zh-Hans"), // Simplified Chinese
-                    new CultureInfo("ja"),      // Japanese
-                    new CultureInfo("ko"),      // Korean
-                    new CultureInfo("es"),      // Spanish
-                    new CultureInfo("de"),      // German
-                    new CultureInfo("fr"),      // French
-                    new CultureInfo("it")       // Italian
                 };
 
                 options.DefaultRequestCulture = new RequestCulture("vi");  // Default language
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
+                options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 
                 // Use cookie for culture storage
                 options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());

@@ -1,5 +1,21 @@
-﻿@{
+﻿@using Microsoft.EntityFrameworkCore
+@inject doan3.Models.DacsGplxContext DbContext
+@{
     Layout = null;
+
+    // Get the logged-in user's RoleId
+    int? roleId = null;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(userIdClaim, out int userId))
+        {
+            var user = await DbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+            roleId = user?.RoleId;
+        }
+    }
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -312,12 +328,21 @@
                         </li>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <li class="nav-item">
-                                <a href="/MyCourses" class="nav-link">
-                                    <i class="nav-icon fas fa-book"></i>
-                                    <p>Khóa học của tôi</p>
-                                </a>
-                            </li>
+                            @* <li class="nav-item"> *@
+                            @*     <a href="/MyCourses" class="nav-link"> *@
+                            @*         <i class="nav-icon fas fa-book"></i> *@
+                            @*         <p>Khóa học của tôi</p> *@
+                            @*     </a> *@
+                            @* </li> *@
+                            @if (roleId == 3) // Show "Lịch Học" for students (RoleId = 3)
+                            {
+                                <li class="nav-item">
+                                    <a href="/StudentLichHoc" class="nav-link">
+                                        <i class="nav-icon fas fa-calendar-alt"></i>
+                                        <p>Lịch Học</p>
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post">
                                     <button type="submit" class="nav-link bg-danger border-0 w-100 text-left">

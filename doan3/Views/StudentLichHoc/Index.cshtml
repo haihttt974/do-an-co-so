@@ -1,0 +1,42 @@
+﻿@model IEnumerable<doan3.Models.LichHoc>
+
+@{
+    ViewData["Title"] = "Lịch Học Của Tôi";
+}
+
+<h1>Lịch Học Của Tôi</h1>
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Lớp</th>
+                <th>Thời Gian Bắt Đầu</th>
+                <th>Thời Gian Kết Thúc</th>
+                <th>Hình Thức Học</th>
+                <th>Nội Dung</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.Lop?.Tenlop ?? "N/A")</td>
+                    <td>@item.TgBatdau.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@item.TgKetthuc.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@item.Hinhthuchoc</td>
+                    <td>@item.Noidung</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.LichhocId" class="btn btn-sm btn-info">Chi Tiết</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Bạn chưa có lịch học nào.</p>
+}
