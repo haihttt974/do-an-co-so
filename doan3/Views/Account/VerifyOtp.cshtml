@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Xác minh OTP";
+    var timeLeft = ViewBag.TimeLeft ?? 60;
+}
+
+<h2>Xác minh mã OTP</h2>
+
+<form method="post" asp-action="VerifyOtp">
+    <label>Nhập mã OTP:</label>
+    <input type="text" name="otp" required />
+    <button type="submit">Xác minh</button>
+</form>
+
+<p>Mã sẽ hết hạn sau: <span id="timer">@timeLeft</span> giây.</p>
+
+<button id="resendBtn" disabled onclick="resendOtp()">Gửi lại mã</button>
+
+<div id="message"></div>
+
+@section Scripts {
+    <script>
+        let timeLeft = parseInt(document.getElementById("timer").innerText);
+        let timer = setInterval(function () {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                document.getElementById("timer").innerText = "0";
+                document.getElementById("message").innerText = "Mã đã hết hạn. Vui lòng gửi lại.";
+                document.getElementById("resendBtn").disabled = false;
+            } else {
+                document.getElementById("timer").innerText = timeLeft;
+            }
+        }, 1000);
+
+        function resendOtp() {
+            fetch("/Account/ResendOtp", { method: "POST" })
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("message").innerText = data;
+                    document.getElementById("resendBtn").disabled = true;
+                    timeLeft = 60;
+                    document.getElementById("timer").innerText = timeLeft;
+                    timer = setInterval(function () {
+                        timeLeft--;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            document.getElementById("timer").innerText = "0";
+                            document.getElementById("message").innerText = "Mã đã hết hạn. Vui lòng gửi lại.";
+                            document.getElementById("resendBtn").disabled = false;
+                        } else {
+                            document.getElementById("timer").innerText = timeLeft;
+                        }
+                    }, 1000);
+                });
+        }
+    </script>
+}
