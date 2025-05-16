@@ -313,8 +313,8 @@ namespace doan3.Controllers
 
         private void SendOtpEmail(string toEmail, string otp)
         {
-            var fromEmail = "ctfcryptotht@gmail.com";
-            var fromPassword = "wtsu ywst agvg ddbw"; // App password, không dùng mật khẩu Gmail thật
+            var fromEmail = "drivingGPLX.shool@gmail.com";
+            var fromPassword = "smqu btut ihjn czrq";
             var smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
@@ -427,8 +427,8 @@ namespace doan3.Controllers
                     <h2>Xác minh tài khoản học viên</h2>
                     <p>Chào bạn,</p>
                     <p>Bạn vừa thực hiện đăng ký tài khoản tại 
-                        <strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe</strong>.</p>
-                    <p>Vui lòng sử dụng mã OTP dưới đây để xác minh email của bạn:</p>
+                        <strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe - DRIVING SCHOOL</strong>.</p>
+                    <p>Vui lòng sử dụng mã OTP dưới đây để xác minh tài khoản của bạn:</p>
                     <div class='otp-container'>
                         <span class='otp-code' id='otp'>{otp}</span>
                     </div>
