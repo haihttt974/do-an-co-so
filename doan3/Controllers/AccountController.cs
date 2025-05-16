@@ -328,123 +328,130 @@ namespace doan3.Controllers
                 Subject = "Xác minh đăng ký tài khoản học viên",
                 IsBodyHtml = true,
                 Body = $@"
-        <html>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
-            <style>
-                body {{
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #f9fafb;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .email-container {{
-                    padding: 50px 20px;
-                }}
-                .email-box {{
-                    max-width: 650px;
-                    margin: 0 auto;
-                    background: #ffffff;
-                    border-radius: 15px;
-                    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-                    padding: 40px;
-                }}
-                .email-box h2 {{
-                    font-size: 26px;
-                    color: #1a1a1a;
-                    margin-bottom: 20px;
-                }}
-                .email-box p {{
-                    font-size: 16px;
-                    color: #333333;
-                    line-height: 1.7;
-                    margin-bottom: 15px;
-                }}
-                .otp-container {{
-                    text-align: center;
-                    margin: 30px 0;
-                }}
-                .otp-code {{
-                    font-size: 38px;
-                    font-weight: bold;
-                    color: #007bff;
-                    letter-spacing: 8px;
-                    background: #e7f1ff;
-                    border: 1px solid #cce4ff;
-                    border-radius: 10px;
-                    padding: 20px;
-                    display: inline-block;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }}
-                .copy-btn {{
-                    display: inline-flex;
-                    align-items: center;
-                    font-size: 15px;
-                    color: #ffffff !important;
-                    background: linear-gradient(90deg, #007bff, #0056b3);
-                    padding: 10px 18px;
-                    border-radius: 25px;
-                    text-decoration: none;
-                    transition: transform 0.2s, background 0.2s;
-                    margin-left: 15px;
-                    cursor: pointer;
-                }}
-                .copy-btn:hover {{
-                    transform: scale(1.05);
-                    background: linear-gradient(90deg, #0056b3, #003d80);
-                }}
-                .copy-btn span {{
-                    margin-right: 6px;
-                }}
-                .footer {{
-                    font-size: 13px;
-                    color: #6c757d;
-                    text-align: center;
-                    margin-top: 40px;
-                    line-height: 1.6;
-                }}
-                @media (max-width: 600px) {{
-                    .email-box {{
-                        padding: 25px;
+                <html>
+                <head>
+                  <meta charset='UTF-8'>
+                  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                  <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+                  <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet'>
+                  <style>
+                    body {{
+                      background-color: #f4f6f8;
+                      font-family: 'Inter', sans-serif;
+                      margin: 0;
+                      padding: 0;
+                      color: #374151;
+                    }}
+                    .email-wrapper {{
+                      padding: 40px 16px;
+                    }}
+                    .email-card {{
+                      max-width: 600px;
+                      margin: 0 auto;
+                      background: #ffffff;
+                      border-radius: 20px;
+                      padding: 48px 36px;
+                      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+                      border: 1px solid #e5eaf1;
+                    }}
+                    .email-card h2 {{
+                      font-size: 26px;
+                      font-weight: 600;
+                      color: #0f172a;
+                      margin-bottom: 20px;
+                    }}
+                    .email-card p {{
+                      font-size: 16px;
+                      color: #374151;
+                      line-height: 1.7;
+                      margin-bottom: 16px;
+                    }}
+                    .otp-container {{
+                      text-align: center;
+                      margin: 36px 0 24px 0;
                     }}
                     .otp-code {{
+                      font-size: 40px;
+                      font-weight: 700;
+                      letter-spacing: 10px;
+                      color: #2563eb;
+                      background: #f0f6ff;
+                      padding: 22px 36px;
+                      border-radius: 14px;
+                      border: 1px solid #c3dafe;
+                      display: inline-block;
+                      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+                    }}
+                    .footer {{
+                      font-size: 13px;
+                      color: #6b7280;
+                      text-align: center;
+                      margin-top: 40px;
+                      line-height: 1.6;
+                    }}
+
+                    /* DARK MODE SUPPORT */
+                    @media (prefers-color-scheme: dark) {{
+                      body {{
+                        background-color: #0d1117;
+                        color: #cbd5e1;
+                      }}
+                      .email-card {{
+                        background: #161b22;
+                        border: 1px solid #30363d;
+                        box-shadow: none;
+                      }}
+                      .email-card h2 {{
+                        color: #f9fafb;
+                      }}
+                      .email-card p {{
+                        color: #cbd5e1;
+                      }}
+                      .otp-code {{
+                        color: #3b82f6;
+                        background: #1e293b;
+                        border-color: #3b82f6;
+                      }}
+                      .footer {{
+                        color: #94a3b8;
+                      }}
+                    }}
+
+                    @media (max-width: 600px) {{
+                      .email-card {{
+                        padding: 32px 24px;
+                      }}
+                      .otp-code {{
                         font-size: 30px;
-                        letter-spacing: 5px;
-                        padding: 15px;
+                        letter-spacing: 6px;
+                        padding: 18px 28px;
+                      }}
                     }}
-                    .copy-btn {{
-                        padding: 8px 15px;
-                        font-size: 14px;
-                    }}
-                }}
-            </style>
-        </head>
-        <body>
-            <div class='email-container'>
-                <div class='email-box'>
-                    <h2>Xác minh tài khoản học viên</h2>
-                    <p>Chào bạn,</p>
-                    <p>Bạn vừa thực hiện đăng ký tài khoản tại 
-                        <strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe - DRIVING SCHOOL</strong>.</p>
-                    <p>Vui lòng sử dụng mã OTP dưới đây để xác minh tài khoản của bạn:</p>
-                    <div class='otp-container'>
-                        <span class='otp-code' id='otp'>{otp}</span>
-                    </div>
-                    <p>Nhấn để sao chép hoặc chọn mã thủ công. Mã có hiệu lực trong <strong>60 giây</strong>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
-                    <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
-                    <p style='margin-top: 20px;'>Trân trọng,</p>
-                    <p><strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe</strong></p>
-                    <div class='footer'>
+                  </style>
+                </head>
+                <body>
+                  <div class='email-wrapper'>
+                    <div class='email-card'>
+                      <h2>Xác minh tài khoản học viên</h2>
+                      <p>Chào bạn,</p>
+                      <p>Bạn vừa đăng ký tài khoản tại <strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe - DRIVING SCHOOL</strong>.</p>
+                      <p>Vui lòng sử dụng mã OTP dưới đây để xác minh tài khoản của bạn:</p>
+                      <div class='otp-container'>
+                        <div class='otp-code'>{otp}</div>
+                      </div>
+                      <p>Mã có hiệu lực trong <strong>60 giây</strong>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+                      <p>Nếu bạn không thực hiện yêu cầu này, bạn có thể bỏ qua email này.</p>
+                      <p style='margin-top: 24px;'>Trân trọng,</p>
+                      <p><strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe</strong></p>
+                      <div class='footer'>
                         Đây là email tự động, vui lòng không phản hồi lại. <br>
                         © {DateTime.Now.Year} Trường Đào Tạo & Cấp Giấy Phép Lái Xe. All rights reserved.
+                      </div>
                     </div>
-                </div>
-            </div>
-        </body>
-        </html>
-    "
+                  </div>
+                </body>
+                </html>
+                "
             };
 
             mailMessage.To.Add(toEmail);
