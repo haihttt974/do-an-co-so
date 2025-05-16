@@ -651,5 +651,295 @@ namespace doan3.Controllers
             mailMessage.To.Add(toEmail);
             smtpClient.Send(mailMessage);
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Vui lòng nhập email của bạn!" });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Isactive == true);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Hài hước thật, email này chưa có trong hệ thống! Đăng ký ngay nào!", showRegister = true });
+            }
+
+            // Lưu email vào Session
+            HttpContext.Session.SetString("ForgotPasswordEmail", email);
+            return Json(new { success = true, message = "Bingo! Email của bạn đã được tìm thấy. Nhấn Gửi OTP để nhận mã!" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendForgotPasswordOTP()
+        {
+            var email = HttpContext.Session.GetString("ForgotPasswordEmail");
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Phiên làm việc đã hết hạn. Vui lòng nhập lại email để tiếp tục!" });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Isactive == true);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Email không hợp lệ. Hãy kiểm tra lại!" });
+            }
+
+            // Tạo và lưu OTP
+            var otp = new Random().Next(100000, 999999).ToString();
+            HttpContext.Session.SetString("ForgotPasswordOTP", otp);
+            HttpContext.Session.SetString("ForgotPasswordOTPTime", DateTime.UtcNow.ToString("o"));
+
+            try
+            {
+                await sendOtpMailForgotPassword(email, otp);
+                return Json(new { success = true, message = "Bùm! Mã OTP đã bay đến email của bạn. Kiểm tra hộp thư ngay nhé!" });
+            }
+            catch (SmtpException ex)
+            {
+                return Json(new { success = false, message = $"Lỗi gửi email: {ex.Message}. Vui lòng kiểm tra lại cấu hình email!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}. Liên hệ hỗ trợ nếu cần!" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyForgotPasswordOTP(string otp)
+        {
+            var email = HttpContext.Session.GetString("ForgotPasswordEmail");
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Phiên làm việc đã hết hạn. Vui lòng thử lại từ đầu!" });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Isactive == true);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Email không hợp lệ. Hãy kiểm tra lại!" });
+            }
+
+            var storedOTP = HttpContext.Session.GetString("ForgotPasswordOTP");
+            var otpTimeStr = HttpContext.Session.GetString("ForgotPasswordOTPTime");
+
+            if (string.IsNullOrEmpty(otpTimeStr) || !DateTime.TryParseExact(otpTimeStr, "o", null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime otpTime))
+            {
+                return Json(new { success = false, message = "Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới!" });
+            }
+
+            var secondsElapsed = (DateTime.UtcNow - otpTime).TotalSeconds;
+            if (secondsElapsed > 60)
+            {
+                return Json(new { success = false, message = "Mã OTP đã hết hạn. Hãy yêu cầu mã mới nhé!" });
+            }
+
+            if (otp == storedOTP)
+            {
+                HttpContext.Session.SetString("ForgotPasswordVerified", "true");
+                HttpContext.Session.Remove("ForgotPasswordOTP");
+                HttpContext.Session.Remove("ForgotPasswordOTPTime");
+                return Json(new { success = true, message = "Tuyệt vời! Mã OTP đúng. Giờ hãy đặt mật khẩu mới nào!" });
+            }
+
+            return Json(new { success = false, message = "Ôi, mã OTP không đúng. Thử lại nhé!" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new { success = false, message = "Dữ liệu không hợp lệ!", errors = errors });
+            }
+
+            var email = HttpContext.Session.GetString("ForgotPasswordEmail");
+            var verified = HttpContext.Session.GetString("ForgotPasswordVerified");
+
+            if (string.IsNullOrEmpty(email) || verified != "true")
+            {
+                return Json(new { success = false, message = "Phiên làm việc không hợp lệ hoặc chưa xác minh OTP. Vui lòng thử lại từ đầu!" });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Isactive == true);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Tài khoản không tồn tại. Hãy kiểm tra lại!" });
+            }
+
+            // Cập nhật mật khẩu
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            user.Updateat = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            // Xóa Session
+            HttpContext.Session.Remove("ForgotPasswordEmail");
+            HttpContext.Session.Remove("ForgotPasswordVerified");
+
+            return Json(new { success = true, message = "Chúc mừng! Mật khẩu của bạn đã được đặt lại thành công!" });
+        }
+
+        private async Task sendOtpMailForgotPassword(string toEmail, string otp)
+        {
+            var fromEmail = "drivingGPLX.shool@gmail.com";
+            var fromPassword = "smqu btut ihjn czrq";
+            var smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(fromEmail, fromPassword),
+                EnableSsl = true,
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(fromEmail, "Trường Đào Tạo & Cấp Giấy Phép Lái Xe"),
+                Subject = "Xác minh quên mật khẩu",
+                IsBodyHtml = true,
+                Body = $@"
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+  <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet'>
+  <style>
+    body {{
+      background-color: #f4f6f8;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #374151;
+    }}
+    .email-wrapper {{
+      padding: 40px 16px;
+    }}
+    .email-card {{
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 48px 36px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5eaf1;
+    }}
+    .email-card h2 {{
+      font-size: 26px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 20px;
+    }}
+    .email-card p {{
+      font-size: 16px;
+      color: #374151;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }}
+    .otp-container {{
+      text-align: center;
+      margin: 36px 0 24px 0;
+    }}
+    .otp-code {{
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 10px;
+      color: #2563eb;
+      background: #f0f6ff;
+      padding: 22px 36px;
+      border-radius: 14px;
+      border: 1px solid #c3dafe;
+      display: inline-block;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+    }}
+    .footer {{
+      font-size: 13px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 40px;
+      line-height: 1.6;
+    }}
+    @media (prefers-color-scheme: dark) {{
+      body {{
+        background-color: #0d1117;
+        color: #cbd5e1;
+      }}
+      .email-card {{
+        background: #161b22;
+        border: 1px solid #30363d;
+        box-shadow: none;
+      }}
+      .email-card h2 {{
+        color: #f9fafb;
+      }}
+      .email-card p {{
+        color: #cbd5e1;
+      }}
+      .otp-code {{
+        color: #3b82f6;
+        background: #1e293b;
+        border-color: #3b82f6;
+      }}
+      .footer {{
+        color: #94a3b8;
+      }}
+    }}
+    @media (max-width: 600px) {{
+      .email-card {{
+        padding: 32px 24px;
+      }}
+      .otp-code {{
+        font-size: 30px;
+        letter-spacing: 6px;
+        padding: 18px 28px;
+      }}
+    }}
+  </style>
+</head>
+<body>
+  <div class='email-wrapper'>
+    <div class='email-card'>
+      <h2>Xác minh quên mật khẩu</h2>
+      <p>Chào bạn,</p>
+      <p>Bạn vừa yêu cầu khôi phục mật khẩu tại <strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe - DRIVING SCHOOL</strong>.</p>
+      <p>Vui lòng sử dụng mã OTP dưới đây để xác minh yêu cầu của bạn:</p>
+      <div class='otp-container'>
+        <div class='otp-code'>{otp}</div>
+      </div>
+      <p>Mã có hiệu lực trong <strong>60 giây</strong>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+      <p>Nếu bạn không thực hiện yêu cầu này, bạn có thể bỏ qua email này.</p>
+      <p style='margin-top: 24px;'>Trân trọng,</p>
+      <p><strong>Trường Đào Tạo & Cấp Giấy Phép Lái Xe</strong></p>
+      <div class='footer'>
+        Đây là email tự động, vui lòng không phản hồi lại. <br>
+        © {DateTime.Now.Year} Trường Đào Tạo & Cấp Giấy Phép Lái Xe. All rights reserved.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+"
+            };
+            mailMessage.To.Add(toEmail);
+
+            try
+            {
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+            catch (SmtpException ex)
+            {
+                throw new SmtpException($"SMTP Error: {ex.Message}. Status: {ex.StatusCode}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"General Error: {ex.Message}");
+            }
+        }
     }
 }
