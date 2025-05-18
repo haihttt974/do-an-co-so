@@ -1,59 +1,56 @@
 ﻿@model IEnumerable<doan3.Models.GiaoVien>
+@using System.Globalization
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách giáo viên";
 }
 
-<h1>Index</h1>
+<h1>Danh sách giáo viên</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Thêm giáo viên mới</a>
 </p>
-<table class="table">
+
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tengiaovien)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Chuyenmon)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HangDaotao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ngaybatdaulamviec)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImgGv)
-            </th>
-            <th></th>
+            <th>Tên giáo viên</th>
+            <th>Chuyên môn</th>
+            <th>Hạng đào tạo</th>
+            <th>Ngày bắt đầu làm việc</th>
+            <th>Ảnh giáo viên</th>
+            <th>Tùy chọn</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tengiaovien)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Chuyenmon)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HangDaotao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ngaybatdaulamviec)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImgGv)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.GiaovienId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.GiaovienId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.GiaovienId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Tengiaovien</td>
+                <td>@item.Chuyenmon</td>
+                <td>@item.HangDaotao</td>
+                <td>
+                    @(item.Ngaybatdaulamviec.HasValue
+                        ? item.Ngaybatdaulamviec.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        : "Chưa có")
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImgGv))
+                    {
+                        <img src="@item.ImgGv" alt="Ảnh giáo viên" width="80" height="80" style="object-fit: cover; border-radius: 8px;" />
+                    }
+                    else
+                    {
+                        <span>Chưa có ảnh</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Details" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-info">Chi tiết</a>
+                    <a asp-action="Delete" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-danger">Xóa</a>
+                    <a asp-action="AddAccount" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-secondary">Thêm tài khoản</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

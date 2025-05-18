@@ -79,7 +79,51 @@ namespace doan3.Controllers
             }
             return View(giaoVien);
         }
+        // POST: GiaoViens/AddAccount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAccount(int id, string username, string password)
+        {
+            var giaoVien = await _context.GiaoViens.FindAsync(id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
 
+            try
+            {
+                // Kiểm tra xem giáo viên đã có tài khoản chưa
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Referenceld == id);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("", "Giáo viên này đã có tài khoản!");
+                    ViewBag.GiaoVienId = id;
+                    ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
+                    return View();
+                }
+
+                // Tạo tài khoản mới
+                var user = new User
+                {
+                    Username = username,
+                    Password = password, // Nên mã hóa mật khẩu trong thực tế
+                    Referenceld = id, // Sử dụng Referenceld thay vì GiaovienId
+                    RoleId = 2, // Ví dụ: RoleId 2 cho giáo viên (cần có bảng Role)
+                    Createat = DateTime.Now,
+                    Isactive = true // Mặc định tài khoản hoạt động
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra khi tạo tài khoản: " + ex.Message);
+                ViewBag.GiaoVienId = id;
+                ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
+                return View();
+            }
+        }
         // POST: GiaoViens/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -133,6 +177,24 @@ namespace doan3.Controllers
             return View(giaoVien);
         }
 
+        // GET: GiaoViens/AddAccount/5
+        public async Task<IActionResult> AddAccount(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var giaoVien = await _context.GiaoViens.FindAsync(id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.GiaoVienId = id;
+            ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
+            return View();
+        }
         // POST: GiaoViens/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
