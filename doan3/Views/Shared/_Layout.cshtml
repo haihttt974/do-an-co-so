@@ -220,9 +220,29 @@
                         <i class="fas fa-bars"></i>
                     </a>
                 </li>
-                <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home me-1"></i> Home</a></li>
-                <li class="nav-item"><a href="/KhoaHocs" class="nav-link"><i class="fas fa-car me-1"></i> Khóa học</a></li>
-                <li class="nav-item"><a href="/GiaoViens" class="nav-link"><i class="fas fa-chalkboard-teacher me-1"></i> Giáo viên</a></li>
+                @if (roleId == 1) // Admin
+                {
+                    <li class="nav-item"><a href="/Dashboard" class="nav-link"><i class="fas fa-chart-line me-1"></i> Dashboard</a></li>
+                    <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li class="nav-item"><a href="/GiaoViens" class="nav-link"><i class="fas fa-chalkboard-teacher me-1"></i> Giáo viên</a></li>
+                    <li class="nav-item"><a href="/HocViens" class="nav-link"><i class="fas fa-users me-1"></i> Học viên</a></li>
+                }
+                else if (roleId == 2) // Giáo viên
+                {
+                    <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li class="nav-item"><a href="/LichDay" class="nav-link"><i class="fas fa-calendar-alt me-1"></i> Lịch dạy</a></li>
+                }
+                else if (roleId == 3) // Học viên
+                {
+                    <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li class="nav-item"><a href="/KhoaHocs" class="nav-link"><i class="fas fa-car me-1"></i> Khóa học</a></li>
+                    <li class="nav-item"><a href="/StudentLichHoc" class="nav-link"><i class="fas fa-calendar-alt me-1"></i> Lịch học</a></li>
+                }
+                else // Chưa đăng nhập
+                {
+                    <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li class="nav-item"><a href="/KhoaHocs" class="nav-link"><i class="fas fa-car me-1"></i> Khóa học</a></li>
+                }
             </ul>
 
             <ul class="navbar-nav ml-auto">
@@ -320,8 +340,6 @@
                                 <p>Hồ sơ của tôi</p>
                             </a>
                         </li>
-                        
-                        
                         <li class="nav-item">
                             <a href="/GiaoViens" class="nav-link">
                                 <i class="nav-icon fas fa-chalkboard-teacher"></i>
@@ -336,21 +354,24 @@
                         </li>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            @* <li class="nav-item"> *@
-                            @*     <a href="/MyCourses" class="nav-link"> *@
-                            @*         <i class="nav-icon fas fa-book"></i> *@
-                            @*         <p>Khóa học của tôi</p> *@
-                            @*     </a> *@
-                            @* </li> *@
-                            @if (roleId == 3) // Show "Lịch Học" for students (RoleId = 3)
-                            {
-                                <li class="nav-item">
-                                    <a href="/StudentLichHoc" class="nav-link">
-                                        <i class="nav-icon fas fa-calendar-alt"></i>
-                                        <p>Lịch Học</p>
-                                    </a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a href="/" class="nav-link">
+                                    <i class="nav-icon fas fa-home"></i>
+                                    <p>Home</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/LichDay" class="nav-link">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>Lịch dạy</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/LopHocs/Manage" class="nav-link">
+                                    <i class="nav-icon fas fa-school"></i>
+                                    <p>Quản lý lớp học</p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post">
                                     <button type="submit" class="nav-link bg-danger border-0 w-100 text-left">
@@ -360,8 +381,61 @@
                                 </form>
                             </li>
                         }
-                        else
+                        else if (roleId == 3) // Học viên
                         {
+                            <li class="nav-item">
+                                <a href="/" class="nav-link">
+                                    <i class="nav-icon fas fa-home"></i>
+                                    <p>Home</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/HoSoThiSinhs/MyHoSo" class="nav-link">
+                                    <i class="nav-icon fas fa-id-card"></i>
+                                    <p>Hồ sơ của tôi</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/StudentLichHoc" class="nav-link">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>Lịch học</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/KhoaHocs" class="nav-link">
+                                    <i class="nav-icon fas fa-car"></i>
+                                    <p>Khóa học</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/PhanHoi" class="nav-link">
+                                    <i class="nav-icon fas fa-comment"></i>
+                                    <p>Phản hồi</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="nav-link bg-danger border-0 w-100 text-left">
+                                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                                        <p>Đăng xuất</p>
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else // Chưa đăng nhập
+                        {
+                            <li class="nav-item">
+                                <a href="/" class="nav-link">
+                                    <i class="nav-icon fas fa-home"></i>
+                                    <p>Home</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/KhoaHocs" class="nav-link">
+                                    <i class="nav-icon fas fa-car"></i>
+                                    <p>Khóa học</p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="/Account/Login" class="nav-link">
                                     <i class="nav-icon fas fa-sign-in-alt"></i>
@@ -575,26 +649,10 @@
         });
     </script>
 
-    <script src="https://app.tudongchat.com/js/chatbox.js"></script>
-    <script>
-        const tudong_chatbox = new TuDongChat('KAzawNdt6a0NnSlwTnBNH')
-        tudong_chatbox.initial()
-    </script>
-
-    @* <!-- Nhúng Chat AI tự động - tudongchat --> *@
+    @* <script src="https://app.tudongchat.com/js/chatbox.js"></script> *@
     @* <script> *@
-    @*     (function(t,u,d,o,n,g,c,h,a,t){ *@
-    @*       t['TudongChatObject']=n;t[n]=t[n]||function(){ *@
-    @*       (t[n].q=t[n].q||[]).push(arguments)}; *@
-    @*       t[n].l=1*new Date();g=u.createElement(d), *@
-    @*       c=u.getElementsByTagName(d)[0];g.async=1;g.src=o; *@
-    @*       c.parentNode.insertBefore(g,c) *@
-    @*     })(window,document,'script','https://cdn.tudongchat.com/js/chatbox.js','tdc'); *@
-
-    @*     tdc('init', { *@
-    @*       bot_id: 'KAzawNdt6a0NnSlwTnBNH', *@
-    @*       token: 'swat:HS256.api:681aaba62dc57a0518e3d097:1746578355:.MZ/NKC4CZ6L3jQHZScL/ohCl+1lP4Yi/6gbpGngj7sA', *@
-    @*     }); *@
+    @*     const tudong_chatbox = new TuDongChat('KAzawNdt6a0NnSlwTnBNH') *@
+    @*     tudong_chatbox.initial() *@
     @* </script> *@
 
     @await RenderSectionAsync("Scripts", required: false)
