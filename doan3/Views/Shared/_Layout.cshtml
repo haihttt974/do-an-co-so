@@ -310,54 +310,49 @@
             <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        @if (roleId == 1) // Admin
-                        {
-                            <li class="nav-item">
-                                <a href="/Dashboard" class="nav-link">
-                                    <i class="nav-icon fas fa-chart-line"></i>
-                                    <p>Dashboard</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/" class="nav-link">
-                                    <i class="nav-icon fas fa-home"></i>
-                                    <p>Home</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/GiaoViens" class="nav-link">
-                                    <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                                    <p>Giáo viên</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/GiaoViens/Manage" class="nav-link">
-                                    <i class="nav-icon fas fa-user-cog"></i>
-                                    <p>Manage giáo viên</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/HocViens" class="nav-link">
-                                    <i class="nav-icon fas fa-users"></i>
-                                    <p>Học viên</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/HoSoThiSinhs/Duyet" class="nav-link">
-                                    <i class="nav-icon fas fa-cogs"></i>
-                                    <p>Manage hồ sơ</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="nav-link bg-danger border-0 w-100 text-left">
-                                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                                        <p>Đăng xuất</p>
-                                    </button>
-                                </form>
-                            </li>
-                        }
-                        else if (roleId == 2) // Giáo viên
+                        <li class="nav-item">
+                            <a href="/Dashboard" class="nav-link">
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/" class="nav-link">
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>Home</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/KhoaHocs" class="nav-link">
+                                <i class="nav-icon fas fa-car"></i>
+                                <p>Khóa học</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/GiaoViens" class="nav-link">
+                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <p>Giáo viên</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/HoSoThiSinhs/MyHoSo" class="nav-link">
+                                <i class="nav-icon fas fa-id-card"></i>
+                                <p>Hồ sơ của tôi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/GiaoViens" class="nav-link">
+                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <p>Manage Giáo viên</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/HoSoThiSinhs/Duyet" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Manage hồ sơ</p>
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <li class="nav-item">
                                 <a href="/" class="nav-link">
