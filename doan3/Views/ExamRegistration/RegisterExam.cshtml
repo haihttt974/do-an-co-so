@@ -1,0 +1,66 @@
+﻿@model doan3.ViewModel.ExamRegistrationViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký lịch thi";
+}
+
+<h2>Đăng ký lịch thi</h2>
+
+@if (!string.IsNullOrEmpty(Model.RegistrationMessage))
+{
+    <div class="alert @(Model.RegistrationMessage.Contains("thành công") ? "alert-success" : "alert-danger")">
+        @Model.RegistrationMessage
+    </div>
+}
+
+@if (Model.RegisteredExam != null)
+{
+    <h4>Lịch thi đã đăng ký</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Thời gian thi</th>
+                <th>Địa điểm thi</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var exam = Model.AvailableExams.FirstOrDefault(e => e.LichthiId == Model.RegisteredExam.LichthiId);
+                if (exam != null)
+                {
+                    <tr>
+                        <td>@exam.Thoigianthi.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@exam.Diadiemthi</td>
+                        <td>@exam.Ghichu</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else if (Model.AvailableExams.Any())
+{
+    <form asp-action="RegisterExam" method="post">
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="HocVienId" />
+        <div class="form-group">
+            <label>Chọn lịch thi:</label>
+            <select asp-for="SelectedLichThiId" class="form-control">
+                <option value="">-- Chọn lịch thi --</option>
+                @foreach (var exam in Model.AvailableExams)
+                {
+                    <option value="@exam.LichthiId">
+                        @exam.Thoigianthi.ToString("dd/MM/yyyy HH:mm") - @exam.Diadiemthi (@exam.Ghichu)
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="SelectedLichThiId" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Đăng ký</button>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
