@@ -235,7 +235,6 @@ namespace doan3.Controllers
             return RedirectToAction("Duyet"); // hoặc tên view phù hợp
         }
 
-
         [Authorize]
         public IActionResult CreateUser()
         {
@@ -247,7 +246,7 @@ namespace doan3.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUser(CreateHoSoViewModel model)
+        public async Task<IActionResult> CreateUser(CreateHoSoViewModel model, [FromServices] IWebHostEnvironment webHostEnvironment)
         {
             if (!ModelState.IsValid)
             {
@@ -262,7 +261,7 @@ namespace doan3.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == 3);
             if (user == null || user.Referenceld == null)
             {
-                return Unauthorized(); // hoặc có thể chuyển hướng đến trang lỗi
+                return Unauthorized();
             }
 
             var hocVienId = user.Referenceld.Value;
@@ -278,15 +277,26 @@ namespace doan3.Controllers
             };
 
             _context.HoSoThiSinhs.Add(hoSo);
-            await _context.SaveChangesAsync(); // để có HosoId
+            await _context.SaveChangesAsync(); // Lưu để có HosoId
 
-            // Lưu ảnh
+            // Đường dẫn đến thư mục wwwroot/img/Profile
+            var profilePath = Path.Combine(webHostEnvironment.WebRootPath, "img", "Profile");
+
+            // Kiểm tra và tạo thư mục nếu chưa tồn tại
+            if (!Directory.Exists(profilePath))
+            {
+                Directory.CreateDirectory(profilePath);
+            }
+
+            // Tạo tên file
             var imgFileName = $"img{hoSo.HosoId}.jpg";
             var kskFileName = $"ksk{hoSo.HosoId}.jpg";
 
-            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), "~/wwwroot/img/Profile", imgFileName);
-            var kskPath = Path.Combine(Directory.GetCurrentDirectory(), "~/wwwroot/img/Profile", kskFileName);
+            // Đường dẫn đầy đủ tới file
+            var imgPath = Path.Combine(profilePath, imgFileName);
+            var kskPath = Path.Combine(profilePath, kskFileName);
 
+            // Lưu ảnh
             using (var stream = new FileStream(imgPath, FileMode.Create))
             {
                 await model.ImgThisinhFile.CopyToAsync(stream);
@@ -297,15 +307,14 @@ namespace doan3.Controllers
                 await model.KhamsuckhoeFile.CopyToAsync(stream);
             }
 
-            // Cập nhật lại đường dẫn ảnh
-            hoSo.ImgThisinh = $"~/img/Profile/{imgFileName}";
-            hoSo.Khamsuckhoe = $"~/img/Profile/{kskFileName}";
+            // Cập nhật đường dẫn ảnh trong cơ sở dữ liệu
+            hoSo.ImgThisinh = $"/img/Profile/{imgFileName}"; // Lưu đường dẫn tương đối
+            hoSo.Khamsuckhoe = $"/img/Profile/{kskFileName}";
 
             _context.HoSoThiSinhs.Update(hoSo);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("MyHoSo");
         }
-
     }
 }
