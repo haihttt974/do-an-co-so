@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using doan3.Models;
 
 namespace doan3.Controllers
 {
+    [Authorize] // Yêu cầu đăng nhập
     public class GiaoViensController : Controller
     {
         private readonly DacsGplxContext _context;
@@ -24,7 +23,145 @@ namespace doan3.Controllers
             return View(await _context.GiaoViens.ToListAsync());
         }
 
-        // GET: GiaoViens/Details/5
+        // GET: GiaoViens/AddAccount/5
+        [Authorize(Roles = "1")] // Chỉ admin
+        public async Task<IActionResult> AddAccount(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var giaoVien = await _context.GiaoViens.FindAsync(id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
+
+            var user = new User
+            {
+                RoleId = 2,
+                Referenceld = id,
+                Username = $"gv_{id}_{giaoVien.Tengiaovien.ToLower().Replace(" ", "")}"
+            };
+            return View(user);
+        }
+
+        // POST: GiaoViens/AddAccount/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "1")] // Chỉ admin
+        public async Task<IActionResult> AddAccount(int id, string Username, string Password, string Email)
+        {
+            var giaoVien = await _context.GiaoViens.FindAsync(id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
+
+            // Kiểm tra giáo viên đã có tài khoản chưa
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Referenceld == id && u.RoleId == 2);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("", "Giáo viên này đã có tài khoản.");
+                return View(new User { Referenceld = id });
+            }
+
+            // Thêm tài khoản mới
+            var user = new User
+            {
+                Username = Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(Password),
+                RoleId = 2,
+                Referenceld = id,
+                Email = Email,
+                Createat = DateTime.Now,
+                Isactive = true
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: GiaoViens/Create
+        [Authorize(Roles = "1")] // Chỉ admin
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: GiaoViens/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "1")]
+        public async Task<IActionResult> Create([Bind("GiaovienId,Tengiaovien,Chuyenmon,HangDaotao,Ngaybatdaulamviec,ImgGv")] GiaoVien giaoVien)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(giaoVien);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(giaoVien);
+        }
+
+        // GET: GiaoViens/Edit/5
+        [Authorize(Roles = "1")] // Chỉ admin
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var giaoVien = await _context.GiaoViens.FindAsync(id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
+            return View(giaoVien);
+        }
+
+        // POST: GiaoViens/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "1")]
+        public async Task<IActionResult> Edit(int id, [Bind("GiaovienId,Tengiaovien,Chuyenmon,HangDaotao,Ngaybatdaulamviec,ImgGv")] GiaoVien giaoVien)
+        {
+            if (id != giaoVien.GiaovienId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(giaoVien);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(giaoVien);
+        }
+
+        // GET: GiaoViens/Delete/5
+        [Authorize(Roles = "1")] // Chỉ admin
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var giaoVien = await _context.GiaoViens.FirstOrDefaultAsync(m => m.GiaovienId == id);
+            if (giaoVien == null)
+            {
+                return NotFound();
+            }
+
+            return View(giaoVien);
+        }
+        // GiaoViens/Details/1
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -41,172 +178,18 @@ namespace doan3.Controllers
 
             return View(giaoVien);
         }
-
-        // GET: GiaoViens/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: GiaoViens/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("GiaovienId,Tengiaovien,Chuyenmon,HangDaotao,Ngaybatdaulamviec,ImgGv")] GiaoVien giaoVien)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(giaoVien);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(giaoVien);
-        }
-
-        // GET: GiaoViens/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var giaoVien = await _context.GiaoViens.FindAsync(id);
-            if (giaoVien == null)
-            {
-                return NotFound();
-            }
-            return View(giaoVien);
-        }
-        // POST: GiaoViens/AddAccount
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddAccount(int id, string username, string password)
-        {
-            var giaoVien = await _context.GiaoViens.FindAsync(id);
-            if (giaoVien == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                // Kiểm tra xem giáo viên đã có tài khoản chưa
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Referenceld == id);
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError("", "Giáo viên này đã có tài khoản!");
-                    ViewBag.GiaoVienId = id;
-                    ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
-                    return View();
-                }
-
-                // Tạo tài khoản mới
-                var user = new User
-                {
-                    Username = username,
-                    Password = password, // Nên mã hóa mật khẩu trong thực tế
-                    Referenceld = id, // Sử dụng Referenceld thay vì GiaovienId
-                    RoleId = 2, // Ví dụ: RoleId 2 cho giáo viên (cần có bảng Role)
-                    Createat = DateTime.Now,
-                    Isactive = true // Mặc định tài khoản hoạt động
-                };
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Có lỗi xảy ra khi tạo tài khoản: " + ex.Message);
-                ViewBag.GiaoVienId = id;
-                ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
-                return View();
-            }
-        }
-        // POST: GiaoViens/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("GiaovienId,Tengiaovien,Chuyenmon,HangDaotao,Ngaybatdaulamviec,ImgGv")] GiaoVien giaoVien)
-        {
-            if (id != giaoVien.GiaovienId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(giaoVien);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GiaoVienExists(giaoVien.GiaovienId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(giaoVien);
-        }
-
-        // GET: GiaoViens/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var giaoVien = await _context.GiaoViens
-                .FirstOrDefaultAsync(m => m.GiaovienId == id);
-            if (giaoVien == null)
-            {
-                return NotFound();
-            }
-
-            return View(giaoVien);
-        }
-
-        // GET: GiaoViens/AddAccount/5
-        public async Task<IActionResult> AddAccount(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var giaoVien = await _context.GiaoViens.FindAsync(id);
-            if (giaoVien == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.GiaoVienId = id;
-            ViewBag.TenGiaoVien = giaoVien.Tengiaovien;
-            return View();
-        }
         // POST: GiaoViens/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var giaoVien = await _context.GiaoViens.FindAsync(id);
             if (giaoVien != null)
             {
                 _context.GiaoViens.Remove(giaoVien);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
