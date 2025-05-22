@@ -2,52 +2,78 @@
 
 @{
     ViewData["Title"] = "Thêm giáo viên";
+    int? roleId = null;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (int.TryParse(roleClaim, out int parsedRoleId))
+        {
+            roleId = parsedRoleId;
+        }
+    }
 }
 
 <h2 class="mb-4">Thêm giáo viên mới</h2>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Tengiaovien" class="form-label">Họ và tên</label>
-                <input asp-for="Tengiaovien" class="form-control" />
-                <span asp-validation-for="Tengiaovien" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Chuyenmon" class="form-label">Chuyên môn</label>
-                <input asp-for="Chuyenmon" class="form-control" />
-                <span asp-validation-for="Chuyenmon" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="HangDaotao" class="form-label">Hạng đào tạo</label>
-                <input asp-for="HangDaotao" class="form-control" />
-                <span asp-validation-for="HangDaotao" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Ngaybatdaulamviec" class="form-label">Ngày bắt đầu làm việc</label>
-                <input asp-for="Ngaybatdaulamviec" type="date" class="form-control" />
-                <span asp-validation-for="Ngaybatdaulamviec" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-4">
-                <label asp-for="ImgGv" class="form-label">Đường dẫn ảnh (URL)</label>
-                <input asp-for="ImgGv" class="form-control" />
-                <span asp-validation-for="ImgGv" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Lưu" class="btn btn-success" />
-                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-            </div>
-        </form>
+@if (roleId != 1)
+{
+    <div class="alert alert-danger">
+        Bạn không có quyền thêm giáo viên mới. Vui lòng đăng nhập với tài khoản Admin.
     </div>
-</div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create">
+                <div class="form-group mb-3">
+                    <label asp-for="Tengiaovien" class="form-label">Họ và tên</label>
+                    <input asp-for="Tengiaovien" class="form-control" required />
+                    <span asp-validation-for="Tengiaovien" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Chuyenmon" class="form-label">Chuyên môn</label>
+                    <input asp-for="Chuyenmon" class="form-control" required />
+                    <span asp-validation-for="Chuyenmon" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="HangDaotao" class="form-label">Hạng đào tạo</label>
+                    <input asp-for="HangDaotao" class="form-control" required />
+                    <span asp-validation-for="HangDaotao" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Ngaybatdaulamviec" class="form-label">Ngày bắt đầu làm việc</label>
+                    <input asp-for="Ngaybatdaulamviec" type="date" class="form-control" />
+                    <span asp-validation-for="Ngaybatdaulamviec" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="ImgGv" class="form-label">Đường dẫn ảnh (URL)</label>
+                    <input asp-for="ImgGv" class="form-control" />
+                    <span asp-validation-for="ImgGv" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Lưu" class="btn btn-success" />
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+}
 
 @section Scripts {
     @{
