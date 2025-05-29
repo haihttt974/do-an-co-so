@@ -380,7 +380,8 @@ public partial class DacsGplxContext : DbContext
 
             entity.ToTable("KET_QUA_HOC_TAP");
 
-            entity.HasIndex(e => e.HosoId, "UK_KQHT_HOSO").IsUnique();
+            // Xóa chỉ mục Unique trên HosoId để cho phép một-nhiều
+            // entity.HasIndex(e => e.HosoId, "UK_KQHT_HOSO").IsUnique(); // Xóa dòng này
 
             entity.Property(e => e.KetquaId).HasColumnName("KETQUA_ID");
             entity.Property(e => e.DauTn)
@@ -414,12 +415,14 @@ public partial class DacsGplxContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("THOIGIANCAPNHAT");
 
-            entity.HasOne(d => d.Hoso).WithOne(p => p.KetQuaHocTap)
-                .HasForeignKey<KetQuaHocTap>(d => d.HosoId)
+            entity.HasOne(d => d.Hoso)
+                .WithMany(p => p.KetQuaHocTaps) // Sửa thành WithMany và sử dụng KetQuaHocTaps
+                .HasForeignKey(d => d.HosoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_KQHT_HOSO");
 
-            entity.HasOne(d => d.Lop).WithMany(p => p.KetQuaHocTaps)
+            entity.HasOne(d => d.Lop)
+                .WithMany(p => p.KetQuaHocTaps)
                 .HasForeignKey(d => d.LopId)
                 .HasConstraintName("FK_KQHT_LOPHOC");
         });

@@ -1,0 +1,80 @@
+﻿@model IEnumerable<doan3.Models.HoSoThiSinh>
+
+@{
+    ViewData["Title"] = "Danh sách Hồ sơ Thí sinh";
+    var lopHoc = ViewData["LopHoc"] as doan3.Models.LopHoc;
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<div class="container mt-4">
+    <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📄 Hồ sơ thí sinh - Lớp <strong>@lopHoc?.Tenlop</strong></h4>
+            <a asp-action="Index" class="btn btn-outline-light btn-sm">← Quay lại danh sách lớp</a>
+        </div>
+
+        <div class="card-body">
+            @if (!Model.Any() && ViewData["Message"] != null)
+            {
+                <div class="alert alert-info text-center">
+                    @ViewData["Message"]
+                </div>
+
+                <script>
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Thông báo',
+                        html: '@Html.Raw(ViewData["Message"])',
+                        confirmButtonText: 'OK'
+                    });
+                </script>
+            }
+            else if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>👤 Họ tên học viên</th>
+                                <th>🚗 Hãng</th>
+                                <th>📁 Loại hồ sơ</th>
+                                <th>📅 Ngày đăng ký</th>
+                                <th>🩺 Khám sức khỏe</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Hocvien?.Tenhocvien</td>
+                                    <td>@item.Hang?.Tenhang</td>
+                                    <td>@item.LoaiHoso</td>
+                                    <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (item.Khamsuckhoe == "true")
+                                        {
+                                            <span class="badge bg-success">Đã khám</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Chưa khám</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-controller="KetQuaHocTaps" asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-info me-1">Kết quả học tập</a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-controller="HoSoThiSinhs" asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-info me-1">🔍 Chi tiết</a>
+                                        <a asp-controller="HoSoThiSinhs" asp-action="Edit" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-secondary me-1">✏️ Sửa</a>
+                                        <a asp-controller="HoSoThiSinhs" asp-action="Delete" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-danger">🗑️ Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

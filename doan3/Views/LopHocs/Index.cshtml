@@ -42,6 +42,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Khoahoc.KhoahocId)
             </td>
+                <td> <a asp-action="ThongTinHocVien" asp-route-id="@item.LopId">Danh sách học viên</a> |</td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.LopId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.LopId">Details</a> |

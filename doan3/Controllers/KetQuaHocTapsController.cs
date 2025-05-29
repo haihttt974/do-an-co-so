@@ -25,7 +25,7 @@ namespace doan3.Controllers
             return View(await dacsGplxContext.ToListAsync());
         }
 
-        // GET: KetQuaHocTaps/Details/5
+        //GET: KetQuaHocTaps/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,8 +35,11 @@ namespace doan3.Controllers
 
             var ketQuaHocTap = await _context.KetQuaHocTaps
                 .Include(k => k.Hoso)
+                .ThenInclude(h => h.Hocvien)
+                .Include(k => k.Hoso.Hang)
                 .Include(k => k.Lop)
-                .FirstOrDefaultAsync(m => m.KetquaId == id);
+                .FirstOrDefaultAsync(m => m.HosoId == id);
+
             if (ketQuaHocTap == null)
             {
                 return NotFound();
