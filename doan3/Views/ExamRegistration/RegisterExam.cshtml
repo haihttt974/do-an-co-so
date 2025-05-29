@@ -1,66 +1,72 @@
 ﻿@model doan3.ViewModel.ExamRegistrationViewModel
 
-@{
-    ViewData["Title"] = "Đăng ký lịch thi";
-}
-
 <h2>Đăng ký lịch thi</h2>
+
+<style>
+    select.form-control {
+        width: 300px;
+        white-space: nowrap;
+    }
+
+    option {
+        white-space: nowrap;
+    }
+</style>
 
 @if (!string.IsNullOrEmpty(Model.RegistrationMessage))
 {
-    <div class="alert @(Model.RegistrationMessage.Contains("thành công") ? "alert-success" : "alert-danger")">
-        @Model.RegistrationMessage
-    </div>
+    <div class="alert alert-info">@Model.RegistrationMessage</div>
 }
 
-@if (Model.RegisteredExam != null)
-{
-    <h4>Lịch thi đã đăng ký</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Thời gian thi</th>
-                <th>Địa điểm thi</th>
-                <th>Ghi chú</th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                var exam = Model.AvailableExams.FirstOrDefault(e => e.LichthiId == Model.RegisteredExam.LichthiId);
-                if (exam != null)
+<form asp-action="RegisterExam" method="get">
+    <div class="form-group">
+        <label for="selectedKyThiId">Chọn kỳ thi:</label>
+        <select name="selectedKyThiId" class="form-control" onchange="this.form.submit()">
+            <option value="">-- Chọn kỳ thi --</option>
+            @foreach (var kyThi in Model.AvailableKyThis)
+            {
+                @if (Model.SelectedKyThiId == kyThi.KythiId)
                 {
-                    <tr>
-                        <td>@exam.Thoigianthi.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>@exam.Diadiemthi</td>
-                        <td>@exam.Ghichu</td>
-                    </tr>
+                    <option value="@kyThi.KythiId" selected>
+                        @kyThi.Tenkythi
+                    </option>
+                }
+                else
+                {
+                    <option value="@kyThi.KythiId">
+                        @kyThi.Tenkythi
+                    </option>
                 }
             }
-        </tbody>
-    </table>
-}
-else if (Model.AvailableExams.Any())
+        </select>
+    </div>
+</form>
+
+@if (Model.SelectedKyThiId.HasValue && Model.AvailableExams.Any())
 {
     <form asp-action="RegisterExam" method="post">
-        <input type="hidden" asp-for="UserId" />
-        <input type="hidden" asp-for="HocVienId" />
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="HocVienId" value="@Model.HocVienId" />
+        <input type="hidden" name="UserId" value="@Model.UserId" />
+        <input type="hidden" name="SelectedKyThiId" value="@Model.SelectedKyThiId" />
+
         <div class="form-group">
-            <label>Chọn lịch thi:</label>
-            <select asp-for="SelectedLichThiId" class="form-control">
+            <label for="SelectedLichThiId">Chọn lịch thi:</label>
+            <select name="SelectedLichThiId" class="form-control" required>
                 <option value="">-- Chọn lịch thi --</option>
                 @foreach (var exam in Model.AvailableExams)
                 {
                     <option value="@exam.LichthiId">
-                        @exam.Thoigianthi.ToString("dd/MM/yyyy HH:mm") - @exam.Diadiemthi (@exam.Ghichu)
+                        @exam.Thoigianthi - @exam.Ghichu
                     </option>
                 }
             </select>
-            <span asp-validation-for="SelectedLichThiId" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Đăng ký</button>
+
+        <button type="submit" class="btn btn-primary">Đăng ký lịch thi</button>
     </form>
 }
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+else if (Model.SelectedKyThiId.HasValue)
+{
+    <p>Không có lịch thi phù hợp với kỳ thi bạn chọn.</p>
 }
