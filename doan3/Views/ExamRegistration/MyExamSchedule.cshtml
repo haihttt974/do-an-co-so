@@ -1,0 +1,21 @@
+﻿@model doan3.ViewModel.ExamRegistrationViewModel
+
+<h2>Lịch thi của bạn</h2>
+
+@if (!string.IsNullOrEmpty(Model.RegistrationMessage))
+{
+    <div class="alert alert-info">@Model.RegistrationMessage</div>
+}
+else if (Model.RegisteredExam != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Thông tin lịch thi</h5>
+            <p class="card-text"><strong>Kỳ thi:</strong> @Model.RegisteredExam.Kythi.Tenkythi</p>
+            <p class="card-text"><strong>Thời gian thi:</strong> @Model.RegisteredExam.Lichthi.Thoigianthi</p>
+            <p class="card-text"><strong>Địa điểm thi:</strong> @Model.RegisteredExam.Lichthi.Diadiemthi</p>
+            <p class="card-text"><strong>Ghi chú:</strong> @Model.RegisteredExam.Lichthi.Ghichu</p>
+            <p class="card-text"><strong>Thời gian đăng ký:</strong> @Model.RegisteredExam.Thoigiandk</p>
+        </div>
+    </div>
+}
