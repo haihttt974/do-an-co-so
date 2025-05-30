@@ -28,7 +28,6 @@ namespace doan3.Controllers
             return View(await dacsGplxContext.ToListAsync());
         }
 
-
         // GET: HoSoThiSinhs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -58,8 +57,6 @@ namespace doan3.Controllers
         }
 
         // POST: HoSoThiSinhs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HocvienId,ImgThisinh,LoaiHoso,HangId,Khamsuckhoe")] HoSoThiSinh hoSoThiSinh)
@@ -78,7 +75,6 @@ namespace doan3.Controllers
             ViewData["HocvienId"] = new SelectList(_context.HocViens, "HocvienId", "HocvienId", hoSoThiSinh.HocvienId);
             return View(hoSoThiSinh);
         }
-
 
         // GET: HoSoThiSinhs/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -99,8 +95,6 @@ namespace doan3.Controllers
         }
 
         // POST: HoSoThiSinhs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("HosoId,HocvienId,ImgThisinh,LoaiHoso,HangId,Ngaydk,Khamsuckhoe,Ghichu")] HoSoThiSinh hoSoThiSinh)
@@ -192,6 +186,31 @@ namespace doan3.Controllers
             if (user.Referenceld == null)
                 return Content("Không tìm thấy thông tin học viên.");
 
+            // Fetch HocVien data
+            var hocVien = await _context.HocViens
+                .AsNoTracking()
+                .FirstOrDefaultAsync(h => h.HocvienId == user.Referenceld);
+
+            if (hocVien == null)
+                return Content("Không tìm thấy thông tin học viên.");
+
+            // Set ViewBag data
+            ViewBag.UserInfo = new
+            {
+                user.Username,
+                user.Email,
+                Diachi = user.Diachi ?? "Chưa cập nhật",
+                Sdt = user.Sdt ?? "Chưa cập nhật"
+            };
+
+            ViewBag.HocVienInfo = new
+            {
+                hocVien.Tenhocvien,
+                hocVien.Socccd,
+                hocVien.Gioitinh,
+                hocVien.Ngaysinh
+            };
+
             var hoSos = await _context.HoSoThiSinhs
                 .Include(h => h.Hang)
                 .Where(h => h.HocvienId == user.Referenceld && h.Ghichu == "Duyệt")
@@ -199,7 +218,6 @@ namespace doan3.Controllers
 
             return View("MyHoSo", hoSos);
         }
-
 
         // GET: Duyet
         public async Task<IActionResult> Duyet()
@@ -233,7 +251,7 @@ namespace doan3.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Duyet"); // hoặc tên view phù hợp
+            return RedirectToAction("Duyet");
         }
 
         [Authorize]
@@ -255,10 +273,7 @@ namespace doan3.Controllers
                 return View(model);
             }
 
-            // Lấy UserId từ claim
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-            // Lấy người dùng và kiểm tra RoleId = 3 (học viên)
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == 3);
             if (user == null || user.Referenceld == null)
             {
@@ -266,8 +281,6 @@ namespace doan3.Controllers
             }
 
             var hocVienId = user.Referenceld.Value;
-
-            // Tạo hồ sơ ban đầu
             var hoSo = new HoSoThiSinh
             {
                 HocvienId = hocVienId,
@@ -278,26 +291,19 @@ namespace doan3.Controllers
             };
 
             _context.HoSoThiSinhs.Add(hoSo);
-            await _context.SaveChangesAsync(); // Lưu để có HosoId
+            await _context.SaveChangesAsync();
 
-            // Đường dẫn đến thư mục wwwroot/img/Profile
             var profilePath = Path.Combine(webHostEnvironment.WebRootPath, "img", "Profile");
-
-            // Kiểm tra và tạo thư mục nếu chưa tồn tại
             if (!Directory.Exists(profilePath))
             {
                 Directory.CreateDirectory(profilePath);
             }
 
-            // Tạo tên file
             var imgFileName = $"img{hoSo.HosoId}.jpg";
             var kskFileName = $"ksk{hoSo.HosoId}.jpg";
-
-            // Đường dẫn đầy đủ tới file
             var imgPath = Path.Combine(profilePath, imgFileName);
             var kskPath = Path.Combine(profilePath, kskFileName);
 
-            // Lưu ảnh
             using (var stream = new FileStream(imgPath, FileMode.Create))
             {
                 await model.ImgThisinhFile.CopyToAsync(stream);
@@ -308,10 +314,8 @@ namespace doan3.Controllers
                 await model.KhamsuckhoeFile.CopyToAsync(stream);
             }
 
-            // Cập nhật đường dẫn ảnh trong cơ sở dữ liệu
-            hoSo.ImgThisinh = $"/img/Profile/{imgFileName}"; // Lưu đường dẫn tương đối
+            hoSo.ImgThisinh = $"/img/Profile/{imgFileName}";
             hoSo.Khamsuckhoe = $"/img/Profile/{kskFileName}";
-
             _context.HoSoThiSinhs.Update(hoSo);
             await _context.SaveChangesAsync();
 

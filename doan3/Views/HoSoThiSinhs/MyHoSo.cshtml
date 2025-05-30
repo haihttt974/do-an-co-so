@@ -2,48 +2,257 @@
 
 @{
     ViewData["Title"] = "Hồ sơ của tôi";
+    var userInfo = ViewBag.UserInfo ?? new { Username = "N/A", Email = "N/A", Diachi = "N/A", Sdt = "N/A" };
+    var hocVienInfo = ViewBag.HocVienInfo ?? new { Tenhocvien = "N/A", Socccd = "N/A", Gioitinh = "N/A", Ngaysinh = (DateTime?)null };
 }
 
-<h2 class="mb-4">Hồ sơ của tôi</h2>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">Bạn chưa có hồ sơ nào được duyệt.</div>
-    <a class="btn btn-primary mt-3" asp-action="CreateUser">Thêm hồ sơ mới</a>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Loại hồ sơ</th>
-                <th>Hạng</th>
-                <th>Ngày đăng ký</th>
-                <th>Ghi chú</th>
-                <th>Ảnh thí sinh</th>
-                <th>Giấy khám sức khỏe</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                var hosoId = item.HosoId;
-                var imgPath = Url.Content($"/img/Profile/img{hosoId}.jpg");
-                var kskPath = Url.Content($"/img/Profile/ksk{hosoId}.jpg");
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
-                <tr>
-                    <td>@item.LoaiHoso</td>
-                    <td>@item.Hang?.Tenhang</td>
-                    <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
-                    <td>@item.Ghichu</td>
-                    <td>
-                        <img src="@imgPath" alt="Ảnh thí sinh" width="100" />
-                    </td>
-                    <td>
-                        <img src="@kskPath" alt="Giấy khám sức khỏe" width="100" />
-                    </td>
-                </tr>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container-profile {
+            padding: 2rem 1rem;
+            max-width: 800px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 3rem;
+        }
+
+        .profile-header {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #667eea;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-info p {
+            font-size: 1.05rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .profile-info i {
+            color: #667eea;
+            margin-right: 0.6rem;
+        }
+
+        .no-profile {
+            text-align: center;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+            .btn-create:hover {
+                background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
             }
-        </tbody>
-    </table>
-}
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 10%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 20%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 15%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                bottom: 20%;
+                right: 10%;
+                animation-delay: 1s;
+            }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="no-profile" id="noProfileMessage">
+            <i class="fas fa-info-circle me-2"></i>Bạn chưa có hồ sơ nào được duyệt.<br />
+            <a class="btn btn-create mt-3" asp-action="CreateUser" id="createBtn">
+                <i class="fas fa-plus me-2"></i>Thêm hồ sơ mới
+            </a>
+        </div>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            var hosoId = item.HosoId;
+            var imgPath = Url.Content($"/img/Profile/img{hosoId}.jpg");
+            var kskPath = Url.Content($"/img/Profile/ksk{hosoId}.jpg");
+
+            <div class="container-profile" id="profileBox-@hosoId">
+                <div class="text-center">
+                    <img src="@imgPath" alt="Ảnh thí sinh" class="avatar" onerror="this.src='/img/default-avatar.jpg'" />
+                </div>
+                <div class="profile-info mt-3">
+                    <p><i class="fas fa-user-circle"></i><strong>Tên học viên:</strong> @hocVienInfo.Tenhocvien</p>
+                    <p><i class="fas fa-id-card"></i><strong>Số CCCD:</strong> @hocVienInfo.Socccd</p>
+                    <p><i class="fas fa-venus-mars"></i><strong>Giới tính:</strong> @hocVienInfo.Gioitinh</p>
+                    <p><i class="fas fa-birthday-cake"></i><strong>Ngày sinh:</strong> @(hocVienInfo.Ngaysinh?.ToString("dd/MM/yyyy") ?? "N/A")</p>
+                    <p><i class="fas fa-user"></i><strong>Tên đăng nhập:</strong> @userInfo.Username</p>
+                    <p><i class="fas fa-envelope"></i><strong>Email:</strong> @userInfo.Email</p>
+                    <p><i class="fas fa-map-marker-alt"></i><strong>Địa chỉ:</strong> @userInfo.Diachi</p>
+                    <p><i class="fas fa-phone"></i><strong>Số điện thoại:</strong> @userInfo.Sdt</p>
+                    <p><i class="fas fa-file-alt"></i><strong>Loại hồ sơ:</strong> @item.LoaiHoso</p>
+                    <p><i class="fas fa-id-card-alt"></i><strong>Hạng:</strong> @(item.Hang?.Tenhang ?? "N/A")</p>
+                    <p><i class="fas fa-calendar-alt"></i><strong>Ngày đăng ký:</strong> @item.Ngaydk.ToString("dd/MM/yyyy")</p>
+                    <p><i class="fas fa-note-sticky"></i><strong>Ghi chú:</strong> @(item.Ghichu ?? "Không có")</p>
+                    <p>
+                        <i class="fas fa-file-medical"></i><strong>Giấy khám sức khỏe:</strong><br />
+                        <a href="#" class="text-decoration-underline text-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#kskModal-@hosoId">
+                            Health Certificate Photo
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="kskModal-@hosoId" tabindex="-1" aria-labelledby="kskModalLabel-@hosoId" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="kskModalLabel-@hosoId">Giấy khám sức khỏe</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="@kskPath" alt="Giấy khám sức khỏe" class="img-fluid rounded shadow-sm" onerror="this.src='/img/default-ksk.jpg'" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tl = gsap.timeline();
+            gsap.set(".container-profile, #noProfileMessage", { opacity: 0, y: 40 });
+
+            tl.to(".container-profile, #noProfileMessage", {
+                duration: 0.6,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out",
+                stagger: 0.2
+            });
+
+            document.querySelectorAll('.avatar').forEach(avatar => {
+                avatar.addEventListener('mouseenter', () => {
+                    gsap.to(avatar, { scale: 1.1, duration: 0.3, rotation: 5, ease: "power2.out" });
+                });
+                avatar.addEventListener('mouseleave', () => {
+                    gsap.to(avatar, { scale: 1.0, duration: 0.3, rotation: 0, ease: "power2.out" });
+                });
+            });
+
+            const createBtn = document.getElementById('createBtn');
+            if (createBtn) {
+                createBtn.addEventListener('mouseenter', () => {
+                    gsap.to(createBtn, { scale: 1.05, duration: 0.2, ease: "power2.out" });
+                });
+                createBtn.addEventListener('mouseleave', () => {
+                    gsap.to(createBtn, { scale: 1.0, duration: 0.2, ease: "power2.out" });
+                });
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

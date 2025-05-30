@@ -13,7 +13,6 @@ public partial class HoSoThiSinh
     public DateOnly Ngaydk { get; set; }
     public string? Khamsuckhoe { get; set; }
     public string? Ghichu { get; set; }
-
     public virtual ICollection<BaiThi> BaiThis { get; set; } = new List<BaiThi>();
     public virtual ICollection<CtDangKyThi> CtDangKyThis { get; set; } = new List<CtDangKyThi>();
     public virtual ICollection<CtPhieuThanhToan> CtPhieuThanhToans { get; set; } = new List<CtPhieuThanhToan>();
