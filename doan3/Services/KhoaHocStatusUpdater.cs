@@ -46,5 +46,4 @@ public class KhoaHocStatusUpdater : BackgroundService
             await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
         }
     }
-
 }

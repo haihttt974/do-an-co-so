@@ -23,17 +23,28 @@ namespace doan3.Controllers
         // GET: KhoaHocs
         public async Task<IActionResult> Index()
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out var userId))
-            {
-                return Unauthorized();
-            }
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-            var hocVien = await _context.HocViens.FirstOrDefaultAsync(hv => hv.HocvienId == user.Referenceld);
-            var hoSo = hocVien != null
-                ? await _context.HoSoThiSinhs.FirstOrDefaultAsync(h => h.HocvienId == hocVien.HocvienId)
-                : null;
+            // Khởi tạo các biến mặc định
+            doan3.Models.HocVien? hocVien = null;
+            doan3.Models.HoSoThiSinh? hoSo = null;
 
+            // Kiểm tra xem người dùng có đăng nhập hay không
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userIdStr, out var userId))
+                {
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                    if (user != null)
+                    {
+                        hocVien = await _context.HocViens.FirstOrDefaultAsync(hv => hv.HocvienId == user.Referenceld);
+                        hoSo = hocVien != null
+                            ? await _context.HoSoThiSinhs.FirstOrDefaultAsync(h => h.HocvienId == hocVien.HocvienId)
+                            : null;
+                    }
+                }
+            }
+
+            // Lấy danh sách khóa học
             var khoaHocs = await _context.KhoaHocs
                 .Include(k => k.Hang)
                 .ToListAsync();
@@ -50,6 +61,7 @@ namespace doan3.Controllers
                                               .CountAsync();
 
                 khoaHoc.SoLuongConLai = khoaHoc.SlToida - registeredStudents;
+                // Chỉ đặt trạng thái "Có thể đăng ký" nếu người dùng đã đăng nhập và thỏa mãn điều kiện
                 khoaHoc.Trangthai = (
                     hocVien != null &&
                     hoSo != null &&
@@ -59,7 +71,7 @@ namespace doan3.Controllers
                 ) ? "Có thể đăng ký" : "Không thể đăng ký";
             }
 
-            // Tạo ViewModel để truyền cả khoaHocs và hoSo
+            // Tạo ViewModel để truyền cả khoaHocs, hoSo và hocVien
             var viewModel = new KhoaHocViewModel
             {
                 KhoaHocs = khoaHocs,
