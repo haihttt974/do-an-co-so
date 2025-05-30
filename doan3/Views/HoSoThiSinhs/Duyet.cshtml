@@ -5,14 +5,13 @@
 
 <h2>Hồ sơ chờ duyệt</h2>
 
-<table class="table">
-    <thead>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
         <tr>
             <th>Học viên</th>
             <th>Loại hồ sơ</th>
             <th>Hạng</th>
             <th>Ngày ĐK</th>
-            <th>Khám sức khỏe</th>
             <th>Thao tác</th>
         </tr>
     </thead>
@@ -20,19 +19,69 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.HocvienId</td>
+                <td>@(item.Hocvien?.Tenhocvien ?? "Không có")</td>
                 <td>@item.LoaiHoso</td>
-                <td>@item.HangId</td>
+                <td>@(item.Hang?.Tenhang ?? "Chưa chọn")</td>
                 <td>@item.Ngaydk.ToString("dd/MM/yyyy")</td>
-                <td>@item.Khamsuckhoe</td>
                 <td>
-                    <form asp-action="DuyetHoSo" method="post">
-                        <input type="hidden" name="id" value="@item.HosoId" />
-                        <button type="submit" name="passed" value="true" class="btn btn-success">Duyệt</button>
-                        <button type="submit" name="passed" value="false" class="btn btn-danger">Từ chối</button>
-                    </form>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#hosoModal@item.HosoId">Xem</button>
                 </td>
             </tr>
+
+            <!-- Modal -->
+            <div class="modal fade" id="hosoModal@item.HosoId" tabindex="-1" aria-labelledby="hosoModalLabel@item.HosoId" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hosoModalLabel@item.HosoId">Chi tiết hồ sơ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Tên học viên:</strong> @(item.Hocvien?.Tenhocvien ?? "Không có")</p>
+                                    <p><strong>Số CCCD:</strong> @(item.Hocvien?.Socccd ?? "Không có")</p>
+                                    <p><strong>Giới tính:</strong> @(item.Hocvien?.Gioitinh ?? "Không có")</p>
+                                    <p><strong>Ngày sinh:</strong> @(item.Hocvien?.Ngaysinh?.ToString("dd/MM/yyyy") ?? "Không có")</p>
+                                    <p><strong>Loại hồ sơ:</strong> @item.LoaiHoso</p>
+                                    <p><strong>Hạng đăng ký:</strong> @(item.Hang?.Tenhang ?? "Chưa chọn")</p>
+                                    <p><strong>Ngày đăng ký:</strong> @item.Ngaydk.ToString("dd/MM/yyyy")</p>
+                                    <p>
+                                        <strong>Ảnh thí sinh:</strong><br />
+                                        @if (!string.IsNullOrEmpty(item.ImgThisinh))
+                                        {
+                                            <img src="@item.ImgThisinh" alt="Ảnh thí sinh" class="img-thumbnail" style="max-width: 200px;" />
+                                        }
+                                        else
+                                        {
+                                            <span>Không có ảnh</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Ảnh giấy khám sức khỏe:</strong></p>
+                                    @if (!string.IsNullOrEmpty(item.Khamsuckhoe))
+                                    {
+                                        <img src="@item.Khamsuckhoe" alt="Khám sức khỏe" class="img-fluid border border-dark" style="max-height: 500px;" />
+                                    }
+                                    else
+                                    {
+                                        <span>Không có ảnh</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <form asp-action="DuyetHoSo" method="post" class="d-flex gap-2">
+                                <input type="hidden" name="id" value="@item.HosoId" />
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" name="passed" value="true" class="btn btn-success">Duyệt</button>
+                                <button type="submit" name="passed" value="false" class="btn btn-danger">Từ chối</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     </tbody>
 </table>
