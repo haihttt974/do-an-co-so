@@ -20,14 +20,12 @@ namespace doan3.Controllers
         // GET: StudentLichHoc
         public async Task<IActionResult> Index()
         {
-            // Get the logged-in user's ID
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Bạn cần đăng nhập để xem lịch học.");
             }
 
-            // Verify user is a student (RoleId = 3) and get their HocVien ID
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == 3);
             if (user == null || user.Referenceld == null)
@@ -35,20 +33,28 @@ namespace doan3.Controllers
                 return Unauthorized("Chỉ học viên được phép xem lịch học.");
             }
 
-            // Get the student's profiles (HoSoThiSinh)
             var hosoIds = await _context.HoSoThiSinhs
                 .Where(hs => hs.HocvienId == user.Referenceld)
                 .Select(hs => hs.HosoId)
                 .ToListAsync();
 
-            // Get classes the student is enrolled in via KetQuaHocTap
+            // Check if any record has "Chưa thanh toán khóa học"
+            bool hasUnpaid = await _context.KetQuaHocTaps
+                .AnyAsync(kq => hosoIds.Contains(kq.HosoId)
+                                && kq.Nhanxet == "Chưa thanh toán khóa học");
+
+            if (hasUnpaid)
+            {
+                TempData["ErrorMessage"] = "Bạn cần thanh toán khóa học trước khi xem lịch học.";
+                return RedirectToAction("PaymentRequired"); // hoặc trả về view thông báo
+            }
+
             var enrolledClasses = await _context.KetQuaHocTaps
                 .Where(kq => hosoIds.Contains(kq.HosoId) && kq.LopId != null)
                 .Select(kq => kq.LopId.Value)
                 .Distinct()
                 .ToListAsync();
 
-            // Get schedules for those classes
             var lichHocs = await _context.LichHocs
                 .Include(l => l.Lop)
                 .Where(l => enrolledClasses.Contains(l.LopId.Value))
@@ -57,6 +63,7 @@ namespace doan3.Controllers
 
             return View(lichHocs);
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -99,5 +106,10 @@ namespace doan3.Controllers
 
             return View(lichHoc);
         }
+        public IActionResult PaymentRequired()
+        {
+            return View();
+        }
+
     }
 }

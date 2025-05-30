@@ -1,4 +1,10 @@
 ﻿@model IEnumerable<doan3.Models.LichHoc>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 @{
     ViewData["Title"] = "Lịch Học Của Tôi";

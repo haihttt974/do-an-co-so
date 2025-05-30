@@ -414,7 +414,7 @@ namespace doan3.Controllers
             {
                 LopId = model.LopId,
                 HosoId = hoSo.HosoId,
-                Nhanxet = null,
+                Nhanxet = "Chưa thanh toán khóa học",
                 Sobuoiodahoc = 0,
                 Sobuoitoithieu = 0,
                 KmHoanthanh = 0,

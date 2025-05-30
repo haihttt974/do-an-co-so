@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Quét mã QR để thanh toán";
+}
+
+<h3>🔒 Thanh toán học phí</h3>
+
+<p>Phương thức: <strong>@ViewBag.PhuongThuc</strong></p>
+<p>Tên người thanh toán: <strong>@ViewBag.TenNguoiThanhToan</strong></p>
+<p>Số tiền: <strong>@ViewBag.SoTien.ToString("N0")</strong> VND</p>
+
+<div class="text-center my-4">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data=@ViewBag.QRCode&size=200x200" alt="QR Code" />
+    <p class="mt-2"><strong>Mã giao dịch:</strong> @ViewBag.QRCode</p>
+</div>
+
+<form asp-action="CompletePayment" method="post">
+    <input type="hidden" name="hosoId" value="@ViewBag.HoSoId" />
+    <input type="hidden" name="ketQuaHocTapId" value="@ViewBag.KetQuaHocTapId" />
+    <input type="hidden" name="tenNguoiThanhToan" value="@ViewBag.TenNguoiThanhToan" />
+    <input type="hidden" name="phuongThuc" value="@ViewBag.PhuongThuc" />
+    <input type="hidden" name="soTien" value="@ViewBag.SoTien" />
+
+    <button type="submit" class="btn btn-success">Tôi đã thanh toán</button>
+</form>

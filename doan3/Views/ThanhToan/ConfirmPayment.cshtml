@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Xác nhận thanh toán";
+}
+
+<h3>Xác nhận thông tin thanh toán</h3>
+
+<form asp-action="ShowQRCode" method="post">
+    <input type="hidden" name="hosoId" value="@ViewBag.HoSoId" />
+    <input type="hidden" name="ketQuaHocTapId" value="@ViewBag.KetQuaHocTapId" />
+    <input type="hidden" name="soTien" value="@ViewBag.Amount" />
+
+    <div class="mb-3">
+        <label>Họ tên học viên:</label>
+        <input class="form-control" value="@ViewBag.HocVienName" disabled />
+    </div>
+
+    <div class="mb-3">
+        <label>Tên người thanh toán:</label>
+        <input class="form-control" name="tenNguoiThanhToan" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Phương thức thanh toán:</label>
+        <select class="form-control" name="phuongThuc" required>
+            <option value="Chuyển khoản">Chuyển khoản</option>
+            <option value="Momo">Momo</option>
+            <option value="VNPay">VNPay</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Tiếp tục</button>
+</form>
