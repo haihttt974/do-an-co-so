@@ -1,10 +1,334 @@
 ﻿@model doan3.Models.User
 
-<h2>Trang cá nhân</h2>
-<ul>
-    <li><strong>Username:</strong> @Model.Username</li>
-    <li><strong>Email:</strong> @Model.Email</li>
-    <li><strong>SĐT:</strong> @Model.Sdt</li>
-    <li><strong>Địa chỉ:</strong> @Model.Diachi</li>
-</ul>
-<a asp-action="EditProfile" class="btn btn-primary">Chỉnh sửa</a>
+@{
+    ViewData["Title"] = "Trang cá nhân";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Driving School</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .profile-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .profile-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+                background-size: 200% 100%;
+                animation: shimmer 2s infinite;
+            }
+
+        @@keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .profile-title {
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-info {
+            margin-bottom: 2rem;
+        }
+
+            .profile-info li {
+                display: flex;
+                align-items: center;
+                padding: 1rem 0;
+                border-bottom: 1px solid #e9ecef;
+                font-size: 1.1rem;
+                color: #333;
+            }
+
+                .profile-info li:last-child {
+                    border-bottom: none;
+                }
+
+            .profile-info i {
+                color: #667eea;
+                margin-right: 1rem;
+                font-size: 1.2rem;
+            }
+
+            .profile-info strong {
+                width: 120px;
+                font-weight: 600;
+            }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-edit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+                background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            }
+
+            .btn-edit:active {
+                transform: translateY(0);
+            }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 10%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 20%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 15%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                bottom: 20%;
+                right: 10%;
+                animation-delay: 1s;
+            }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .profile-card {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+
+            .profile-title {
+                font-size: 1.5rem;
+            }
+
+            .profile-info li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-card" id="profileCard">
+            <!-- Profile Title -->
+            <h2 class="profile-title" id="profileTitle">Trang cá nhân</h2>
+
+            <!-- Profile Information -->
+            <ul class="profile-info" id="profileInfo">
+                <li>
+                    <i class="fas fa-user"></i>
+                    <strong>Tên đăng nhập:</strong> @Model.Username
+                </li>
+                <li>
+                    <i class="fas fa-envelope"></i>
+                    <strong>Email:</strong> @Model.Email
+                </li>
+                <li>
+                    <i class="fas fa-phone"></i>
+                    <strong>SĐT:</strong> @Model.Sdt
+                </li>
+                <li>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>Địa chỉ:</strong> @Model.Diachi
+                </li>
+            </ul>
+
+            <!-- Edit Profile Button -->
+            <a asp-action="EditProfile" class="btn btn-edit" id="editBtn">
+                <i class="fas fa-edit me-2"></i>Chỉnh sửa
+            </a>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // GSAP Animations
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create timeline
+            const tl = gsap.timeline();
+
+            // Initial state
+            gsap.set("#profileCard", { scale: 0.8, opacity: 0 });
+            gsap.set("#profileTitle", { opacity: 0, y: 20 });
+            gsap.set("#profileInfo li", { opacity: 0, x: -30 });
+            gsap.set("#editBtn", { opacity: 0, x: -30 });
+
+            // Animate profile card entrance
+            tl.to("#profileCard", {
+                duration: 0.8,
+                scale: 1,
+                opacity: 1,
+                ease: "back.out(1.7)"
+            })
+            // Animate title
+            .to("#profileTitle", {
+                duration: 0.5,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            }, "-=0.3")
+            // Animate profile info items
+            .to("#profileInfo li", {
+                duration: 0.5,
+                opacity: 1,
+                x: 0,
+                ease: "power2.out",
+                stagger: 0.2
+            }, "-=0.3")
+            // Animate edit button
+            .to("#editBtn", {
+                duration: 0.5,
+                opacity: 1,
+                x: 0,
+                ease: "power2.out"
+            }, "-=0.3");
+
+            // Button hover animation
+            const editBtn = document.getElementById('editBtn');
+            editBtn.addEventListener('mouseenter', function () {
+                gsap.to(editBtn, {
+                    duration: 0.2,
+                    scale: 1.02,
+                    ease: "power2.out"
+                });
+            });
+
+            editBtn.addEventListener('mouseleave', function () {
+                gsap.to(editBtn, {
+                    duration: 0.2,
+                    scale: 1,
+                    ease: "power2.out"
+                });
+            });
+
+            // Profile info hover animation
+            const profileItems = document.querySelectorAll('.profile-info li');
+            profileItems.forEach(item => {
+                item.addEventListener('mouseenter', function () {
+                    gsap.to(item, {
+                        duration: 0.3,
+                        scale: 1.02,
+                        background: "rgba(102, 126, 234, 0.1)",
+                        ease: "power2.out"
+                    });
+                });
+
+                item.addEventListener('mouseleave', function () {
+                    gsap.to(item, {
+                        duration: 0.3,
+                        scale: 1,
+                        background: "none",
+                        ease: "power2.out"
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -4,39 +4,362 @@
     ViewData["Title"] = "Lịch Học Của Tôi";
 }
 
-<h1>Lịch Học Của Tôi</h1>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
 
-@if (Model.Any())
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Lớp</th>
-                <th>Thời Gian Bắt Đầu</th>
-                <th>Thời Gian Kết Thúc</th>
-                <th>Hình Thức Học</th>
-                <th>Nội Dung</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@(item.Lop?.Tenlop ?? "N/A")</td>
-                    <td>@item.TgBatdau.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@item.TgKetthuc.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@item.Hinhthuchoc</td>
-                    <td>@item.Noidung</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.LichhocId" class="btn btn-sm btn-info">Chi Tiết</a>
-                    </td>
-                </tr>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .schedule-container {
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .schedule-title {
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .schedule-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <p class="text-muted">Bạn chưa có lịch học nào.</p>
-}
+
+            .schedule-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+                background-size: 200% 100%;
+                animation: shimmer 2s infinite;
+            }
+
+        @@keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .schedule-card .schedule-info {
+            flex-grow: 1;
+        }
+
+        .schedule-card h5 {
+            color: #333;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-card p {
+            margin: 0;
+            font-size: 1rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+        }
+
+        .schedule-card i {
+            color: #667eea;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-details {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-details:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+                background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            }
+
+            .btn-details:active {
+                transform: translateY(0);
+            }
+
+        .no-schedule {
+            color: #666;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 10%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 20%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 15%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                bottom: 20%;
+                right: 10%;
+                animation-delay: 1s;
+            }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .schedule-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .schedule-title {
+                font-size: 1.5rem;
+            }
+
+            .schedule-card {
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+                .schedule-card .btn-details {
+                    width: 100%;
+                    margin-top: 1rem;
+                }
+
+                .schedule-card h5 {
+                    font-size: 1.1rem;
+                }
+
+                .schedule-card p {
+                    font-size: 0.95rem;
+                }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="schedule-container">
+        <!-- Schedule Title -->
+        <h1 class="schedule-title" id="scheduleTitle">Lịch Học Của Tôi</h1>
+
+        @if (Model.Any())
+        {
+            <!-- Schedule Cards -->
+            <div class="w-100" id="scheduleList">
+                @foreach (var item in Model)
+                {
+                    <div class="schedule-card" id="scheduleCard-@item.LichhocId">
+                        <div class="schedule-info">
+                            <h5><i class="fas fa-chalkboard-teacher me-2"></i>@(item.Lop?.Tenlop ?? "N/A")</h5>
+                            <p><i class="fas fa-clock"></i>@item.TgBatdau.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <a asp-action="Details" asp-route-id="@item.LichhocId" class="btn btn-details">
+                            <i class="fas fa-info-circle me-2"></i>Chi Tiết
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- No Schedule Message -->
+            <p class="no-schedule" id="noScheduleMessage">
+                <i class="fas fa-exclamation-circle me-2"></i>Bạn chưa có lịch học nào.
+            </p>
+        }
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // GSAP Animations
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create timeline
+            const tl = gsap.timeline();
+
+            // Initial state
+            gsap.set("#scheduleTitle", { opacity: 0, y: 20 });
+            gsap.set(".schedule-card, #noScheduleMessage", { opacity: 0, y: 30 });
+
+            // Animate title
+            tl.to("#scheduleTitle", {
+                duration: 0.5,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            });
+
+            // Animate schedule cards or no-schedule message
+            if (document.querySelectorAll('.schedule-card').length > 0) {
+                gsap.to(".schedule-card", {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    ease: "power2.out",
+                    stagger: 0.2,
+                    delay: 0.3
+                });
+            } else {
+                gsap.to("#noScheduleMessage", {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    ease: "power2.out",
+                    delay: 0.3
+                });
+            }
+
+            // Card hover animation
+            const cards = document.querySelectorAll('.schedule-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    gsap.to(card, {
+                        duration: 0.3,
+                        scale: 1.02,
+                        boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
+                        ease: "power2.out"
+                    });
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    gsap.to(card, {
+                        duration: 0.3,
+                        scale: 1,
+                        boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
+                        ease: "power2.out"
+                    });
+                });
+            });
+
+            // Button hover animation
+            const buttons = document.querySelectorAll('.btn-details');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    gsap.to(button, {
+                        duration: 0.2,
+                        scale: 1.02,
+                        ease: "power2.out"
+                    });
+                });
+
+                button.addEventListener('mouseleave', function () {
+                    gsap.to(button, {
+                        duration: 0.2,
+                        scale: 1,
+                        ease: "power2.out"
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
