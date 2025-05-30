@@ -224,6 +224,7 @@ namespace doan3.Controllers
         {
             var hoSos = await _context.HoSoThiSinhs
                 .Include(h => h.Hocvien)
+                .Include(h => h.Hang)
                 .Where(h => h.Ghichu == "Chưa được duyệt")
                 .ToListAsync();
 
@@ -232,6 +233,7 @@ namespace doan3.Controllers
 
         // POST: DuyetHoSo
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DuyetHoSo(int id, bool passed)
         {
             var hoso = await _context.HoSoThiSinhs.FindAsync(id);
@@ -253,6 +255,7 @@ namespace doan3.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Duyet");
         }
+
 
         [Authorize]
         public IActionResult CreateUser()
