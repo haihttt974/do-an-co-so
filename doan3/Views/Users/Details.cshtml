@@ -1,78 +1,274 @@
 ﻿@model doan3.Models.User
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết người dùng";
 }
 
-<h1>Details</h1>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Driving School</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Referenceld)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Referenceld)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Diachi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Diachi)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sdt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sdt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Createat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Createat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Updateat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Updateat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Isactive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Isactive)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role.RoleId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.UserId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        .container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+                background-size: 200% 100%;
+                animation: shimmer 2s infinite;
+            }
+
+        @@keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .dl-horizontal dt {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dl-horizontal dd {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+                background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 12px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+
+            .btn-secondary:hover {
+                background: #667eea;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+            }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 10%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 20%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 15%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                bottom: 20%;
+                right: 10%;
+                animation-delay: 1s;
+            }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .card {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="card" id="detailsCard">
+            <h2 class="brand-title text-center mb-4">Chi tiết người dùng</h2>
+            <dl class="dl-horizontal">
+                <dt>@Html.DisplayNameFor(model => model.UserId)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.UserId)</dd>
+                <dt>Vai trò</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Role.Rolename)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Username)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Username)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Email)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Email)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Diachi)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Diachi)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Sdt)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Sdt)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Referenceld)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Referenceld)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Createat)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Createat)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Updateat)</dt>
+                <dd class="detail-item">@Html.DisplayFor(model => model.Updateat)</dd>
+                <dt>@Html.DisplayNameFor(model => model.Isactive)</dt>
+                <dd class="detail-item">@(Model.Isactive.HasValue && Model.Isactive.Value ? "Kích hoạt" : "Dừng hoạt động")</dd>
+            </dl>
+            <div class="text-center mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-primary"><i class="fas fa-edit me-2"></i>Sửa</a>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tl = gsap.timeline();
+            gsap.set("#detailsCard", { scale: 0.8, opacity: 0 });
+            gsap.set(".brand-title", { opacity: 0, y: 20 });
+            gsap.set(".detail-item", { opacity: 0, x: -30 });
+            gsap.set(".btn", { opacity: 0, x: -30 });
+
+            tl.to("#detailsCard", {
+                duration: 0.8,
+                scale: 1,
+                opacity: 1,
+                ease: "back.out(1.7)"
+            })
+            .to(".brand-title", {
+                duration: 0.5,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            }, "-=0.3")
+            .to(".detail-item", {
+                duration: 0.5,
+                opacity: 1,
+                x: 0,
+                ease: "power2.out",
+                stagger: 0.1
+            }, "-=0.3")
+            .to(".btn", {
+                duration: 0.5,
+                opacity: 1,
+                x: 0,
+                ease: "power2.out",
+                stagger: 0.1
+            });
+
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    gsap.to(button, {
+                        duration: 0.2,
+                        scale: 1.02,
+                        ease: "power2.out"
+                    });
+                });
+                button.addEventListener('mouseleave', function () {
+                    gsap.to(button, {
+                        duration: 0.2,
+                        scale: 1,
+                        ease: "power2.out"
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
