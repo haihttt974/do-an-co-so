@@ -4,42 +4,112 @@
     ViewData["Title"] = "Thêm tài khoản cho giáo viên";
 }
 
-<h2>Thêm tài khoản cho giáo viên: @((await _context.GiaoViens.FindAsync(Model.Referenceld))?.Tengiaovien)</h2>
+<!-- Bootstrap 5 stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p>@error.ErrorMessage</p>
+<style>
+    .form-group {
+        transition: all 0.3s ease;
+    }
+
+        .form-group:hover {
+            transform: translateY(-2px);
         }
-    </div>
-}
 
-<form asp-action="AddAccount" method="post">
-    <input type="hidden" name="id" value="@Model.Referenceld" />
-    <div class="form-group">
-        <label>Tên đăng nhập</label>
-        <input type="text" name="Username" class="form-control" value="@Model.Username" required
-               oninvalid="this.setCustomValidity('Vui lòng nhập tên đăng nhập.')"
-               oninput="this.setCustomValidity('')" />
+    .form-control:focus {
+        border-color: #0D6EFD;
+        box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+    }
+</style>
+
+<div class="container py-4">
+    <h2 class="text-center mb-4 text-primary fw-bold">
+        Thêm tài khoản cho giáo viên: @((await _context.GiaoViens.FindAsync(Model.Referenceld))?.Tengiaovien)
+    </h2>
+
+    <div class="d-flex justify-content-center">
+        <div class="p-4 rounded-4 shadow-sm" style="max-width: 650px; width: 100%; background-color: #F1F6F9; border: 2px solid #5B9BD5;">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger rounded-3 shadow-sm">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p class="mb-0">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="AddAccount" method="post">
+                <input type="hidden" name="id" value="@Model.Referenceld" />
+
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary">Tên đăng nhập</label>
+                    <input type="text" name="Username" class="form-control" value="@Model.Username" required
+                           oninvalid="this.setCustomValidity('Vui lòng nhập tên đăng nhập.')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary">Mật khẩu</label>
+                    <input type="password" name="Password" class="form-control" required
+                           oninvalid="this.setCustomValidity('Vui lòng nhập mật khẩu.')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary">Email</label>
+                    <input type="email" name="Email" class="form-control" required
+                           oninvalid="this.setCustomValidity('Vui lòng nhập email.')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="form-group mt-4 text-center">
+                    <input type="submit" value="Tạo tài khoản" class="btn btn-primary shadow-sm me-2" />
+                    <a asp-action="Index" class="btn btn-secondary shadow-sm">Quay lại</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label>Mật khẩu</label>
-        <input type="password" name="Password" class="form-control" required
-               oninvalid="this.setCustomValidity('Vui lòng nhập mật khẩu.')"
-               oninput="this.setCustomValidity('')" />
-    </div>
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="Email" class="form-control" required
-               oninvalid="this.setCustomValidity('Vui lòng nhập email.')"
-               oninput="this.setCustomValidity('')" />
-    </div>
-    <div class="form-group mt-2">
-        <input type="submit" value="Tạo tài khoản" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-    </div>
-</form>
+</div>
 
 @inject doan3.Models.DacsGplxContext _context
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script>
+        // Hiệu ứng cho tiêu đề
+        gsap.from("h2", {
+            duration: 1,
+            y: -40,
+            opacity: 0,
+            ease: "power2.out",
+            onComplete: () => {
+                document.querySelector("h2").style.opacity = 1;
+            }
+        });
+
+        // Hiệu ứng cho các nút
+        gsap.from(".btn", {
+            duration: 1,
+            scale: 0.8,
+            opacity: 0,
+            delay: 0.2,
+            ease: "back.out(1.7)",
+            onComplete: () => {
+                document.querySelectorAll(".btn").forEach(btn => btn.style.opacity = 1);
+            }
+        });
+
+        // Hiệu ứng cho các trường input
+        gsap.from(".form-group", {
+            duration: 0.6,
+            opacity: 0,
+            y: 30,
+            stagger: 0.1,
+            ease: "power2.out",
+            onComplete: () => {
+                document.querySelectorAll(".form-group").forEach(group => group.style.opacity = 1);
+            }
+        });
+    </script>
+}
