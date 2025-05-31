@@ -297,15 +297,21 @@ namespace doan3.Controllers
             await _context.SaveChangesAsync();
 
             var profilePath = Path.Combine(webHostEnvironment.WebRootPath, "img", "Profile");
+            var filePath = Path.Combine(webHostEnvironment.WebRootPath, "img", "file");
             if (!Directory.Exists(profilePath))
             {
                 Directory.CreateDirectory(profilePath);
             }
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
 
             var imgFileName = $"img{hoSo.HosoId}.jpg";
-            var kskFileName = $"ksk{hoSo.HosoId}.jpg";
+            var kskFileExtension = Path.GetExtension(model.KhamsuckhoeFile.FileName);
+            var kskFileName = $"ksk{hoSo.HosoId}{kskFileExtension}";
             var imgPath = Path.Combine(profilePath, imgFileName);
-            var kskPath = Path.Combine(profilePath, kskFileName);
+            var kskPath = Path.Combine(filePath, kskFileName);
 
             using (var stream = new FileStream(imgPath, FileMode.Create))
             {
@@ -318,7 +324,7 @@ namespace doan3.Controllers
             }
 
             hoSo.ImgThisinh = $"/img/Profile/{imgFileName}";
-            hoSo.Khamsuckhoe = $"/img/Profile/{kskFileName}";
+            hoSo.Khamsuckhoe = $"/img/file/{kskFileName}";
             _context.HoSoThiSinhs.Update(hoSo);
             await _context.SaveChangesAsync();
 

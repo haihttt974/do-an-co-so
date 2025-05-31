@@ -1,0 +1,26 @@
+﻿@model IEnumerable<doan3.Models.Phanhoi>
+
+<h2>Danh sách phản hồi của bạn</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div style="color:green">@TempData["Success"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p>Bạn chưa gửi phản hồi nào.</p>
+}
+else
+{
+    <ul>
+        @foreach (var phanhoi in Model)
+        {
+            <li>
+                <strong>@phanhoi.Thoigianph.ToString("dd/MM/yyyy HH:mm")</strong>: @phanhoi.Noidung
+            </li>
+        }
+    </ul>
+}
+
+<a asp-action="Create">Gửi phản hồi mới</a>

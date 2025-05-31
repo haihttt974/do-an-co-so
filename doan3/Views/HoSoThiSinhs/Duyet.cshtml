@@ -12,7 +12,7 @@
             <th>Loại hồ sơ</th>
             <th>Hạng</th>
             <th>Ngày ĐK</th>
-            <th>Thao tác</th>   
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -59,14 +59,22 @@
                                     </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>Ảnh giấy khám sức khỏe:</strong></p>
+                                    <p><strong>Giấy khám sức khỏe:</strong></p>
                                     @if (!string.IsNullOrEmpty(item.Khamsuckhoe))
                                     {
-                                        <img src="@item.Khamsuckhoe" alt="Khám sức khỏe" class="img-fluid border border-dark" style="max-height: 500px;" />
+                                        var extension = item.Khamsuckhoe.Substring(item.Khamsuckhoe.LastIndexOf('.')).ToLower();
+                                        if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                                        {
+                                            <img src="@item.Khamsuckhoe" alt="Khám sức khỏe" class="img-fluid border border-dark" style="max-height: 500px;" />
+                                        }
+                                        else
+                                        {
+                                            <a href="@item.Khamsuckhoe" download class="btn btn-primary">Tải xuống giấy khám sức khỏe (@extension)</a>
+                                        }
                                     }
                                     else
                                     {
-                                        <span>Không có ảnh</span>
+                                        <span>Không có tệp</span>
                                     }
                                 </div>
                             </div>

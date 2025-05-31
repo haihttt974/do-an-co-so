@@ -1,0 +1,24 @@
+﻿@model doan3.Models.Phanhoi
+
+<h2>Gửi phản hồi mới</h2>
+
+@Html.ValidationSummary(true, "", new { @style = "color:red" })
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Nội dung phản hồi:</label><br />
+        <textarea asp-for="Noidung" rows="6" cols="60"></textarea>
+        <span asp-validation-for="Noidung" style="color:red"></span>
+    </div>
+
+    <br />
+
+    <button type="submit">Gửi phản hồi</button>
+    <a asp-action="Index">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -173,8 +173,8 @@
         @foreach (var item in Model)
         {
             var hosoId = item.HosoId;
-            var imgPath = Url.Content($"/img/Profile/img{hosoId}.jpg");
-            var kskPath = Url.Content($"/img/Profile/ksk{hosoId}.jpg");
+            var imgPath = Url.Content(item.ImgThisinh ?? "/img/default-avatar.jpg");
+            var kskPath = Url.Content(item.Khamsuckhoe ?? "/img/default-ksk.jpg");
 
             <div class="container-profile" id="profileBox-@hosoId">
                 <div class="text-center">
@@ -196,7 +196,7 @@
                     <p>
                         <i class="fas fa-file-medical"></i><strong>Giấy khám sức khỏe:</strong><br />
                         <a href="#" class="text-decoration-underline text-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#kskModal-@hosoId">
-                            Health Certificate Photo
+                            Xem giấy khám sức khỏe
                         </a>
                     </p>
                 </div>
@@ -211,7 +211,29 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                         </div>
                         <div class="modal-body text-center">
-                            <img src="@kskPath" alt="Giấy khám sức khỏe" class="img-fluid rounded shadow-sm" onerror="this.src='/img/default-ksk.jpg'" />
+                            @if (!string.IsNullOrEmpty(item.Khamsuckhoe))
+                            {
+                                var extension = item.Khamsuckhoe.Substring(item.Khamsuckhoe.LastIndexOf('.')).ToLower();
+                                if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                                {
+                                    <img src="@kskPath" alt="Giấy khám sức khỏe" class="img-fluid rounded shadow-sm" style="max-height: 500px;" onerror="this.src='/img/default-ksk.jpg'" />
+                                }
+                                else if (extension == ".pdf")
+                                {
+                                    <embed src="@kskPath" type="application/pdf" width="100%" height="500px" />
+                                }
+                                else
+                                {
+                                    <p>
+                                        Vui lòng tải xuống để xem giấy khám sức khỏe (@extension).<br />
+                                        <a href="@kskPath" download class="btn btn-primary mt-2">Tải xuống</a>
+                                    </p>
+                                }
+                            }
+                            else
+                            {
+                                <p>Không có giấy khám sức khỏe.</p>
+                            }
                         </div>
                     </div>
                 </div>
