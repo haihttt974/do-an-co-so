@@ -1,68 +1,121 @@
 ﻿@model IEnumerable<doan3.Models.GiaoVien>
 @using System.Globalization
-@using Microsoft.EntityFrameworkCore
 @inject doan3.Models.DacsGplxContext _context
 
 @{
     ViewData["Title"] = "Danh sách giáo viên";
 }
 
-<h1>Danh sách giáo viên</h1>
+<!-- Bootstrap 5 stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- GSAP animation library -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Thêm giáo viên mới</a>
-</p>
+<style>
+    /* Hiệu ứng hover cho nút */
+    .btn:hover {
+        transform: scale(1.05);
+        transition: all 0.2s ease-in-out;
+    }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success" role="alert">
-        @TempData["SuccessMessage"]
-    </div>
-}
+    /* Xóa nền xen kẽ, chỉ dùng nền trắng + hover */
+    #gvTable tbody tr {
+        background-color: #fff !important;
+        transition: background-color 0.3s ease;
+    }
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Tên giáo viên</th>
-            <th>Chuyên môn</th>
-            <th>Hạng đào tạo</th>
-            <th>Ngày bắt đầu làm việc</th>
-            <th>Ảnh giáo viên</th>
-            <th>Tùy chọn</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Tengiaovien</td>
-                <td>@item.Chuyenmon</td>
-                <td>@item.HangDaotao</td>
-                <td>
-                    @(item.Ngaybatdaulamviec.HasValue
-                        ? item.Ngaybatdaulamviec.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
-                        : "Chưa có")
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.ImgGv))
-                    {
-                        <img src="@item.ImgGv" alt="Ảnh giáo viên" width="80" height="80" style="object-fit: cover; border-radius: 8px;" />
-                    }
-                    else
-                    {
-                        <span>Chưa có ảnh</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Details" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-info">Chi tiết</a>
-                    <a asp-action="Delete" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-danger">Xóa</a>
-                    @if (!await _context.Users.AnyAsync(u => u.Referenceld == item.GiaovienId && u.RoleId == 2))
-                    {
-                        <a asp-action="AddAccount" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-secondary">Thêm tài khoản</a>
-                    }
-                </td>
-            </tr>
+        #gvTable tbody tr:hover {
+            background-color: #f2f2f2 !important; /* xám nhẹ khi hover */
         }
-    </tbody>
-</table>
+</style>
+
+<div class="container py-4" id="gvWrapper">
+    <h1 class="mb-4 text-primary fw-bold">Danh sách giáo viên</h1>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">➕ Thêm giáo viên mới</a>
+    </p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <table id="gvTable" class="table table-bordered shadow-sm rounded mt-3">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Tên giáo viên</th>
+                <th>Chuyên môn</th>
+                <th>Hạng đào tạo</th>
+                <th>Ngày bắt đầu làm việc</th>
+                <th>Ảnh giáo viên</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="align-middle">
+                    <td>@item.Tengiaovien</td>
+                    <td>@item.Chuyenmon</td>
+                    <td>@item.HangDaotao</td>
+                    <td>
+                        @(item.Ngaybatdaulamviec.HasValue
+                            ? item.Ngaybatdaulamviec.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            : "Chưa có")
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImgGv))
+                        {
+                            <img src="@item.ImgGv"
+                                 alt="Ảnh giáo viên"
+                                 width="80"
+                                 height="80"
+                                 class="rounded border border-secondary shadow-sm"
+                                 style="object-fit: cover; transition: transform 0.3s;"
+                                 onmouseover="this.style.transform='scale(1.1)'"
+                                 onmouseout="this.style.transform='scale(1)'" />
+                        }
+                        else
+                        {
+                            <span>Chưa có ảnh</span>
+                        }
+                    </td>
+                    <td class="text-nowrap">
+                        <a asp-action="Edit" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-warning">Sửa</a>
+                        <a asp-action="Details" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-info text-white">Chi tiết</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        gsap.from("h1", {
+            duration: 1,
+            y: -40,
+            opacity: 0,
+            ease: "power2.out"
+        });
+
+        gsap.from("p a.btn", {
+            duration: 1,
+            scale: 0.8,
+            opacity: 0,
+            delay: 0.2,
+            ease: "back.out(1.7)"
+        });
+
+        gsap.from("#gvTable tbody tr", {
+            duration: 0.6,
+            opacity: 0,
+            y: 30,
+            stagger: 0.1,
+            ease: "power2.out"
+        });
+    </script>
+}
