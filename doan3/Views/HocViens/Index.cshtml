@@ -1,53 +1,71 @@
 ﻿@model IEnumerable<doan3.Models.HocVien>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách học viên";
 }
 
-<h1>Index</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold" id="pageTitle">Danh sách học viên</h2>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tenhocvien)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Socccd)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gioitinh)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ngaysinh)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tenhocvien)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Socccd)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gioitinh)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ngaysinh)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.HocvienId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.HocvienId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.HocvienId">Delete</a>
-            </td>
-        </tr>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover shadow-sm" id="hocvienTable">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>Tên học viên</th>
+                    <th>Số CCCD</th>
+                    <th>Giới tính</th>
+                    <th>Ngày sinh</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Chưa có học viên nào.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr class="table-row">
+                            <td>@item.Tenhocvien</td>
+                            <td>@item.Socccd</td>
+                            <td>@item.Gioitinh</td>
+                            <td>@item.Ngaysinh</td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.HocvienId" class="btn btn-sm btn-warning">Sửa</a>
+                                <a asp-action="Details" asp-route-id="@item.HocvienId" class="btn btn-sm btn-info text-white">Chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // GSAP Animation cho trang danh sách học viên
+        gsap.from("#pageTitle", {
+            duration: 1,
+            y: -30,
+            opacity: 0,
+            ease: "power3.out"
+        });
+
+        gsap.from(".table-row", {
+            delay: 0.4,
+            duration: 0.8,
+            y: 20,
+            opacity: 0,
+            stagger: 0.15,
+            ease: "power2.out"
+        });
+    </script>
 }
-    </tbody>
-</table>
