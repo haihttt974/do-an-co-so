@@ -90,6 +90,7 @@ namespace doan3
             app.UseAuthorization();
             app.UseSession();
             app.UseStaticFiles();
+            app.UseDeveloperExceptionPage();
 
             // Default route
             app.MapControllerRoute(

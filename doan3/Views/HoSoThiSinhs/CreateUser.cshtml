@@ -21,13 +21,13 @@
 
     <div class="form-group">
         <label>Ảnh thí sinh</label>
-        <input asp-for="ImgThisinhFile" type="file" class="form-control" />
+        <input asp-for="ImgThisinhFile" type="file" class="form-control" accept=".jpg,.jpeg" />
         <span asp-validation-for="ImgThisinhFile" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label>Giấy khám sức khỏe</label>
-        <input asp-for="KhamsuckhoeFile" type="file" class="form-control" />
+        <input asp-for="KhamsuckhoeFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
         <span asp-validation-for="KhamsuckhoeFile" class="text-danger"></span>
     </div>
 
