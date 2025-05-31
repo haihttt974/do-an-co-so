@@ -1,42 +1,72 @@
 ﻿@model doan3.Models.HocVien
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết học viên";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-primary fw-bold mb-4 text-center" id="detailsTitle">Thông tin học viên</h2>
 
-<div>
-    <h4>HocVien</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tenhocvien)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tenhocvien)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Socccd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Socccd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gioitinh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gioitinh)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ngaysinh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ngaysinh)
-        </dd>
-    </dl>
+            <div class="card shadow-sm border-0" id="detailsCard">
+                <div class="card-body bg-light rounded p-4">
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label fw-semibold">Họ tên:</label>
+                        <div class="col-sm-8">
+                            <div class="form-control bg-light">@Html.DisplayFor(model => model.Tenhocvien)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label fw-semibold">Số CCCD:</label>
+                        <div class="col-sm-8">
+                            <div class="form-control bg-light">@Html.DisplayFor(model => model.Socccd)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label fw-semibold">Giới tính:</label>
+                        <div class="col-sm-8">
+                            <div class="form-control bg-light">@Html.DisplayFor(model => model.Gioitinh)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label fw-semibold">Ngày sinh:</label>
+                        <div class="col-sm-8">
+                            <div class="form-control bg-light">
+                                @Model.Ngaysinh
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 mt-4 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">← Quay lại danh sách</a>
+                        <a asp-action="Edit" asp-route-id="@Model?.HocvienId" class="btn btn-primary">✏️ Chỉnh sửa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.HocvienId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        gsap.from("#detailsTitle", {
+            duration: 1,
+            y: -40,
+            opacity: 0,
+            ease: "power3.out"
+        });
+
+        gsap.from("#detailsCard", {
+            delay: 0.3,
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power2.out"
+        });
+    </script>
+}
