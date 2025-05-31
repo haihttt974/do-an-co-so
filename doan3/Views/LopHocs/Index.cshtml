@@ -1,54 +1,45 @@
 ﻿@model IEnumerable<doan3.Models.LopHoc>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách lớp học";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Đảm bảo bạn đã có layout này
 }
 
-<h1>Index</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">@ViewData["Title"]</h2>
+        <a asp-action="Create" class="btn btn-success">+ Thêm lớp học mới</a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tenlop)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LoaiLop)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Giaovien)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Khoahoc)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tenlop)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LoaiLop)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Giaovien.GiaovienId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Khoahoc.KhoahocId)
-            </td>
-                <td> <a asp-action="ThongTinHocVien" asp-route-id="@item.LopId">Danh sách học viên</a> |</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LopId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LopId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LopId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table table-striped table-bordered shadow-sm">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Tenlop)</th>
+                <th>@Html.DisplayNameFor(model => model.LoaiLop)</th>
+                <th>@Html.DisplayNameFor(model => model.Giaovien)</th>
+                <th>@Html.DisplayNameFor(model => model.Khoahoc)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="text-center align-middle">
+                    <td>@Html.DisplayFor(modelItem => item.Tenlop)</td>
+                    <td>@Html.DisplayFor(modelItem => item.LoaiLop)</td>
+                    <td>
+                        <a asp-action="ThongTinHocVien" asp-route-id="@item.LopId" class="btn btn-outline-info btn-sm">
+                            Danh sách
+                        </a>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.LopId" class="btn btn-warning btn-sm">Sửa</a>
+                            <a asp-action="Details" asp-route-id="@item.LopId" class="btn btn-primary btn-sm">Chi tiết</a>
+                            <a asp-action="Delete" asp-route-id="@item.LopId" class="btn btn-danger btn-sm">Xoá</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

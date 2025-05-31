@@ -1,102 +1,62 @@
 ﻿@model doan3.Models.KetQuaHocTap
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết kết quả học tập";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Chi tiết kết quả học tập</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Nhận xét</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Nhanxet)</dd>
 
-<div>
-    <h4>KetQuaHocTap</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nhanxet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nhanxet)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sobuoiodahoc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sobuoiodahoc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sobuoitoithieu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sobuoitoithieu)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.KmHoanthanh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.KmHoanthanh)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GioBandem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GioBandem)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HtLythuyet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HtLythuyet)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HtMophong)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HtMophong)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HtSahinh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HtSahinh)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HtDuongtruong)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HtDuongtruong)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DauTn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DauTn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DuDkThisat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DuDkThisat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Thoigiancapnhat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Thoigiancapnhat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hoso)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hoso.HosoId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Lop)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Lop.LopId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.KetquaId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <dt class="col-sm-4">Số buổi đã học</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Sobuoiodahoc)</dd>
+
+                <dt class="col-sm-4">Số buổi tối thiểu</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Sobuoitoithieu)</dd>
+
+                <dt class="col-sm-4">Km hoàn thành</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.KmHoanthanh)</dd>
+
+                <dt class="col-sm-4">Giờ ban đêm</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.GioBandem)</dd>
+
+                <dt class="col-sm-4">HT Lý thuyết</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.HtLythuyet)</dd>
+
+                <dt class="col-sm-4">HT Mô phỏng</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.HtMophong)</dd>
+
+                <dt class="col-sm-4">HT Sa hình</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.HtSahinh)</dd>
+
+                <dt class="col-sm-4">HT Đường trường</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.HtDuongtruong)</dd>
+
+                <dt class="col-sm-4">Đậu TN</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.DauTn)</dd>
+
+                <dt class="col-sm-4">Đủ điều kiện thi sát</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.DuDkThisat)</dd>
+
+                <dt class="col-sm-4">Thời gian cập nhật</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Thoigiancapnhat)</dd>
+
+                <dt class="col-sm-4">Hồ sơ</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Hoso.HosoId)</dd>
+
+                <dt class="col-sm-4">Lớp</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Lop.LopId)</dd>
+            </dl>
+        </div>
+        <div class="card-footer text-end">
+            <a asp-action="Edit" asp-route-id="@Model?.KetquaId" class="btn btn-warning me-2">Chỉnh sửa</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Về trang chủ</a>
+        </div>
+    </div>
 </div>
