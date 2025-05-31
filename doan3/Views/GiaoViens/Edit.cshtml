@@ -4,11 +4,11 @@
     ViewData["Title"] = "Chỉnh sửa giáo viên";
 }
 
-<h1>Chỉnh sửa thông tin giáo viên</h1>
+<h1 class="text-center mb-4 text-primary fw-bold">Chỉnh sửa thông tin giáo viên</h1>
 
-<hr />
-<div class="row">
-    <div class="col-md-6">
+<div class="d-flex justify-content-center">
+    <div class="p-4 rounded-4 shadow-sm" style="max-width: 650px; width: 100%;
+         background-color: #F1F6F9; border: 2px solid #5B9BD5;">
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-danger">
@@ -46,14 +46,20 @@
                 <span asp-validation-for="Ngaybatdaulamviec" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ImgGv" class="form-label">Đường dẫn ảnh (URL)</label>
-                <input asp-for="ImgGv" class="form-control" />
+            <div class="form-group mb-4">
+                <label asp-for="ImgGv" class="form-label fw-semibold">Đường dẫn ảnh (URL)</label>
+                <input asp-for="ImgGv" class="form-control" id="imgUrlInput" />
                 <span asp-validation-for="ImgGv" class="text-danger"></span>
+
+                <div class="mt-3 text-center">
+                    <img id="imgPreview" src="@Model.ImgGv" alt="Ảnh giáo viên"
+                         class="img-thumbnail rounded-3 shadow-sm"
+                         style="max-width: 250px; max-height: 250px;" />
+                </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Lưu" class="btn btn-success" />
+            <div class="form-group text-center">
+                <input type="submit" value="Lưu" class="btn btn-success me-2" />
                 <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
             </div>
         </form>
@@ -61,7 +67,28 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        const imgInput = document.getElementById("imgUrlInput");
+        const imgPreview = document.getElementById("imgPreview");
+
+        imgInput.addEventListener("input", function () {
+            const newUrl = this.value;
+
+            gsap.to(imgPreview, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: function () {
+                    imgPreview.src = newUrl;
+                }
+            });
+        });
+
+        imgPreview.addEventListener("load", function () {
+            gsap.to(imgPreview, { opacity: 1, duration: 0.5 });
+        });
+    </script>
 }

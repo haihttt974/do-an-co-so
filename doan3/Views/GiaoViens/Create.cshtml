@@ -13,21 +13,21 @@
     }
 }
 
-<h2 class="mb-4">Thêm giáo viên mới</h2>
+<h2 class="mb-4 text-center fw-bold text-primary" id="form-title">Thêm giáo viên mới</h2>
 
 @if (roleId != 1)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger text-center" id="access-denied">
         Bạn không có quyền thêm giáo viên mới. Vui lòng đăng nhập với tài khoản Admin.
     </div>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-6">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6" id="form-container">
             @if (!ViewData.ModelState.IsValid)
             {
-                <div class="alert alert-danger">
+                <div class="alert alert-danger" id="error-alert">
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                     {
                         <p>@error.ErrorMessage</p>
@@ -35,48 +35,89 @@ else
                 </div>
             }
 
-            <form asp-action="Create">
-                <div class="form-group mb-3">
-                    <label asp-for="Tengiaovien" class="form-label">Họ và tên</label>
-                    <input asp-for="Tengiaovien" class="form-control" required />
-                    <span asp-validation-for="Tengiaovien" class="text-danger"></span>
-                </div>
+            <div class="card shadow-lg rounded-4 border-0 p-4">
+                <form asp-action="Create" id="gv-form">
+                    <div class="form-group mb-3">
+                        <label asp-for="Tengiaovien" class="form-label fw-semibold">Họ và tên</label>
+                        <input asp-for="Tengiaovien" class="form-control" required />
+                        <span asp-validation-for="Tengiaovien" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="Chuyenmon" class="form-label">Chuyên môn</label>
-                    <input asp-for="Chuyenmon" class="form-control" required />
-                    <span asp-validation-for="Chuyenmon" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Chuyenmon" class="form-label fw-semibold">Chuyên môn</label>
+                        <input asp-for="Chuyenmon" class="form-control" required />
+                        <span asp-validation-for="Chuyenmon" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="HangDaotao" class="form-label">Hạng đào tạo</label>
-                    <input asp-for="HangDaotao" class="form-control" required />
-                    <span asp-validation-for="HangDaotao" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="HangDaotao" class="form-label fw-semibold">Hạng đào tạo</label>
+                        <input asp-for="HangDaotao" class="form-control" required />
+                        <span asp-validation-for="HangDaotao" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="Ngaybatdaulamviec" class="form-label">Ngày bắt đầu làm việc</label>
-                    <input asp-for="Ngaybatdaulamviec" type="date" class="form-control" />
-                    <span asp-validation-for="Ngaybatdaulamviec" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Ngaybatdaulamviec" class="form-label fw-semibold">Ngày bắt đầu làm việc</label>
+                        <input asp-for="Ngaybatdaulamviec" type="date" class="form-control" />
+                        <span asp-validation-for="Ngaybatdaulamviec" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mb-4">
-                    <label asp-for="ImgGv" class="form-label">Đường dẫn ảnh (URL)</label>
-                    <input asp-for="ImgGv" class="form-control" />
-                    <span asp-validation-for="ImgGv" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="ImgGv" class="form-label fw-semibold">Đường dẫn ảnh (URL)</label>
+                        <input asp-for="ImgGv" class="form-control" />
+                        <span asp-validation-for="ImgGv" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group">
-                    <input type="submit" value="Lưu" class="btn btn-success" />
-                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-                </div>
-            </form>
+                    <div class="d-flex justify-content-between">
+                        <input type="submit" value="Lưu" class="btn btn-success px-4" />
+                        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 }
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // GSAP animation on load
+        gsap.from("#form-title", {
+            y: -50,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out"
+        });
+
+        gsap.from("#form-container", {
+            y: 100,
+            opacity: 0,
+            duration: 1.2,
+            delay: 0.3,
+            ease: "power2.out"
+        });
+
+        gsap.from("#gv-form .form-group", {
+            opacity: 0,
+            y: 30,
+            duration: 0.6,
+            stagger: 0.1,
+            delay: 0.5
+        });
+
+        gsap.from("#access-denied", {
+            y: -30,
+            opacity: 0,
+            duration: 1,
+            ease: "back"
+        });
+
+        gsap.from("#error-alert", {
+            opacity: 0,
+            scale: 0.95,
+            duration: 0.6,
+            ease: "power1.inOut"
+        });
+    </script>
 }
