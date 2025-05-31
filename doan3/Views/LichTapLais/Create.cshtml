@@ -1,65 +1,151 @@
 ﻿@model doan3.Models.LichTapLai
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Đăng ký lịch tập lái";
 }
 
-<h1>Create</h1>
+<h1>Đăng ký lịch tập lái</h1>
 
-<h4>LichTapLai</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="GiaovienId" class="control-label"></label>
-                <select asp-for="GiaovienId" class ="form-control" asp-items="ViewBag.GiaovienId"></select>
+
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@ViewData["ErrorMessage"]</div>
+            }
+
+            @if (ViewData["IsLearner"] != null && (bool)ViewData["IsLearner"])
+            {
+                <div class="form-group mb-3">
+                    <label class="control-label">Học viên</label>
+                    <input type="text" class="form-control" value="@ViewData["HocvienName"]" readonly />
+                    <input type="hidden" asp-for="HosoId" value="@ViewData["HosoId"]" />
+                </div>
+            }
+            else
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="HosoId" class="control-label">Học viên</label>
+                    <select asp-for="HosoId" class="form-control" asp-items="ViewBag.HosoId">
+                        <option value="">-- Chọn học viên --</option>
+                    </select>
+                    <span asp-validation-for="HosoId" class="text-danger"></span>
+                </div>
+            }
+
+            <div class="form-group mb-3">
+                <label asp-for="GiaovienId" class="control-label">Giáo viên</label>
+                <select asp-for="GiaovienId" class="form-control" asp-items="ViewBag.GiaovienId">
+                    <option value="">-- Chọn giáo viên --</option>
+                </select>
+                <span asp-validation-for="GiaovienId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="HosoId" class="control-label"></label>
-                <select asp-for="HosoId" class ="form-control" asp-items="ViewBag.HosoId"></select>
+
+            <div class="form-group mb-3">
+                <label asp-for="XeId" class="control-label">Xe tập lái</label>
+                <select asp-for="XeId" class="form-control" asp-items="ViewBag.XeId">
+                    <option value="">-- Chọn xe --</option>
+                </select>
+                <span asp-validation-for="XeId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="XeId" class="control-label"></label>
-                <select asp-for="XeId" class ="form-control" asp-items="ViewBag.XeId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tgbatdau" class="control-label"></label>
-                <input asp-for="Tgbatdau" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Tgbatdau" class="control-label">Thời gian bắt đầu</label>
+                <input asp-for="Tgbatdau" class="form-control" type="datetime-local" />
                 <span asp-validation-for="Tgbatdau" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Tgketthuc" class="control-label"></label>
-                <input asp-for="Tgketthuc" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Tgketthuc" class="control-label">Thời gian kết thúc</label>
+                <input asp-for="Tgketthuc" class="form-control" type="datetime-local" />
                 <span asp-validation-for="Tgketthuc" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Diadiem" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="Diadiem" class="control-label">Địa điểm</label>
                 <input asp-for="Diadiem" class="form-control" />
                 <span asp-validation-for="Diadiem" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Noidung" class="control-label"></label>
-                <input asp-for="Noidung" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Noidung" class="control-label">Nội dung</label>
+                <textarea asp-for="Noidung" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Noidung" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Ghichu" class="control-label"></label>
-                <input asp-for="Ghichu" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Ghichu" class="control-label">Ghi chú</label>
+                <textarea asp-for="Ghichu" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Ghichu" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Tạo mới" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Đảm bảo chọn giá trị hợp lệ cho dropdown
+            $('select').each(function () {
+                if ($(this).val() === "") {
+                    $(this).find('option:first').prop('selected', true);
+                }
+            });
+
+            // Client-side validation cho thời gian
+            $('form').on('submit', function (e) {
+                var startTime = new Date($('#Tgbatdau').val());
+                var endTime = new Date($('#Tgketthuc').val());
+                if (startTime >= endTime) {
+                    e.preventDefault();
+                    toastr.error('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');
+                }
+            });
+
+            // Cập nhật dropdown giáo viên và xe khi chọn học viên (cho admin)
+            $('#HosoId').change(function () {
+                var hosoId = $(this).val();
+                if (hosoId) {
+                    $.ajax({
+                        url: '/LichTapLais/GetFilteredOptions',
+                        type: 'GET',
+                        data: { hosoId: hosoId },
+                        success: function (data) {
+                            // Cập nhật dropdown giáo viên
+                            $('#GiaovienId').empty().append('<option value="">-- Chọn giáo viên --</option>');
+                            $.each(data.giaoViens, function (i, item) {
+                                $('#GiaovienId').append($('<option>', {
+                                    value: item.giaovienId,
+                                    text: item.tengiaovien
+                                }));
+                            });
+
+                            // Cập nhật dropdown xe
+                            $('#XeId').empty().append('<option value="">-- Chọn xe --</option>');
+                            $.each(data.xeTapLais, function (i, item) {
+                                $('#XeId').append($('<option>', {
+                                    value: item.xeId,
+                                    text: item.loaixe
+                                }));
+                            });
+                        },
+                        error: function () {
+                            toastr.error('Không thể tải danh sách giáo viên và xe.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }
