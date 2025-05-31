@@ -1,49 +1,72 @@
 ﻿@model doan3.Models.HocVien
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Sửa thông tin học viên";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-primary mb-4 fw-bold text-center" id="formTitle">Sửa thông tin học viên</h2>
+            <form asp-action="Edit" class="shadow p-4 rounded bg-light" id="editForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="HocvienId" />
 
-<h4>HocVien</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="HocvienId" />
-            <div class="form-group">
-                <label asp-for="Tenhocvien" class="control-label"></label>
-                <input asp-for="Tenhocvien" class="form-control" />
-                <span asp-validation-for="Tenhocvien" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Socccd" class="control-label"></label>
-                <input asp-for="Socccd" class="form-control" />
-                <span asp-validation-for="Socccd" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Gioitinh" class="control-label"></label>
-                <input asp-for="Gioitinh" class="form-control" />
-                <span asp-validation-for="Gioitinh" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ngaysinh" class="control-label"></label>
-                <input asp-for="Ngaysinh" class="form-control" />
-                <span asp-validation-for="Ngaysinh" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="mb-3">
+                    <label asp-for="Tenhocvien" class="form-label">Tên học viên</label>
+                    <input asp-for="Tenhocvien" class="form-control" />
+                    <span asp-validation-for="Tenhocvien" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Socccd" class="form-label">Số CCCD</label>
+                    <input asp-for="Socccd" class="form-control" />
+                    <span asp-validation-for="Socccd" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Gioitinh" class="form-label">Giới tính</label>
+                    <select asp-for="Gioitinh" class="form-select">
+                        <option value="">-- Chọn giới tính --</option>
+                        <option value="Nam" selected="@(Model.Gioitinh == "Nam")">Nam</option>
+                        <option value="Nữ" selected="@(Model.Gioitinh == "Nữ")">Nữ</option>
+                    </select>
+                    <span asp-validation-for="Gioitinh" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Ngaysinh" class="form-label">Ngày sinh</label>
+                    <input asp-for="Ngaysinh" class="form-control" />
+                    <span asp-validation-for="Ngaysinh" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">← Quay lại danh sách</a>
+                    <button type="submit" class="btn btn-primary">💾 Lưu</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // GSAP animation khi hiển thị form
+        gsap.from("#formTitle", {
+            duration: 1,
+            y: -40,
+            opacity: 0,
+            ease: "power3.out"
+        });
+
+        gsap.from("#editForm", {
+            delay: 0.3,
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power2.out"
+        });
+    </script>
 }
