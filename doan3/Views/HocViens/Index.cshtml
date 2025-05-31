@@ -35,7 +35,7 @@
                             <td>@item.Tenhocvien</td>
                             <td>@item.Socccd</td>
                             <td>@item.Gioitinh</td>
-                            <td>@item.Ngaysinh</td>
+                            <td>@(item.Ngaysinh.HasValue ? item.Ngaysinh.Value.ToString("dd/MM/yyyy") : "")</td>
                             <td class="text-center">
                                 <a asp-action="Edit" asp-route-id="@item.HocvienId" class="btn btn-sm btn-warning">Sửa</a>
                                 <a asp-action="Details" asp-route-id="@item.HocvienId" class="btn btn-sm btn-info text-white">Chi tiết</a>
