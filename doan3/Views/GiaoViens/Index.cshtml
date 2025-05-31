@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<doan3.Models.GiaoVien>
 @using System.Globalization
+@using Microsoft.EntityFrameworkCore
 @inject doan3.Models.DacsGplxContext _context
 
 @{
@@ -86,6 +87,10 @@
                     <td class="text-nowrap">
                         <a asp-action="Edit" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-warning">Sửa</a>
                         <a asp-action="Details" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-info text-white">Chi tiết</a>
+                        @if (!await _context.Users.AnyAsync(u => u.Referenceld == item.GiaovienId && u.RoleId == 2))
+                        {
+                            <a asp-action="AddAccount" asp-route-id="@item.GiaovienId" class="btn btn-sm btn-secondary">Thêm tài khoản</a>
+                        }
                     </td>
                 </tr>
             }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using doan3.Models;
+using System.Globalization;
+using System.Text;
 
 namespace doan3.Controllers
 {
@@ -24,6 +26,22 @@ namespace doan3.Controllers
         }
 
         // GET: GiaoViens/AddAccount/5
+        public static string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
         [Authorize(Roles = "1")] // Chỉ admin
         public async Task<IActionResult> AddAccount(int? id)
         {
@@ -42,7 +60,7 @@ namespace doan3.Controllers
             {
                 RoleId = 2,
                 Referenceld = id,
-                Username = $"gv_{id}_{giaoVien.Tengiaovien.ToLower().Replace(" ", "")}"
+                Username = RemoveDiacritics("gv." + giaoVien.Tengiaovien).Replace(" ", "").ToLower()
             };
             return View(user);
         }
