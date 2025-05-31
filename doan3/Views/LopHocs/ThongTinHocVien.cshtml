@@ -61,13 +61,8 @@
                                             <span class="badge bg-warning text-dark">Chưa khám</span>
                                         }
                                     </td>
-                                    <td>
-                                        <a asp-controller="KetQuaHocTaps" asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-info me-1">Kết quả học tập</a>
-                                    </td>
                                     <td class="text-center">
-                                        <a asp-controller="HoSoThiSinhs" asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-info me-1">🔍 Chi tiết</a>
-                                        <a asp-controller="HoSoThiSinhs" asp-action="Edit" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-secondary me-1">✏️ Sửa</a>
-                                        <a asp-controller="HoSoThiSinhs" asp-action="Delete" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-danger">🗑️ Xóa</a>
+                                        <a asp-controller="KetQuaHocTaps" asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-outline-info me-1">Kết quả học tập</a>
                                     </td>
                                 </tr>
                             }
