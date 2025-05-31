@@ -49,7 +49,6 @@ namespace doan3
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<DacsGplxContext>(options =>
                 options.UseSqlServer(connectionString));
-
             // Authentication (cookie-based)
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
