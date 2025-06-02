@@ -12,11 +12,11 @@ public partial class CtDangKyThi
     public int HosoId { get; set; }
 
     public DateTime Thoigiandk { get; set; }
-
+    public bool thanhtoan {  get; set; }
     public DateTime? Thoigianthi { get; set; }
 
     public int? LichthiId { get; set; }
-
+    //  ALTER TABLE CT_DANG_KY_THI ADD THANHTOAN BIT NOT NULL DEFAULT 0;
     public virtual HoSoThiSinh Hoso { get; set; } = null!;
 
     public virtual KyThi Kythi { get; set; } = null!;
