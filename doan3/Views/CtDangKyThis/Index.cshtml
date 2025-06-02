@@ -27,6 +27,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Lichthi)
             </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.thanhtoan)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,6 +50,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Lichthi.LichthiId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.thanhtoan)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CtDktId">Edit</a> |

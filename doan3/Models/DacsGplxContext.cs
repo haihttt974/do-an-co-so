@@ -127,6 +127,9 @@ public partial class DacsGplxContext : DbContext
             entity.Property(e => e.HosoId).HasColumnName("HOSO_ID");
             entity.Property(e => e.KythiId).HasColumnName("KYTHI_ID");
             entity.Property(e => e.LichthiId).HasColumnName("LICHTHI_ID");
+            entity.Property(e => e.thanhtoan)
+                .HasColumnType("bit")
+                .HasColumnName("THANHTOAN");
             entity.Property(e => e.Thoigiandk)
                 .HasColumnType("datetime")
                 .HasColumnName("THOIGIANDK");
