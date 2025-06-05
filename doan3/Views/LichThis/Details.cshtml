@@ -1,36 +1,53 @@
 ﻿@model doan3.Models.LichThi
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết lịch thi";
 }
 
-<h1>Details</h1>
+<div class="container py-4">
+    <h1 class="text-center text-info fw-bold mb-4 animate-fade-in">Chi tiết lịch thi</h1>
 
-<div>
-    <h4>LichThi</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Thoigianthi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Thoigianthi)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Diadiemthi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Diadiemthi)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ghichu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ghichu)
-        </dd>
-    </dl>
+    <div class="card shadow-lg animate-slide-up">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3 fw-bold">Thời gian thi</dt>
+                <dd class="col-sm-9">@Model.Thoigianthi</dd>
+
+                <dt class="col-sm-3 fw-bold">Địa điểm thi</dt>
+                <dd class="col-sm-9">@Model.Diadiemthi</dd>
+
+                <dt class="col-sm-3 fw-bold">Ghi chú</dt>
+                <dd class="col-sm-9">@Model.Ghichu</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-end gap-2 animate-fade-in">
+        <a asp-action="Edit" asp-route-id="@Model?.LichthiId" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Quay lại danh sách
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.LichthiId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        gsap.from(".animate-fade-in", {
+            opacity: 0,
+            y: -20,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: 0.2
+        });
+
+        gsap.from(".animate-slide-up", {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: "power2.out"
+        });
+    </script>
+}

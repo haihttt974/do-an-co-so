@@ -1,44 +1,70 @@
 ﻿@model doan3.Models.LichThi
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa lịch thi";
 }
 
-<h1>Edit</h1>
+<div class="container py-4">
+    <h1 class="text-center text-primary fw-bold mb-4 animate-fade-in">Chỉnh sửa lịch thi</h1>
 
-<h4>LichThi</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="LichthiId" />
-            <div class="form-group">
-                <label asp-for="Thoigianthi" class="control-label"></label>
-                <input asp-for="Thoigianthi" class="form-control" />
-                <span asp-validation-for="Thoigianthi" class="text-danger"></span>
+    <div class="row justify-content-center">
+        <div class="col-md-6 animate-slide-up">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="LichthiId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Thoigianthi" class="form-label fw-semibold">Thời gian thi</label>
+                            <input asp-for="Thoigianthi" class="form-control" />
+                            <span asp-validation-for="Thoigianthi" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Diadiemthi" class="form-label fw-semibold">Địa điểm thi</label>
+                            <input asp-for="Diadiemthi" class="form-control" />
+                            <span asp-validation-for="Diadiemthi" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Ghichu" class="form-label fw-semibold">Ghi chú</label>
+                            <input asp-for="Ghichu" class="form-control" />
+                            <span asp-validation-for="Ghichu" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Diadiemthi" class="control-label"></label>
-                <input asp-for="Diadiemthi" class="form-control" />
-                <span asp-validation-for="Diadiemthi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ghichu" class="control-label"></label>
-                <input asp-for="Ghichu" class="form-control" />
-                <span asp-validation-for="Ghichu" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        gsap.from(".animate-fade-in", {
+            opacity: 0,
+            y: -20,
+            duration: 0.6,
+            ease: "power2.out"
+        });
+
+        gsap.from(".animate-slide-up", {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: "power2.out"
+        });
+    </script>
 }
