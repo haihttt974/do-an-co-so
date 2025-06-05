@@ -1,0 +1,31 @@
+﻿@model IEnumerable<doan3.ViewModel.LichDayViewModel>
+
+@{
+    ViewData["Title"] = "Lịch Dạy";
+}
+
+<h2 class="mb-4">Lịch Dạy Của Tôi</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Tên Lớp</th>
+            <th>Bắt Đầu</th>
+            <th>Kết Thúc</th>
+            <th>Hình Thức Học</th>
+            <th>Nội Dung</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TenLop</td>
+                <td>@item.TgBatDau.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@item.TgKetThuc.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@item.HinhThucHoc</td>
+                <td>@item.NoiDung</td>
+            </tr>
+        }
+    </tbody>
+</table>
