@@ -1,47 +1,68 @@
 ﻿@model IEnumerable<doan3.Models.Phanhoi>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách phản hồi";
 }
 
-<h1>Index</h1>
+<h1 class="text-center text-primary fw-bold mb-4 animate-fade-in">Danh sách phản hồi</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Noidung)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Thoigianph)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hocvien)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Noidung)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Thoigianph)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hocvien.HocvienId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PhanhoiId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PhanhoiId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PhanhoiId">Delete</a>
-            </td>
-        </tr>
+<div class="d-flex justify-content-end mb-3 animate-fade-in">
+    @* <a asp-action="Create" class="btn btn-success"> *@
+    @*     <i class="bi bi-plus-circle me-1"></i> Tạo phản hồi mới *@
+    @* </a> *@
+</div>
+
+<div class="table-responsive animate-slide-up">
+    <table class="table table-bordered table-striped shadow-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Học viên</th>
+                <th>Nội dung</th>
+                @* <th>Thời gian phản hồi</th> *@
+                <th class="text-center">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                     <td>@Html.DisplayFor(modelItem => item.Hocvien.Tenhocvien)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Noidung)</td>
+                    @* <td>@Html.DisplayFor(modelItem => item.Thoigianph)</td> *@
+                    <td class="text-center">
+                        <a asp-action="Details" asp-route-id="@item.PhanhoiId" class="btn btn-outline-primary btn-sm me-1" title="Xem chi tiết">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                       @*  <a asp-action="Edit" asp-route-id="@item.PhanhoiId" class="btn btn-outline-warning btn-sm me-1" title="Chỉnh sửa">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.PhanhoiId" class="btn btn-outline-danger btn-sm" title="Xóa">
+                            <i class="bi bi-trash"></i>
+                        </a> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <!-- GSAP for animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        gsap.from(".animate-fade-in", {
+            opacity: 0,
+            y: -30,
+            duration: 0.8,
+            ease: "power2.out",
+            stagger: 0.2
+        });
+
+        gsap.from(".animate-slide-up", {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: "power2.out"
+        });
+    </script>
 }
-    </tbody>
-</table>
