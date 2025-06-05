@@ -194,6 +194,8 @@ namespace doan3.Controllers
 
                 lichTapLai.HosoId = hoSo.HosoId; // Cố định HosoId
             }
+            // Cố định Địa điểm là "Trường Driving School"
+            lichTapLai.Diadiem = "Trường Driving School";
 
             // Kiểm tra TGBATDAU < TGKETTHUC
             if (lichTapLai.Tgbatdau >= lichTapLai.Tgketthuc)
@@ -231,34 +233,62 @@ namespace doan3.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(lichTapLai);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Đăng ký lịch tập lái thành công!";
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(lichTapLai);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Đăng ký lịch tập lái thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Lỗi khi lưu dữ liệu: {ex.Message}");
+                    // Repopulate dropdowns
+                    if (user.RoleId == 3)
+                    {
+                        var hoSo = await _context.HoSoThiSinhs
+                            .Include(h => h.Hocvien)
+                            .Include(h => h.Hang)
+                            .FirstOrDefaultAsync(h => h.HocvienId == user.Referenceld);
+                        var tenHang = hoSo?.Hang.Tenhang;
+                        ViewData["GiaovienId"] = new SelectList(
+                            _context.GiaoViens.Where(g => g.HangDaotao.Contains(tenHang)),
+                            "GiaovienId", "Tengiaovien", lichTapLai.GiaovienId);
+                        ViewData["XeId"] = new SelectList(
+                            _context.XeTapLais.Where(x => x.Loaixe.Contains(tenHang)),
+                            "XeId", "Loaixe", lichTapLai.XeId);
+                        ViewData["HosoId"] = hoSo?.HosoId;
+                        ViewData["HocvienName"] = hoSo?.Hocvien.Tenhocvien;
+                        ViewData["IsLearner"] = true;
+                    }
+                    else
+                    {
+                        ViewData["HosoId"] = new SelectList(
+                            _context.HoSoThiSinhs.Include(h => h.Hocvien),
+                            "HosoId", "Hocvien.Tenhocvien", lichTapLai.HosoId);
+                        ViewData["GiaovienId"] = new SelectList(_context.GiaoViens, "GiaovienId", "Tengiaovien", lichTapLai.GiaovienId);
+                        ViewData["XeId"] = new SelectList(_context.XeTapLais, "XeId", "Loaixe", lichTapLai.XeId);
+                        ViewData["IsLearner"] = false;
+                    }
+                    return View(lichTapLai);
+                }
             }
 
-            // Trả lại dữ liệu cho dropdown và thông tin học viên
+            // Add return statement for when ModelState is invalid
+            // Repopulate dropdowns
             if (user.RoleId == 3)
             {
                 var hoSo = await _context.HoSoThiSinhs
                     .Include(h => h.Hocvien)
                     .Include(h => h.Hang)
                     .FirstOrDefaultAsync(h => h.HocvienId == user.Referenceld);
-
-                if (hoSo?.HangId != null)
-                {
-                    var tenHang = hoSo.Hang.Tenhang;
-                    ViewData["GiaovienId"] = new SelectList(
-                        _context.GiaoViens.Where(g => g.HangDaotao.Contains(tenHang)),
-                        "GiaovienId",
-                        "Tengiaovien",
-                        lichTapLai.GiaovienId);
-                    ViewData["XeId"] = new SelectList(
-                        _context.XeTapLais.Where(x => x.Loaixe.Contains(tenHang)),
-                        "XeId",
-                        "Loaixe",
-                        lichTapLai.XeId);
-                }
+                var tenHang = hoSo?.Hang.Tenhang;
+                ViewData["GiaovienId"] = new SelectList(
+                    _context.GiaoViens.Where(g => g.HangDaotao.Contains(tenHang)),
+                    "GiaovienId", "Tengiaovien", lichTapLai.GiaovienId);
+                ViewData["XeId"] = new SelectList(
+                    _context.XeTapLais.Where(x => x.Loaixe.Contains(tenHang)),
+                    "XeId", "Loaixe", lichTapLai.XeId);
                 ViewData["HosoId"] = hoSo?.HosoId;
                 ViewData["HocvienName"] = hoSo?.Hocvien.Tenhocvien;
                 ViewData["IsLearner"] = true;
@@ -267,15 +297,11 @@ namespace doan3.Controllers
             {
                 ViewData["HosoId"] = new SelectList(
                     _context.HoSoThiSinhs.Include(h => h.Hocvien),
-                    "HosoId",
-                    "Hocvien.Tenhocvien",
-                    lichTapLai.HosoId);
+                    "HosoId", "Hocvien.Tenhocvien", lichTapLai.HosoId);
                 ViewData["GiaovienId"] = new SelectList(_context.GiaoViens, "GiaovienId", "Tengiaovien", lichTapLai.GiaovienId);
                 ViewData["XeId"] = new SelectList(_context.XeTapLais, "XeId", "Loaixe", lichTapLai.XeId);
                 ViewData["IsLearner"] = false;
             }
-
-            ViewData["ErrorMessage"] = "Vui lòng kiểm tra lại thông tin.";
             return View(lichTapLai);
         }
 
