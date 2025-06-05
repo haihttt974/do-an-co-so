@@ -4,13 +4,13 @@
     ViewData["Title"] = "Đăng ký lịch tập lái";
 }
 
-<h1>Đăng ký lịch tập lái</h1>
+<h1 class="mb-4 text-primary fw-bold text-center animate-fade-in">Đăng ký lịch tập lái</h1>
 
 <hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row justify-content-center">
+    <div class="col-md-8 animate-slide-up">
+        <form asp-action="Create" class="bg-light p-4 rounded shadow-sm border">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             @if (ViewData["ErrorMessage"] != null)
             {
@@ -20,7 +20,7 @@
             @if (ViewData["IsLearner"] != null && (bool)ViewData["IsLearner"])
             {
                 <div class="form-group mb-3">
-                    <label class="control-label">Học viên</label>
+                    <label class="form-label">Học viên</label>
                     <input type="text" class="form-control" value="@ViewData["HocvienName"]" readonly />
                     <input type="hidden" asp-for="HosoId" value="@ViewData["HosoId"]" />
                 </div>
@@ -28,8 +28,8 @@
             else
             {
                 <div class="form-group mb-3">
-                    <label asp-for="HosoId" class="control-label">Học viên</label>
-                    <select asp-for="HosoId" class="form-control" asp-items="ViewBag.HosoId">
+                    <label asp-for="HosoId" class="form-label">Học viên</label>
+                    <select asp-for="HosoId" class="form-select" asp-items="ViewBag.HosoId">
                         <option value="">-- Chọn học viên --</option>
                     </select>
                     <span asp-validation-for="HosoId" class="text-danger"></span>
@@ -37,99 +37,112 @@
             }
 
             <div class="form-group mb-3">
-                <label asp-for="GiaovienId" class="control-label">Giáo viên</label>
-                <select asp-for="GiaovienId" class="form-control" asp-items="ViewBag.GiaovienId">
+                <label asp-for="GiaovienId" class="form-label">Giáo viên</label>
+                <select asp-for="GiaovienId" class="form-select" id="GiaovienId" asp-items="ViewBag.GiaovienId">
                     <option value="">-- Chọn giáo viên --</option>
                 </select>
                 <span asp-validation-for="GiaovienId" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="XeId" class="control-label">Xe tập lái</label>
-                <select asp-for="XeId" class="form-control" asp-items="ViewBag.XeId">
+                <label asp-for="XeId" class="form-label">Xe tập lái</label>
+                <select asp-for="XeId" class="form-select" id="XeId" asp-items="ViewBag.XeId">
                     <option value="">-- Chọn xe --</option>
                 </select>
                 <span asp-validation-for="XeId" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Tgbatdau" class="control-label">Thời gian bắt đầu</label>
-                <input asp-for="Tgbatdau" class="form-control" type="datetime-local" />
+                <label asp-for="Tgbatdau" class="form-label">Thời gian bắt đầu</label>
+                <input asp-for="Tgbatdau" class="form-control" type="datetime-local" id="Tgbatdau" />
                 <span asp-validation-for="Tgbatdau" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Tgketthuc" class="control-label">Thời gian kết thúc</label>
-                <input asp-for="Tgketthuc" class="form-control" type="datetime-local" />
+                <label asp-for="Tgketthuc" class="form-label">Thời gian kết thúc</label>
+                <input asp-for="Tgketthuc" class="form-control" type="datetime-local" id="Tgketthuc" />
                 <span asp-validation-for="Tgketthuc" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Diadiem" class="control-label">Địa điểm</label>
+                <label asp-for="Diadiem" class="form-label">Địa điểm</label>
                 <input asp-for="Diadiem" class="form-control" value="Trường Driving School" readonly />
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Noidung" class="control-label">Nội dung</label>
-                <textarea asp-for="Noidung" class="form-control" rows="4"></textarea>
+                <label asp-for="Noidung" class="form-label">Nội dung</label>
+                <textarea asp-for="Noidung" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Noidung" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Ghichu" class="control-label">Ghi chú</label>
-                <textarea asp-for="Ghichu" class="form-control" rows="4"></textarea>
+                <label asp-for="Ghichu" class="form-label">Ghi chú</label>
+                <textarea asp-for="Ghichu" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Ghichu" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Tạo mới" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            <div class="form-group mt-4">
+                <input type="submit" value="Tạo mới" class="btn btn-success me-2" />
+                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
             </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
     <script>
         $(document).ready(function () {
-            // Đảm bảo chọn giá trị hợp lệ cho dropdown
+            // GSAP animation khi vào form
+            gsap.from(".animate-slide-up", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            gsap.from(".animate-fade-in", {
+                opacity: 0,
+                duration: 1,
+                delay: 0.2
+            });
+
+            // Reset dropdown nếu chưa chọn gì
             $('select').each(function () {
                 if ($(this).val() === "") {
                     $(this).find('option:first').prop('selected', true);
                 }
             });
 
-            // Client-side validation cho thời gian
+            // Validation client-side
             $('form').on('submit', function (e) {
-                var startTime = new Date($('#Tgbatdau').val());
-                var endTime = new Date($('#Tgketthuc').val());
-                if (startTime >= endTime) {
+                let start = new Date($('#Tgbatdau').val());
+                let end = new Date($('#Tgketthuc').val());
+
+                if (start >= end) {
                     e.preventDefault();
                     toastr.error('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');
                 }
-            });
 
-            // Client-side validation cho dropdowns
-            $('form').on('submit', function (e) {
                 if ($('#GiaovienId').val() === "" || $('#XeId').val() === "") {
                     e.preventDefault();
                     toastr.error('Vui lòng chọn giáo viên và xe tập lái.');
                 }
             });
 
-            // Cập nhật dropdown giáo viên và xe khi chọn học viên (cho admin)
+            // Cập nhật danh sách giáo viên & xe khi chọn học viên
             $('#HosoId').change(function () {
-                var hosoId = $(this).val();
+                const hosoId = $(this).val();
                 if (hosoId) {
                     $.ajax({
                         url: '/LichTapLais/GetGiaoVienXeByHoso',
                         type: 'GET',
                         data: { hosoId: hosoId },
                         success: function (data) {
-                            // Cập nhật dropdown giáo viên
                             $('#GiaovienId').empty().append('<option value="">-- Chọn giáo viên --</option>');
                             $.each(data.giaoViens, function (i, item) {
                                 $('#GiaovienId').append($('<option>', {
@@ -138,7 +151,6 @@
                                 }));
                             });
 
-                            // Cập nhật dropdown xe
                             $('#XeId').empty().append('<option value="">-- Chọn xe --</option>');
                             $.each(data.xeTapLais, function (i, item) {
                                 $('#XeId').append($('<option>', {
