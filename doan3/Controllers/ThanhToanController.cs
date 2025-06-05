@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using doan3.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace doan3.Controllers
 {
@@ -17,152 +14,117 @@ namespace doan3.Controllers
             _context = context;
         }
 
-        // GET: ThanhToan
-        public async Task<IActionResult> Index()
+        // Thanh toán khóa học
+        public async Task<IActionResult> KhoaHoc()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out int userId))
-            {
-                return Unauthorized("Bạn cần đăng nhập.");
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == 3);
-
-            if (user == null || user.Referenceld == null)
-            {
-                return Unauthorized("Chỉ học viên mới có quyền truy cập.");
-            }
-
-            var hosoIds = await _context.HoSoThiSinhs
-                .Where(h => h.HocvienId == user.Referenceld)
-                .Select(h => h.HosoId)
+            var ketQuaList = await _context.KetQuaHocTaps
+                .Include(k => k.Hoso).ThenInclude(h => h.Hocvien)
+                .Include(k => k.Lop).ThenInclude(l => l.Khoahoc)
+                .Where(k => k.Nhanxet == "Chưa thanh toán khóa học")
                 .ToListAsync();
 
-            var hocPhis = await _context.KetQuaHocTaps
-                .Where(kq => hosoIds.Contains(kq.HosoId) && kq.Nhanxet == "Chưa thanh toán khóa học")
-                .Include(kq => kq.Hoso)
-                .Include(kq => kq.Hoso.Hocvien)
-                .ToListAsync();
-
-            return View(hocPhis);
+            return View(ketQuaList);
         }
 
-        //// GET: ThanhToan/Pay/5
-        //public async Task<IActionResult> Pay(int id)
-        //{
-        //    var ketQua = await _context.KetQuaHocTaps
-        //        .Include(k => k.Hoso)
-        //        .FirstOrDefaultAsync(k => k.KetquaId == id && k.Nhanxet == "Chưa thanh toán khóa học");
-
-        //    if (ketQua == null)
-        //    {
-        //        return NotFound("Không tìm thấy thông tin thanh toán.");
-        //    }
-
-        //    // Giả sử: Tạo mới Phiếu thanh toán và chi tiết
-        //    var thanhToan = new ThanhToan
-        //    {
-        //        TenThanhToan = $"Học phí hồ sơ #{ketQua.HosoId}",
-        //        Sotien = 1000000, // Cập nhật theo logic thực tế
-        //        Trangthai = "Đã thanh toán",
-        //        Phuongthuc = "Chuyển khoản",
-        //        Ghichu = $"Thanh toán học phí hồ sơ #{ketQua.HosoId}"
-        //    };
-
-        //    _context.ThanhToans.Add(thanhToan);
-        //    await _context.SaveChangesAsync();
-
-        //    var ct = new CtPhieuThanhToan
-        //    {
-        //        HosoId = ketQua.HosoId,
-        //        ThanhtoanId = thanhToan.ThanhtoanId,
-        //        Thoigianthanhtoan = DateTime.Now,
-        //        Loaiphi = "Học phí"
-        //    };
-
-        //    _context.CtPhieuThanhToans.Add(ct);
-
-        //    // Cập nhật trạng thái KetQuaHocTap
-        //    ketQua.Nhanxet = null;
-        //    await _context.SaveChangesAsync();
-
-        //    TempData["Success"] = "Thanh toán thành công!";
-        //    return RedirectToAction(nameof(Index));
-        //}
-        //// GET: ThanhToan/ConfirmPayment/5
-        public async Task<IActionResult> ConfirmPayment(int id)
+        // Thanh toán thi
+        public async Task<IActionResult> Thi()
         {
-            var ketQua = await _context.KetQuaHocTaps
-                .Include(k => k.Hoso)
-                .ThenInclude(h => h.Hocvien)
-                .FirstOrDefaultAsync(k => k.KetquaId == id && k.Nhanxet == "Chưa thanh toán khóa học");
+            var danhSach = await _context.CtDangKyThis
+                .Include(ct => ct.Hoso).ThenInclude(h => h.Hocvien)
+                .Include(ct => ct.Lichthi)
+                .Where(ct => ct.thanhtoan == false)
+                .ToListAsync();
 
-            if (ketQua == null)
+            return View(danhSach);
+        }
+
+        // Xác nhận thanh toán
+        public async Task<IActionResult> ConfirmPayment(int? ketQuaHocTapId, int? ctDangKyThiId)
+        {
+            if (ketQuaHocTapId != null)
             {
-                return NotFound();
-            }
+                var ketQua = await _context.KetQuaHocTaps
+                    .Include(k => k.Hoso).ThenInclude(h => h.Hocvien)
+                    .Include(k => k.Lop).ThenInclude(l => l.Khoahoc)
+                    .FirstOrDefaultAsync(k => k.KetquaId == ketQuaHocTapId);
 
-            ViewBag.KetQuaHocTapId = id;
-            ViewBag.HocVienName = ketQua.Hoso.Hocvien?.Tenhocvien;
-            ViewBag.HoSoId = ketQua.HosoId;
-            ViewBag.Amount = 1000000; // Số tiền giả định
+                if (ketQua == null) return NotFound();
+
+                var hang = await _context.HangGplxes.FirstOrDefaultAsync(h => h.HangId == ketQua.Lop.Khoahoc.HangId);
+                var amount = hang?.PhiDaotao ?? 0;
+
+                ViewBag.HoSoId = ketQua.HosoId;
+                ViewBag.KetQuaHocTapId = ketQua.KetquaId;
+                ViewBag.HocVienName = ketQua.Hoso?.Hocvien?.Tenhocvien;
+                ViewBag.Amount = amount;
+            }
+            else if (ctDangKyThiId != null)
+            {
+                var ct = await _context.CtDangKyThis
+                    .Include(c => c.Hoso).ThenInclude(h => h.Hocvien)
+                    .Include(c => c.Lichthi)
+                    .FirstOrDefaultAsync(c => c.CtDktId == ctDangKyThiId);
+
+                if (ct == null) return NotFound();
+
+                var ghiChu = ct.Lichthi?.Ghichu?.Trim();
+                var tenHang = ghiChu?.Split(' ').LastOrDefault()?.ToUpper();
+                var hang = await _context.HangGplxes.FirstOrDefaultAsync(h => h.Tenhang.ToUpper() == tenHang);
+                var amount = hang?.PhiThi ?? 0;
+
+                ViewBag.CtDangKyThiId = ct.CtDktId;
+                ViewBag.HoSoId = ct.HosoId;
+                ViewBag.HocVienName = ct.Hoso?.Hocvien?.Tenhocvien;
+                ViewBag.Amount = amount;
+            }
 
             return View();
         }
 
-        // POST: ThanhToan/ShowQRCode
         [HttpPost]
-        public IActionResult ShowQRCode(string tenNguoiThanhToan, string phuongThuc, int hosoId, int ketQuaHocTapId, decimal soTien)
+        public IActionResult ShowQRCode(int? hosoId, int? ketQuaHocTapId, int? ctDangKyThiId, string tenNguoiThanhToan, string phuongThuc, decimal soTien)
         {
-            var qrCode = Guid.NewGuid().ToString().Substring(0, 10).ToUpper();
-            ViewBag.QRCode = qrCode;
+            var maGiaoDich = Guid.NewGuid().ToString();
 
-            ViewBag.TenNguoiThanhToan = tenNguoiThanhToan;
-            ViewBag.PhuongThuc = phuongThuc;
             ViewBag.HoSoId = hosoId;
             ViewBag.KetQuaHocTapId = ketQuaHocTapId;
+            ViewBag.CtDangKyThiId = ctDangKyThiId;
+            ViewBag.TenNguoiThanhToan = tenNguoiThanhToan;
+            ViewBag.PhuongThuc = phuongThuc;
             ViewBag.SoTien = soTien;
+            ViewBag.QRCode = maGiaoDich;
 
             return View();
         }
 
-        // POST: ThanhToan/CompletePayment
         [HttpPost]
-        public async Task<IActionResult> CompletePayment(int hosoId, int ketQuaHocTapId, string tenNguoiThanhToan, string phuongThuc, decimal soTien)
+        public async Task<IActionResult> CompletePayment(int? ketQuaHocTapId, int? ctDangKyThiId)
         {
-            var thanhToan = new ThanhToan
+            if (ketQuaHocTapId != null)
             {
-                TenThanhToan = $"Thanh toán học phí bởi {tenNguoiThanhToan}",
-                Sotien = soTien,
-                Trangthai = "Đã thanh toán",
-                Phuongthuc = phuongThuc,
-                Ghichu = $"Thanh toán hồ sơ {hosoId}"
-            };
-
-            _context.ThanhToans.Add(thanhToan);
-            await _context.SaveChangesAsync();
-
-            var ct = new CtPhieuThanhToan
+                var ketQua = await _context.KetQuaHocTaps.FindAsync(ketQuaHocTapId);
+                if (ketQua != null)
+                {
+                    ketQua.Nhanxet = "Đã thanh toán khóa học";
+                }
+            }
+            else if (ctDangKyThiId != null)
             {
-                HosoId = hosoId,
-                ThanhtoanId = thanhToan.ThanhtoanId,
-                Thoigianthanhtoan = DateTime.Now,
-                Loaiphi = "Học phí"
-            };
-
-            _context.CtPhieuThanhToans.Add(ct);
-
-            var ketQua = await _context.KetQuaHocTaps.FindAsync(ketQuaHocTapId);
-            if (ketQua != null)
-            {
-                ketQua.Nhanxet = null;
+                var ct = await _context.CtDangKyThis.FindAsync(ctDangKyThiId);
+                if (ct != null)
+                {
+                    ct.thanhtoan = true;
+                }
             }
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Thanh toán thành công!";
-            return RedirectToAction("Index");
+            return RedirectToAction("PaymentSuccess");
+        }
+
+        public IActionResult PaymentSuccess()
+        {
+            return View();
         }
     }
 }
