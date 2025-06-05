@@ -52,8 +52,6 @@ namespace doan3.Controllers
         }
 
         // POST: Phanhois/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PhanhoiId,Noidung,Thoigianph,HocvienId")] Phanhoi phanhoi)
@@ -86,8 +84,6 @@ namespace doan3.Controllers
         }
 
         // POST: Phanhois/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PhanhoiId,Noidung,Thoigianph,HocvienId")] Phanhoi phanhoi)
@@ -159,5 +155,6 @@ namespace doan3.Controllers
         {
             return _context.Phanhois.Any(e => e.PhanhoiId == id);
         }
+
     }
 }
