@@ -33,7 +33,7 @@ public partial class KetQuaHocTap
 
     public string? DuDkThisat { get; set; }
 
-    public DateTime Thoigiancapnhat { get; set; }
+    public DateTime? Thoigiancapnhat { get; set; }
 
     public virtual HoSoThiSinh Hoso { get; set; } = null!;
 

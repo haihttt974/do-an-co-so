@@ -1,32 +1,55 @@
 ﻿@{
     ViewData["Title"] = "Xác nhận thanh toán";
+    var loaiThanhToan = ViewBag.Type == "thi" ? "Phí thi" : "Phí khóa học";
 }
 
-<h3>Xác nhận thông tin thanh toán</h3>
+<div class="container mt-4">
+    <h2 class="mb-4">💳 Xác nhận thông tin thanh toán</h2>
 
-<form asp-action="ShowQRCode" method="post">
-    <input type="hidden" name="hosoId" value="@ViewBag.HoSoId" />
-    <input type="hidden" name="ketQuaHocTapId" value="@ViewBag.KetQuaHocTapId" />
-    <input type="hidden" name="soTien" value="@ViewBag.Amount" />
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="ShowQRCode" method="post">
+                <input type="hidden" name="hosoId" value="@ViewBag.HoSoId" />
+                <input type="hidden" name="ketQuaHocTapId" value="@ViewBag.KetQuaHocTapId" />
+                <input type="hidden" name="ctDangKyThiId" value="@ViewBag.CtDangKyThiId" />
+                <input type="hidden" name="soTien" value="@ViewBag.Amount" />
+                <input type="hidden" name="type" value="@ViewBag.Type" />
 
-    <div class="mb-3">
-        <label>Họ tên học viên:</label>
-        <input class="form-control" value="@ViewBag.HocVienName" disabled />
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">🔹 Loại thanh toán:</label>
+                        <input class="form-control" value="@loaiThanhToan" disabled />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">🔸 Số tiền thanh toán:</label>
+                        <input class="form-control" value="@string.Format("{0:N0} VNĐ", ViewBag.Amount)" disabled />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">👤 Họ tên học viên:</label>
+                    <input class="form-control" value="@ViewBag.HocVienName" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">✍️ Tên người thanh toán:</label>
+                    <input class="form-control" name="tenNguoiThanhToan" placeholder="Nhập họ tên người thanh toán" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">💰 Phương thức thanh toán:</label>
+                    <select class="form-select" name="phuongThuc" required>
+                        <option selected disabled value="">-- Chọn phương thức --</option>
+                        <option value="Chuyển khoản">Chuyển khoản</option>
+                        <option value="Momo">Momo</option>
+                        <option value="VNPay">VNPay</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Tiếp tục đến mã QR ➡️
+                </button>
+            </form>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label>Tên người thanh toán:</label>
-        <input class="form-control" name="tenNguoiThanhToan" required />
-    </div>
-
-    <div class="mb-3">
-        <label>Phương thức thanh toán:</label>
-        <select class="form-control" name="phuongThuc" required>
-            <option value="Chuyển khoản">Chuyển khoản</option>
-            <option value="Momo">Momo</option>
-            <option value="VNPay">VNPay</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Tiếp tục</button>
-</form>
+</div>

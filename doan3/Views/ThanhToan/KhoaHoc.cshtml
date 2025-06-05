@@ -1,0 +1,55 @@
+﻿@model IEnumerable<doan3.Models.KetQuaHocTap>
+@{
+    ViewData["Title"] = "Thanh toán khóa học";
+}
+
+<h2>📚 Thanh toán khóa học</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Khóa học</th>
+            <th>Lớp học</th>
+            <th>Ngày đăng ký</th>
+            <th>Hạn thanh toán</th>
+            <th>Hồ sơ</th>
+            <th>Học viên</th>
+            <th>Học phí</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var ngayDangKy = item.Thoigiancapnhat ?? DateTime.Now;
+            var hanThanhToan = ngayDangKy.AddDays(15);
+            var conLai = (hanThanhToan - DateTime.Now).Days;
+
+            if (conLai < 0)
+            {
+                continue; // Đã hết hạn thanh toán
+            }
+
+            <tr>
+                <td>@item.Lop?.Khoahoc?.Tenkhoahoc</td>
+                <td>@item.Lop?.Tenlop</td>
+                <td>@ngayDangKy.ToString("dd/MM/yyyy")</td>
+                <td>@hanThanhToan.ToString("dd/MM/yyyy") (@conLai ngày còn lại)</td>
+                <td>@item.HosoId</td>
+                <td>@item.Hoso?.Hocvien?.Tenhocvien</td>
+                <td>@(item.Hoso?.Hang?.PhiDaotao?.ToString("N0") ?? "Không rõ") VNĐ</td>
+                <td>
+                    <a class="btn btn-primary"
+                       href="@Url.Action("ConfirmPayment", "ThanhToan", new { id = item.KetquaId, type = "khoahoc" })">
+                        Thanh toán
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
