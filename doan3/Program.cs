@@ -73,9 +73,13 @@ namespace doan3
             // Configure middleware
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error/Error500"); // Trang lỗi hệ thống
+                app.UseStatusCodePagesWithReExecute("/Error/{0}"); // Lỗi 404, 403, ...
                 app.UseHsts();
             }
+
+            // Middleware bắt lỗi 404
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseHttpsRedirection();
             
