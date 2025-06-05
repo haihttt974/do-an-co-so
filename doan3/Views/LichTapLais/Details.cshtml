@@ -1,66 +1,68 @@
 ﻿@model doan3.Models.LichTapLai
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết lịch tập lái";
 }
 
-<h1>Details</h1>
+<!-- Tiêu đề có hiệu ứng GSAP và căn giữa -->
+<h1 class="text-center text-primary fw-bold mb-4 animate-fade-in">Chi tiết lịch tập lái</h1>
 
-<div>
-    <h4>LichTapLai</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tgbatdau)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tgbatdau)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tgketthuc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tgketthuc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Diadiem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Diadiem)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Noidung)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Noidung)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ghichu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ghichu)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Giaovien)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Giaovien.GiaovienId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hoso)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hoso.HosoId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Xe)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Xe.XeId)
-        </dd>
-    </dl>
+<div class="card shadow-lg animate-slide-up">
+    <div class="card-body">
+        <h4 class="card-title text-secondary mb-3">Thông tin chi tiết</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold">Học viên</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Hoso.Hocvien.Tenhocvien)</dd>
+
+            <dt class="col-sm-3 fw-bold">Giáo viên</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Giaovien.Tengiaovien)</dd>
+
+            <dt class="col-sm-3 fw-bold">Xe tập lái</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Xe.Loaixe)</dd>
+
+            <dt class="col-sm-3 fw-bold">Thời gian bắt đầu</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Tgbatdau)</dd>
+
+            <dt class="col-sm-3 fw-bold">Thời gian kết thúc</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Tgketthuc)</dd>
+
+            <dt class="col-sm-3 fw-bold">Địa điểm</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Diadiem)</dd>
+
+            <dt class="col-sm-3 fw-bold">Nội dung</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Noidung)</dd>
+
+            <dt class="col-sm-3 fw-bold">Ghi chú</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ghichu)</dd>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.LichId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- Chỉ giữ lại nút Quay lại danh sách -->
+<div class="d-flex justify-content-center mt-4 animate-fade-in">
+    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+        <i class="bi bi-arrow-left-circle me-1"></i> Quay lại danh sách
+    </a>
 </div>
+
+@section Scripts {
+    <!-- Thêm animation GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        gsap.from(".animate-fade-in", {
+            opacity: 0,
+            y: -30,
+            duration: 0.8,
+            ease: "power2.out",
+            stagger: 0.2
+        });
+
+        gsap.from(".animate-slide-up", {
+            y: 40,
+            opacity: 0,
+            duration: 0.9,
+            ease: "power2.out"
+        });
+    </script>
+}
