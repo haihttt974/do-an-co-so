@@ -53,11 +53,6 @@ else
                     <td>@Html.DisplayFor(modelItem => item.Ghichu)</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@item.LichId" class="btn btn-sm btn-info">Chi tiết</a>
-                        @if (!User.IsInRole("user"))
-                        {
-                            <a asp-action="Edit" asp-route-id="@item.LichId" class="btn btn-sm btn-warning">Sửa</a>
-                            <a asp-action="Delete" asp-route-id="@item.LichId" class="btn btn-sm btn-danger">Xóa</a>
-                        }
                     </td>
                 </tr>
             }
