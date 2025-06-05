@@ -23,9 +23,9 @@ public partial class LichTapLai
 
     public string? Ghichu { get; set; }
 
-    public virtual GiaoVien Giaovien { get; set; } = null!;
+    public virtual GiaoVien? Giaovien { get; set; } = null!;
 
-    public virtual HoSoThiSinh Hoso { get; set; } = null!;
+    public virtual HoSoThiSinh? Hoso { get; set; } = null!;
 
-    public virtual XeTapLai Xe { get; set; } = null!;
+    public virtual XeTapLai? Xe { get; set; } = null!;
 }
