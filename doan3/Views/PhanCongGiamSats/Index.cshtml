@@ -1,53 +1,53 @@
 ﻿@model IEnumerable<doan3.Models.PhanCongGiamSat>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Phân công giám sát";
 }
 
-<h1>Index</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Vaitro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ghichu)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Baithi)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nguoigs)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vaitro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ghichu)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Baithi.BaithiId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nguoigs.NguoigsId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PhancongGsId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PhancongGsId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PhancongGsId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container py-4">
+    <h1 class="mb-4 text-primary">Danh sách phân công giám sát</h1>
+
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Thêm mới
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped shadow-sm" id="phanCongTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Người giám sát</th>
+                    <th>Vai trò</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="phancong-row">
+                        <td>@Html.DisplayFor(modelItem => item.Nguoigs.Hoten)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Vaitro)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.PhancongGsId" class="btn btn-sm btn-primary">Sửa</a>
+                            <a asp-action="Details" asp-route-id="@item.PhancongGsId" class="btn btn-sm btn-info text-white">Chi tiết</a>
+                            <a asp-action="Delete" asp-route-id="@item.PhancongGsId" class="btn btn-sm btn-danger">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    gsap.from(".phancong-row", {
+        opacity: 0,
+        y: 30,
+        duration: 0.5,
+        stagger: 0.1
+    });
+</script>
