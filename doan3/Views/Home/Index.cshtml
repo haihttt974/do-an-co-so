@@ -1,8 +1,27 @@
-﻿@model doan3.ViewModel.HomeViewModel
-
+﻿@using Microsoft.EntityFrameworkCore
+@model doan3.ViewModel.HomeViewModel
 @{
     ViewData["Title"] = "Driving School - Home";
 }
+@inject doan3.Models.DacsGplxContext DbContext
+@{
+    // Layout = null;
+
+    // Get the logged-in user's RoleId
+    int? roleId = null;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(userIdClaim, out int userId))
+        {
+            var user = await DbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+            roleId = user?.RoleId;
+        }
+    }
+}
+
 
 <!-- Hero Section -->
 <section class="hero-section text-white position-relative">
@@ -90,15 +109,18 @@
                             <div class="card-footer bg-transparent border-0 p-3">
                                 <div class="d-flex gap-2">
                                     <a href="/KhoaHocs/Details/@course.KhoahocId" class="btn btn-outline-primary w-50"><i class="fas fa-info-circle me-2"></i> Xem Chi Tiết</a>
-                                    @if (canRegister)
+                                    @if (roleId == 3)
                                     {
-                                        <a href="/KhoaHocs/Register/@course.KhoahocId" class="btn btn-primary w-50"><i class="fas fa-user-plus me-2"></i> Đăng Ký</a>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn btn-secondary w-50" data-bs-toggle="modal" data-bs-target="#reasonModal-@course.KhoahocId">
-                                            <i class="fas fa-user-plus me-2"></i> Đăng Ký
-                                        </button>
+                                        @if (canRegister)
+                                        {
+                                            <a href="/KhoaHocs/Register/@course.KhoahocId" class="btn btn-primary w-50"><i class="fas fa-user-plus me-2"></i> Đăng Ký</a>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-secondary w-50" data-bs-toggle="modal" data-bs-target="#reasonModal-@course.KhoahocId">
+                                                <i class="fas fa-user-plus me-2"></i> Đăng Ký
+                                            </button>
+                                        }
                                     }
                                 </div>
                             </div>

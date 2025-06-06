@@ -1,5 +1,23 @@
-﻿@model doan3.Models.GiaoVien
+﻿@using Microsoft.EntityFrameworkCore
+@model doan3.Models.GiaoVien
+@inject doan3.Models.DacsGplxContext DbContext
+@{
+    // Layout = null;
 
+    // Get the logged-in user's RoleId
+    int? roleId = null;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(userIdClaim, out int userId))
+        {
+            var user = await DbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+            roleId = user?.RoleId;
+        }
+    }
+}
 @{
     ViewData["Title"] = "Chi tiết giáo viên";
 }
@@ -9,32 +27,32 @@
 
 <style>
     .info-row {
-        background-color: #F8FAFC;
-        border: 1px solid #5B9BD5;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        min-height: 60px; /* Đảm bảo đủ không gian cho nội dung */
+    background-color: #F8FAFC;
+    border: 1px solid #5B9BD5;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    min-height: 60px; /* Đảm bảo đủ không gian cho nội dung */
     }
 
-        .info-row:hover {
-            background-color: #E9F0F7;
-            border-color: #0D6EFD;
-            transform: translateY(-2px);
-        }
+    .info-row:hover {
+    background-color: #E9F0F7;
+    border-color: #0D6EFD;
+    transform: translateY(-2px);
+    }
 
     .teacher-img {
-        border: 2px solid #5B9BD5;
-        transition: all 0.3s ease;
+    border: 2px solid #5B9BD5;
+    transition: all 0.3s ease;
     }
 
-        .teacher-img:hover {
-            border-color: #0D6EFD;
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .teacher-img:hover {
+    border-color: #0D6EFD;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
     /* Đảm bảo nội dung rõ ràng */
     .info-row dt, .info-row dd {
-        opacity: 1 !important; /* Buộc nội dung rõ ràng */
+    opacity: 1 !important; /* Buộc nội dung rõ ràng */
     }
 </style>
 
@@ -79,8 +97,15 @@
 
             <div class="mt-5 text-center">
                 <!-- Tăng margin-top để tránh chồng lấn -->
-                <a asp-action="Edit" asp-route-id="@Model?.GiaovienId" class="btn btn-primary shadow-sm me-2">Chỉnh sửa</a>
-                <a asp-action="Index" class="btn btn-secondary shadow-sm">Quay lại danh sách</a>
+                @if(roleId == 1)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model?.GiaovienId" class="btn btn-primary shadow-sm me-2">Chỉnh sửa</a>
+                    <a asp-action="Index" class="btn btn-secondary shadow-sm">Quay lại danh sách</a>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary shadow-sm" onclick="window.history.back()">Trở về</button>
+                }
             </div>
         </div>
     </div>
