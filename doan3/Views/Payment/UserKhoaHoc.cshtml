@@ -4,99 +4,104 @@
     ViewData["Title"] = "Thanh toán khóa học của bạn";
 }
 
-<h1>Thanh toán khóa học của bạn</h1>
+<div class="container mt-5">
+    <h1 class="mb-4 text-primary">Thanh toán khóa học của bạn</h1>
 
-<h2>Khóa học chưa thanh toán</h2>
-<table class="table table-bordered unpaid-table">
-    <thead>
-        <tr>
-            <th>Khóa học</th>
-            <th>Lớp học</th>
-            <th>Hạng GPLX</th>
-            <th>Ngày bắt đầu</th>
-            <th>Phí đào tạo</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.UnpaidKhoaHocs.Any())
-        {
-            @foreach (var item in Model.UnpaidKhoaHocs)
-            {
-                <tr>
-                    <td>@item.TenKhoaHoc</td>
-                    <td>@item.TenLopHoc</td>
-                    <td>@item.HangGPLX</td>
-                    <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
-                    <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
-                    <td><span class="badge bg-warning">Chưa thanh toán</span></td>
-                    <td>
-                        <form asp-action="ProcessUserKhoaHocPayment" method="post">
-                            <input type="hidden" name="id" value="@item.KetQuaHocTapId" />
-                            <button type="submit" class="btn btn-primary btn-sm">Thanh toán</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="7" class="text-center">Bạn không có khóa học chưa thanh toán</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <h2 class="mt-5">Khóa học chưa thanh toán</h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <table class="table table-hover unpaid-table">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Khóa học</th>
+                        <th>Lớp học</th>
+                        <th>Hạng GPLX</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Phí đào tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.UnpaidKhoaHocs.Any())
+                    {
+                        @foreach (var item in Model.UnpaidKhoaHocs)
+                        {
+                            <tr>
+                                <td>@item.TenKhoaHoc</td>
+                                <td>@item.TenLopHoc</td>
+                                <td>@item.HangGPLX</td>
+                                <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
+                                <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
+                                <td><span class="badge bg-warning">Chưa thanh toán</span></td>
+                                <td>
+                                    <a asp-action="ConfirmPayment" asp-route-id="@item.KetQuaHocTapId" asp-route-type="KhoaHoc" class="btn btn-primary btn-sm">Thanh toán</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Bạn không có khóa học chưa thanh toán</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<h2>Khóa học đã thanh toán</h2>
-<table class="table table-bordered paid-table">
-    <thead>
-        <tr>
-            <th>Khóa học</th>
-            <th>Lớp học</th>
-            <th>Hạng GPLX</th>
-            <th>Ngày bắt đầu</th>
-            <th>Phí đào tạo</th>
-            <th>Trạng thái</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.PaidKhoaHocs.Any())
-        {
-            @foreach (var item in Model.PaidKhoaHocs)
-            {
-                <tr>
-                    <td>@item.TenKhoaHoc</td>
-                    <td>@item.TenLopHoc</td>
-                    <td>@item.HangGPLX</td>
-                    <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
-                    <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
-                    <td><span class="badge bg-success">Đã thanh toán</span></td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="6" class="text-center">Bạn không có khóa học đã thanh toán</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <h2 class="mt-5">Khóa học đã thanh toán</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover paid-table">
+                <thead class="table-success">
+                    <tr>
+                        <th>Khóa học</th>
+                        <th>Lớp học</th>
+                        <th>Hạng GPLX</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Phí đào tạo</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PaidKhoaHocs.Any())
+                    {
+                        @foreach (var item in Model.PaidKhoaHocs)
+                        {
+                            <tr>
+                                <td>@item.TenKhoaHoc</td>
+                                <td>@item.TenLopHoc</td>
+                                <td>@item.HangGPLX</td>
+                                <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
+                                <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
+                                <td><span class="badge bg-success">Đã thanh toán</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Bạn không có khóa học đã thanh toán</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('.unpaid-table').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
-                }
+                language: { url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json' },
+                responsive: true
             });
             $('.paid-table').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
-                }
+                language: { url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json' },
+                responsive: true
             });
         });
     </script>

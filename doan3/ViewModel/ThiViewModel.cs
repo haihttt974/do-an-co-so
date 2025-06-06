@@ -13,7 +13,7 @@
 
     public class ThiPaymentViewModel
     {
-        public List<ThiViewModel> UnpaidRegistrations { get; set; }
-        public List<ThiViewModel> PaidRegistrations { get; set; }
+        public List<ThiViewModel> UnpaidRegistrations { get; set; } = new List<ThiViewModel>();
+        public List<ThiViewModel> PaidRegistrations { get; set; } = new List<ThiViewModel>();
     }
 }

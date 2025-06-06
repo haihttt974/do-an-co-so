@@ -17,7 +17,6 @@
             <th>Ngày bắt đầu</th>
             <th>Phí đào tạo</th>
             <th>Trạng thái</th>
-            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -33,19 +32,13 @@
                     <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
                     <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
                     <td><span class="badge bg-warning">Chưa thanh toán</span></td>
-                    <td>
-                        <form asp-action="ProcessAdminKhoaHocPayment" method="post">
-                            <input type="hidden" name="id" value="@item.KetQuaHocTapId" />
-                            <button type="submit" class="btn btn-primary btn-sm">Thanh toán</button>
-                        </form>
-                    </td>
                 </tr>
             }
         }
         else
         {
             <tr>
-                <td colspan="8" class="text-center">Không có khóa học chưa thanh toán</td>
+                <td colspan="7" class="text-center">Không có khóa học chưa thanh toán</td>
             </tr>
         }
     </tbody>
@@ -91,7 +84,7 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('.unpaid-table').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
@@ -99,7 +92,7 @@
             });
             $('.paid-table').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
+                    url: '//cdn.datatables.net/plug-ins/1.10/25/i18n/Vietnamese.json'
                 }
             });
         });

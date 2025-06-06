@@ -1,0 +1,34 @@
+﻿@model doan3.ViewModels.QRCodeViewModel
+
+@{
+    ViewData["Title"] = "Quét mã QR để thanh toán";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-primary">Quét mã QR để thanh toán</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+            <h4 class="card-title mb-4">Thông tin thanh toán</h4>
+            <div class="mb-3">
+                <p><strong>Loại thanh toán:</strong> @(Model.Type == "Thi" ? "Kỳ thi" : "Khóa học")</p>
+                <p><strong>Mô tả:</strong> @Model.Description</p>
+                <p><strong>Số tiền:</strong> @Model.Amount.ToString("N0") VNĐ</p>
+                <p><strong>Phương thức:</strong> @Model.PaymentMethod</p>
+            </div>
+
+            <div class="mb-4">
+                <h5>Vui lòng quét mã QR bên dưới để thanh toán</h5>
+                <img src="@Model.QRCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 250px;" />
+            </div>
+
+            <div class="alert alert-info">
+                Sau khi quét mã QR và hoàn tất thanh toán, nhấn nút "Xác nhận thanh toán" để cập nhật trạng thái.
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <a asp-action="ProcessPaymentCallback" asp-route-id="@Model.Id" asp-route-type="@Model.Type" asp-route-thanhToanId="@Model.ThanhToanId" asp-route-hocvienId="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" class="btn btn-primary">Xác nhận thanh toán</a>
+            </div>
+        </div>
+    </div>
+</div>
