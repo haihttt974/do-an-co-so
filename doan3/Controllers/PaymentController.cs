@@ -370,70 +370,117 @@ namespace doan3.Controllers
 
         // GET: Payment/ProcessPaymentCallback
         [Authorize]
-        public async Task<IActionResult> ProcessPaymentCallback(int id, string type, int thanhToanId, int hocvienId)
+        [HttpGet]
+        public async Task<IActionResult> ProcessPaymentCallback(int id, string type, int thanhToanId, string hocvienId)
         {
-            var currentHocvienIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(currentHocvienIdClaim, out var currentHocvienId) || currentHocvienId != hocvienId)
+            if (!int.TryParse(hocvienId, out var parsedHocvienId))
             {
+                _logger.LogError("Invalid hocvienId: {HocvienId}. Id: {Id}, Type: {Type}, ThanhToanId: {ThanhToanId}",
+                    hocvienId, id, type, thanhToanId);
+                return Unauthorized("Thông tin học viên không hợp lệ.");
+            }
+
+            var currentUserHocvienId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (hocvienId != currentUserHocvienId)
+            {
+                _logger.LogError("HocvienId mismatch. Provided: {HocvienId}, Current User: {CurrentUserHocvienId}, Id: {Id}, Type: {Type}, ThanhToanId: {ThanhToanId}",
+                    hocvienId, currentUserHocvienId, id, type, thanhToanId);
                 return Unauthorized("Không có quyền xác nhận thanh toán này.");
             }
 
-            var thanhToan = await _context.ThanhToans.FindAsync(thanhToanId);
-            if (thanhToan == null || thanhToan.Trangthai != "Pending")
+            try
             {
-                return NotFound("Giao dịch không tồn tại hoặc đã được xử lý.");
-            }
-
-            if (type == "Thi")
-            {
-                var registration = await _context.CtDangKyThis
-                    .Include(ct => ct.Hoso)
-                    .FirstOrDefaultAsync(ct => ct.CtDktId == id && ct.Hoso.HocvienId == hocvienId);
-                if (registration == null || registration.thanhtoan)
+                var thanhToan = await _context.ThanhToans.FindAsync(thanhToanId);
+                if (thanhToan == null)
                 {
-                    thanhToan.Trangthai = "Failed";
-                    thanhToan.Ghichu += "; Lỗi: Đăng ký thi không tồn tại hoặc đã thanh toán.";
-                    _context.Update(thanhToan);
-                    await _context.SaveChangesAsync();
-                    return NotFound("Đăng ký thi không tồn tại hoặc đã thanh toán.");
+                    _logger.LogError("ThanhToan record not found for ThanhToanId: {ThanhToanId}. Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                        thanhToanId, id, type, hocvienId);
+                    return NotFound("Giao dịch không tồn tại.");
                 }
 
-                registration.thanhtoan = true;
-                _context.Update(registration);
-            }
-            else if (type == "KhoaHoc")
-            {
-                var ketQua = await _context.KetQuaHocTaps
-                    .Include(kq => kq.Hoso)
-                    .FirstOrDefaultAsync(kq => kq.KetquaId == id && kq.Hoso.HocvienId == hocvienId);
-                if (ketQua == null || ketQua.Nhanxet != "Chưa thanh toán khóa học")
+                if (thanhToan.Trangthai != "Chưa thanh toán")
                 {
-                    thanhToan.Trangthai = "Failed";
-                    thanhToan.Ghichu += "; Lỗi: Khóa học không tồn tại hoặc đã thanh toán.";
-                    _context.Update(thanhToan);
-                    await _context.SaveChangesAsync();
-                    return NotFound("Khóa học không tồn tại hoặc đã thanh toán.");
+                    _logger.LogError("ThanhToan record has invalid status. ThanhToanId: {ThanhToanId}, Trangthai: {Trangthai}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                        thanhToanId, thanhToan.Trangthai, id, type, hocvienId);
+                    return BadRequest("Giao dịch đã được xử lý.");
                 }
 
-                ketQua.Nhanxet = "Đã thanh toán khóa học";
-                _context.Update(ketQua);
+                _logger.LogInformation("Processing payment confirmation. ThanhToanId: {ThanhToanId}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                    thanhToanId, id, type, hocvienId);
+
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    // Update ThanhToan status
+                    thanhToan.Trangthai = "Đã thanh toán";
+                    _context.ThanhToans.Update(thanhToan);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("ThanhToan status updated to 'Đã thanh toán'. ThanhToanId: {ThanhToanId}", thanhToanId);
+
+                    if (type == "Thi")
+                    {
+                        var registration = await _context.CtDangKyThis
+                            .FirstOrDefaultAsync(ct => ct.CtDktId == id && ct.Hoso.HocvienId == parsedHocvienId);
+                        if (registration == null)
+                        {
+                            _logger.LogError("No registration found for CtDktId: {Id}, HocvienId: {HocvienId}", id, parsedHocvienId);
+                            throw new Exception("Không tìm thấy đăng ký thi.");
+                        }
+
+                        registration.thanhtoan = true;
+                        _context.CtDangKyThis.Update(registration);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("CtDangKyThi updated. CtDktId: {Id}, thanhtoan: {thanhtoan}", id, registration.thanhtoan);
+                    }
+                    else if (type == "KhoaHoc")
+                    {
+                        var ketQua = await _context.KetQuaHocTaps
+                            .FirstOrDefaultAsync(kq => kq.KetquaId == id && kq.Hoso.HocvienId == parsedHocvienId);
+                        if (ketQua == null)
+                        {
+                            _logger.LogError("No KetQuaHocTap found for KetquaId: {Id}, HocvienId: {HocvienId}", id, parsedHocvienId);
+                            throw new Exception("Không tìm thấy kết quả học tập.");
+                        }
+
+                        ketQua.Nhanxet = "Đã thanh toán khóa học";
+                        _context.KetQuaHocTaps.Update(ketQua);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("KetQuaHocTap updated. KetquaId: {Id}, Nhanxet: {Nhanxet}", id, ketQua.Nhanxet);
+                    }
+                    else
+                    {
+                        _logger.LogError("Invalid Type value: {Type}. ThanhToanId: {ThanhToanId}, Id: {Id}, HocvienId: {HocvienId}",
+                            type, thanhToanId, id, hocvienId);
+                        throw new Exception("Loại thanh toán không hợp lệ.");
+                    }
+
+                    await transaction.CommitAsync();
+                    _logger.LogInformation("Payment confirmation completed. ThanhToanId: {ThanhToanId}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                        thanhToanId, id, type, hocvienId);
+
+                    // Redirect to a success page or UserKhoaHoc/UserThi
+                    return RedirectToAction(type == "Thi" ? "UserThi" : "UserKhoaHoc");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error during payment confirmation transaction. ThanhToanId: {ThanhToanId}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                        thanhToanId, id, type, hocvienId);
+                    throw;
+                }
             }
-            else
+            catch (DbException dbEx)
             {
-                thanhToan.Trangthai = "Failed";
-                thanhToan.Ghichu += "; Lỗi: Loại thanh toán không hợp lệ.";
-                _context.Update(thanhToan);
-                await _context.SaveChangesAsync();
-                return BadRequest("Loại thanh toán không hợp lệ.");
+                _logger.LogError(dbEx, "Database error in ProcessPaymentCallback for ThanhToanId: {ThanhToanId}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                    thanhToanId, id, type, hocvienId);
+                return StatusCode(500, $"Lỗi cơ sở dữ liệu: {dbEx.Message}");
             }
-
-            // Cập nhật trạng thái
-            thanhToan.Trangthai = "Completed";
-            thanhToan.Ghichu += "; Thanh toán thành công qua QR.";
-            _context.Update(thanhToan);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Success", new { type });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in ProcessPaymentCallback for ThanhToanId: {ThanhToanId}, Id: {Id}, Type: {Type}, HocvienId: {HocvienId}",
+                    thanhToanId, id, type, hocvienId);
+                return StatusCode(500, $"Đã xảy ra lỗi không mong đợi: {ex.Message}");
+            }
         }
 
         // GET: Payment/Success
