@@ -72,7 +72,7 @@ namespace doan3.Controllers
             }
 
             // Tạo ViewModel để truyền cả khoaHocs, hoSo và hocVien
-            var viewModel = new KhoaHocViewModel
+            var viewModel = new ViewModel.KhoaHocViewModel
             {
                 KhoaHocs = khoaHocs,
                 HoSo = hoSo,
