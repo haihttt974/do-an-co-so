@@ -23,7 +23,24 @@
             </div>
 
             <div class="d-flex justify-content-center">
-                <a asp-action="ProcessPaymentCallback" asp-route-id="@Model.Id" asp-route-type="@Model.Type" asp-route-thanhToanId="@Model.ThanhToanId" asp-route-hocvienId="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" class="btn btn-primary">Xác nhận thanh toán</a>
+                @* <a asp-action="ProcessPaymentCallback" asp-route-id="@Model.Id" asp-route-type="@Model.Type" asp-route-thanhToanId="@Model.ThanhToanId" asp-route-hocvienId="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" class="btn btn-primary">Xác nhận thanh toán</a> *@
+                <a id="autoClickBtn"
+                   asp-action="ProcessPaymentCallback"
+                   asp-route-id="@Model.Id"
+                   asp-route-type="@Model.Type"
+                   asp-route-thanhToanId="@Model.ThanhToanId"
+                   asp-route-hocvienId="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value"
+                   class="btn btn-primary"
+                   style="display: none;">
+                    @* Xác nhận thanh toán *@
+                </a>
+
+                <script>
+                    setTimeout(() => {
+                        document.getElementById('autoClickBtn').click();
+                    }, 10000); // 15000 ms = 15 giây
+                </script>
+
                 <a asp-action="@(Model.Type == "Thi" ? "UserThi" : "UserKhoaHoc")" asp-controller="Payment" class="btn btn-secondary ms-2">Hủy</a>
             </div>
         </div>
