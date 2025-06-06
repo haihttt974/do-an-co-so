@@ -1,60 +1,47 @@
 ﻿@model doan3.Models.KhoaHoc
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết khóa học";
 }
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4 p-4" id="detailCard">
+        <h2 class="mb-4 text-primary">Thông tin khóa học</h2>
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold">Tên khóa học</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Tenkhoahoc)</dd>
 
-<h1>Details</h1>
+            <dt class="col-sm-3 fw-bold">Hạng giấy phép</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Hang.Tenhang)</dd>
 
-<div>
-    <h4>KhoaHoc</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tenkhoahoc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tenkhoahoc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ngaybatdau)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ngaybatdau)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ngayketthuc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ngayketthuc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SlToida)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SlToida)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Trangthai)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Trangthai)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Mota)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Mota)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hang.HangId)
-        </dd>
-    </dl>
+            <dt class="col-sm-3 fw-bold">Ngày bắt đầu</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ngaybatdau)</dd>
+
+            <dt class="col-sm-3 fw-bold">Ngày kết thúc</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ngayketthuc)</dd>
+
+            <dt class="col-sm-3 fw-bold">Số lượng tối đa</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SlToida)</dd>
+
+            <dt class="col-sm-3 fw-bold">Trạng thái</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Trangthai)</dd>
+
+            <dt class="col-sm-3 fw-bold">Mô tả</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Mota)</dd>
+
+        </dl>
+        <div class="mt-4">
+            <a asp-action="Edit" asp-route-id="@Model?.KhoahocId" class="btn btn-warning me-2">Chỉnh sửa</a>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.KhoahocId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<!-- Animation với GSAP -->
+<script>
+    gsap.from("#detailCard", {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        ease: "power3.out"
+    });
+</script>
