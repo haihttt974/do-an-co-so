@@ -1,0 +1,107 @@
+﻿@model doan3.Models.KhoaHocPaymentViewModel
+
+@{
+    ViewData["Title"] = "Quản lý thanh toán khóa học";
+}
+
+<h1>Quản lý thanh toán khóa học</h1>
+
+<h2>Khóa học chưa thanh toán</h2>
+<table class="table table-bordered unpaid-table">
+    <thead>
+        <tr>
+            <th>Học viên</th>
+            <th>Khóa học</th>
+            <th>Lớp học</th>
+            <th>Hạng GPLX</th>
+            <th>Ngày bắt đầu</th>
+            <th>Phí đào tạo</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.UnpaidKhoaHocs.Any())
+        {
+            @foreach (var item in Model.UnpaidKhoaHocs)
+            {
+                <tr>
+                    <td>@item.HoTenThiSinh</td>
+                    <td>@item.TenKhoaHoc</td>
+                    <td>@item.TenLopHoc</td>
+                    <td>@item.HangGPLX</td>
+                    <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
+                    <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
+                    <td><span class="badge bg-warning">Chưa thanh toán</span></td>
+                    <td>
+                        <form asp-action="ProcessAdminKhoaHocPayment" method="post">
+                            <input type="hidden" name="id" value="@item.KetQuaHocTapId" />
+                            <button type="submit" class="btn btn-primary btn-sm">Thanh toán</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center">Không có khóa học chưa thanh toán</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2>Khóa học đã thanh toán</h2>
+<table class="table table-bordered paid-table">
+    <thead>
+        <tr>
+            <th>Học viên</th>
+            <th>Khóa học</th>
+            <th>Lớp học</th>
+            <th>Hạng GPLX</th>
+            <th>Ngày bắt đầu</th>
+            <th>Phí đào tạo</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PaidKhoaHocs.Any())
+        {
+            @foreach (var item in Model.PaidKhoaHocs)
+            {
+                <tr>
+                    <td>@item.HoTenThiSinh</td>
+                    <td>@item.TenKhoaHoc</td>
+                    <td>@item.TenLopHoc</td>
+                    <td>@item.HangGPLX</td>
+                    <td>@(item.NgayHoc == default ? "Chưa có" : item.NgayHoc.ToString("dd/MM/yyyy"))</td>
+                    <td>@item.PhiDaoTao.ToString("N0") VNĐ</td>
+                    <td><span class="badge bg-success">Đã thanh toán</span></td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">Không có khóa học đã thanh toán</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.unpaid-table').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
+                }
+            });
+            $('.paid-table').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json'
+                }
+            });
+        });
+    </script>
+}
