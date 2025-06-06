@@ -1,42 +1,42 @@
 ﻿@model doan3.Models.PhanCongGiamSat
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết phân công giám sát";
 }
 
-<h1>Details</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
 
-<div>
-    <h4>PhanCongGiamSat</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Vaitro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Vaitro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ghichu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ghichu)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Baithi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Baithi.BaithiId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nguoigs)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nguoigs.NguoigsId)
-        </dd>
-    </dl>
+<div class="container py-4">
+    <h2 class="text-primary mb-4">Chi tiết phân công giám sát</h2>
+
+    <div class="card shadow-sm p-4 animated-card">
+        <dl class="row">
+            <dt class="col-sm-3">Người giám sát</dt>
+            <dd class="col-sm-9">@Model.Nguoigs?.Hoten</dd>
+
+            <dt class="col-sm-3">Vai trò</dt>
+            <dd class="col-sm-9">@Model.Vaitro</dd>
+
+            <dt class="col-sm-3">Bài thi</dt>
+            <dd class="col-sm-9">@Model.Baithi?.Tenbaithi</dd>
+
+            <dt class="col-sm-3">Ghi chú</dt>
+            <dd class="col-sm-9">@Model.Ghichu</dd>
+        </dl>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model?.PhancongGsId" class="btn btn-warning">Chỉnh sửa</a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại danh sách</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PhancongGsId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<script>
+    gsap.from(".animated-card", {
+        duration: 0.6,
+        opacity: 0,
+        y: 40,
+        ease: "power2.out"
+    });
+</script>
