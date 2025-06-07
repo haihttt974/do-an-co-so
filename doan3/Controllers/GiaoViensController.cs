@@ -95,6 +95,7 @@ namespace doan3.Controllers
                 Referenceld = id,
                 Email = Email,
                 Createat = DateTime.Now,
+                Updateat = DateTime.Now,
                 Isactive = true
             };
             _context.Users.Add(user);

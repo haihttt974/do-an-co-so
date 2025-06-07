@@ -102,7 +102,10 @@ namespace doan3.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmPayment(int id, string type)
         {
-            var hocvienIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hocvienIdClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .LastOrDefault()?.Value;
+
             if (!int.TryParse(hocvienIdClaim, out var hocvienId))
             {
                 _logger.LogError("Invalid HocvienId claim for ConfirmPayment. Id: {Id}, Type: {Type}", id, type);
@@ -182,7 +185,130 @@ namespace doan3.Controllers
             }
         }
 
-        // POST: Payment/ConfirmPayment
+        //// POST: Payment/ConfirmPayment
+        //[Authorize]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ConfirmPayment(ConfirmPaymentViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        _logger.LogWarning("ModelState is invalid. Errors: {Errors}",
+        //            string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+        //        return View(model);
+        //    }
+
+        //    try
+        //    {
+        //        _logger.LogInformation("Processing ConfirmPayment POST. Id: {Id}, Type: {Type}, HosoId: {HosoId}, Amount: {Amount}, PaymentMethod: {PaymentMethod}, Description: {Description}",
+        //            model.Id, model.Type, model.HosoId, model.Amount, model.PaymentMethod, model.Description);
+
+        //        if (string.IsNullOrEmpty(model.Type) || (model.Type != "Thi" && model.Type != "KhoaHoc"))
+        //        {
+        //            _logger.LogError("Invalid Type value: {Type}", model.Type);
+        //            ModelState.AddModelError("", "Loại thanh toán không hợp lệ.");
+        //            return View(model);
+        //        }
+
+        //        if (model.HosoId <= 0)
+        //        {
+        //            _logger.LogError("Invalid HosoId: {HosoId}", model.HosoId);
+        //            ModelState.AddModelError("", "Thông tin hồ sơ không hợp lệ.");
+        //            return View(model);
+        //        }
+
+        //        if (model.Amount <= 0)
+        //        {
+        //            _logger.LogError("Invalid Amount: {Amount}", model.Amount);
+        //            ModelState.AddModelError("", "Số tiền thanh toán phải lớn hơn 0.");
+        //            return View(model);
+        //        }
+
+        //        if (string.IsNullOrEmpty(model.PaymentMethod))
+        //        {
+        //            _logger.LogError("PaymentMethod is empty");
+        //            ModelState.AddModelError("PaymentMethod", "Vui lòng chọn phương thức thanh toán.");
+        //            return View(model);
+        //        }
+
+        //        var hosoExists = await _context.HoSoThiSinhs.AnyAsync(h => h.HosoId == model.HosoId);
+        //        if (!hosoExists)
+        //        {
+        //            _logger.LogError("HosoId {HosoId} does not exist in Hosos table", model.HosoId);
+        //            ModelState.AddModelError("", "Hồ sơ không tồn tại trong hệ thống.");
+        //            return View(model);
+        //        }
+
+        //        using var transaction = await _context.Database.BeginTransactionAsync();
+        //        try
+        //        {
+        //            var thanhToan = new ThanhToan
+        //            {
+        //                TenThanhToan = model.Description ?? $"Thanh toán {model.Type}",
+        //                Sotien = model.Amount,
+        //                Trangthai = "Chưa thanh toán",
+        //                Phuongthuc = model.PaymentMethod,
+        //                Ghichu = $"Thanh toán {model.Type} qua {model.PaymentMethod}"
+        //            };
+
+        //            _logger.LogInformation("Attempting to insert ThanhToan: {ThanhToan}",
+        //                Newtonsoft.Json.JsonConvert.SerializeObject(thanhToan));
+
+        //            _context.ThanhToans.Add(thanhToan);
+        //            await _context.SaveChangesAsync();
+        //            _logger.LogInformation("ThanhToan record created. ThanhToanId: {ThanhToanId}", thanhToan.ThanhtoanId);
+
+        //            var ctPhieu = new CtPhieuThanhToan
+        //            {
+        //                HosoId = model.HosoId,
+        //                ThanhtoanId = thanhToan.ThanhtoanId,
+        //                Thoigianthanhtoan = DateTime.Now,
+        //                Loaiphi = model.Type
+        //            };
+
+        //            _logger.LogInformation("Attempting to insert CtPhieuThanhToan: {CtPhieuThanhToan}",
+        //                Newtonsoft.Json.JsonConvert.SerializeObject(ctPhieu));
+
+        //            _context.CtPhieuThanhToans.Add(ctPhieu);
+        //            await _context.SaveChangesAsync();
+        //            _logger.LogInformation("CtPhieuThanhToan record created. HosoId: {HosoId}, ThanhToanId: {ThanhtoanId}",
+        //                ctPhieu.HosoId, ctPhieu.ThanhtoanId);
+
+        //            await transaction.CommitAsync();
+
+        //            _logger.LogInformation("Redirecting to ShowQRCode with Id: {Id}, Type: {Type}, ThanhToanId: {ThanhToanId}",
+        //                model.Id, model.Type, thanhToan.ThanhtoanId);
+
+        //            return RedirectToAction("ShowQRCode", new { id = model.Id, type = model.Type, thanhToanId = thanhToan.ThanhtoanId });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+        //            _logger.LogError(ex, "Error during transaction for Id: {Id}, Type: {Type}. Details: {Message}",
+        //                model.Id, model.Type, ex.Message);
+        //            throw;
+        //        }
+        //    }
+        //    catch (DbUpdateException dbEx)
+        //    {
+        //        string errorDetails = dbEx.InnerException?.Message ?? dbEx.Message;
+        //        if (dbEx.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx)
+        //        {
+        //            errorDetails += $"; SQL Error Number: {sqlEx.Number}; SQL State: {sqlEx.State}";
+        //        }
+        //        _logger.LogError(dbEx, "Database error in ConfirmPayment POST for Id: {Id}, Type: {Type}. Details: {Details}",
+        //            model.Id, model.Type, errorDetails);
+        //        ModelState.AddModelError("", $"Lỗi cơ sở dữ liệu: {errorDetails}");
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Unexpected error in ConfirmPayment POST for Id: {Id}, Type: {Type}. Details: {Message}",
+        //            model.Id, model.Type, ex.Message);
+        //        ModelState.AddModelError("", $"Đã xảy ra lỗi không mong muốn: {ex.Message}");
+        //        return View(model);
+        //    }
+        //}
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -228,10 +354,54 @@ namespace doan3.Controllers
                     return View(model);
                 }
 
+                // Lấy hocvienId từ claim
+                var hocvienIdClaim = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).LastOrDefault()?.Value;
+                if (!int.TryParse(hocvienIdClaim, out var hocvienId))
+                {
+                    _logger.LogError("Invalid HocvienId claim.");
+                    ModelState.AddModelError("", "Không tìm thấy thông tin học viên.");
+                    return View(model);
+                }
+
+                // Kiểm tra dữ liệu tùy loại thanh toán
+                if (model.Type == "Thi")
+                {
+                    var registration = await _context.CtDangKyThis
+                        .Include(ct => ct.Hoso)
+                        .FirstOrDefaultAsync(ct => ct.CtDktId == model.Id && ct.Hoso.HocvienId == hocvienId);
+
+                    if (registration == null)
+                    {
+                        _logger.LogError("Không tìm thấy đăng ký thi phù hợp. CtDktId: {Id}, HocvienId: {HocvienId}", model.Id, hocvienId);
+                        ModelState.AddModelError("", "Không tìm thấy đăng ký thi phù hợp.");
+                        return View(model);
+                    }
+                }
+                else if (model.Type == "KhoaHoc")
+                {
+                    var ketQua = await _context.KetQuaHocTaps
+                        .Include(kq => kq.Hoso)
+                        .FirstOrDefaultAsync(kq => kq.KetquaId == model.Id && kq.Hoso.HocvienId == hocvienId && kq.Nhanxet == "Chưa thanh toán khóa học");
+
+                    if (ketQua == null)
+                    {
+                        _logger.LogError("Không tìm thấy kết quả học tập phù hợp hoặc đã thanh toán. KetquaId: {Id}, HocvienId: {HocvienId}", model.Id, hocvienId);
+                        ModelState.AddModelError("", "Không tìm thấy kết quả học tập phù hợp hoặc đã thanh toán.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Loại thanh toán không hợp lệ: {Type}", model.Type);
+                    ModelState.AddModelError("", "Loại thanh toán không hợp lệ.");
+                    return View(model);
+                }
+
+                // Kiểm tra tồn tại HosoId trong bảng HoSoThiSinhs
                 var hosoExists = await _context.HoSoThiSinhs.AnyAsync(h => h.HosoId == model.HosoId);
                 if (!hosoExists)
                 {
-                    _logger.LogError("HosoId {HosoId} does not exist in Hosos table", model.HosoId);
+                    _logger.LogError("HosoId {HosoId} does not exist in HoSoThiSinhs table", model.HosoId);
                     ModelState.AddModelError("", "Hồ sơ không tồn tại trong hệ thống.");
                     return View(model);
                 }
@@ -248,12 +418,8 @@ namespace doan3.Controllers
                         Ghichu = $"Thanh toán {model.Type} qua {model.PaymentMethod}"
                     };
 
-                    _logger.LogInformation("Attempting to insert ThanhToan: {ThanhToan}",
-                        Newtonsoft.Json.JsonConvert.SerializeObject(thanhToan));
-
                     _context.ThanhToans.Add(thanhToan);
                     await _context.SaveChangesAsync();
-                    _logger.LogInformation("ThanhToan record created. ThanhToanId: {ThanhToanId}", thanhToan.ThanhtoanId);
 
                     var ctPhieu = new CtPhieuThanhToan
                     {
@@ -263,18 +429,10 @@ namespace doan3.Controllers
                         Loaiphi = model.Type
                     };
 
-                    _logger.LogInformation("Attempting to insert CtPhieuThanhToan: {CtPhieuThanhToan}",
-                        Newtonsoft.Json.JsonConvert.SerializeObject(ctPhieu));
-
                     _context.CtPhieuThanhToans.Add(ctPhieu);
                     await _context.SaveChangesAsync();
-                    _logger.LogInformation("CtPhieuThanhToan record created. HosoId: {HosoId}, ThanhToanId: {ThanhtoanId}",
-                        ctPhieu.HosoId, ctPhieu.ThanhtoanId);
 
                     await transaction.CommitAsync();
-
-                    _logger.LogInformation("Redirecting to ShowQRCode with Id: {Id}, Type: {Type}, ThanhToanId: {ThanhToanId}",
-                        model.Id, model.Type, thanhToan.ThanhtoanId);
 
                     return RedirectToAction("ShowQRCode", new { id = model.Id, type = model.Type, thanhToanId = thanhToan.ThanhtoanId });
                 }
@@ -311,7 +469,9 @@ namespace doan3.Controllers
         [Authorize]
         public async Task<IActionResult> ShowQRCode(int id, string type, int thanhToanId)
         {
-            var hocvienIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hocvienIdClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .LastOrDefault()?.Value;
             if (!int.TryParse(hocvienIdClaim, out var hocvienId))
             {
                 _logger.LogError("Invalid HocvienId claim for ShowQRCode. Id: {Id}, Type: {Type}, ThanhToanId: {ThanhToanId}",
@@ -435,17 +595,21 @@ namespace doan3.Controllers
                     else if (type == "KhoaHoc")
                     {
                         var ketQua = await _context.KetQuaHocTaps
-                            .FirstOrDefaultAsync(kq => kq.KetquaId == id && kq.Hoso.HocvienId == parsedHocvienId);
+                            .FirstOrDefaultAsync(kq => kq.KetquaId == id);
+
                         if (ketQua == null)
                         {
-                            _logger.LogError("No KetQuaHocTap found for KetquaId: {Id}, HocvienId: {HocvienId}", id, parsedHocvienId);
+                            _logger.LogError("Không tìm thấy kết quả học tập với KetquaId: {Id}", id);
                             throw new Exception("Không tìm thấy kết quả học tập.");
                         }
 
+                        // Ghi log để đảm bảo đúng dữ liệu
+                        _logger.LogInformation("Cập nhật nhận xét cho KetquaId: {Id}, HosoId: {HosoId}", ketQua.KetquaId, ketQua.HosoId);
+
+                        // Cập nhật nhận xét
                         ketQua.Nhanxet = "Đã thanh toán khóa học";
-                        _context.KetQuaHocTaps.Update(ketQua);
                         await _context.SaveChangesAsync();
-                        _logger.LogInformation("KetQuaHocTap updated. KetquaId: {Id}, Nhanxet: {Nhanxet}", id, ketQua.Nhanxet);
+
                     }
                     else
                     {
@@ -491,27 +655,75 @@ namespace doan3.Controllers
             return View();
         }
 
-        // GET: Payment/UserKhoaHoc
-        [Authorize]
+        //// GET: Payment/UserKhoaHoc
+        //[Authorize(Roles = "3")]
+        //public async Task<IActionResult> UserKhoaHoc()
+        //{
+        //    var hocvienIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    if (!int.TryParse(hocvienIdClaim, out var hocvienId))
+        //    {
+        //        _logger.LogError("Không tìm thấy HocvienId trong claims.");
+        //        return NotFound("Không tìm thấy thông tin học viên.");
+        //    }
+
+        //    _logger.LogInformation($"HocvienId: {hocvienId}");
+
+        //    var results = await _context.KetQuaHocTaps
+        //        .Include(kq => kq.Hoso)
+        //            .ThenInclude(hs => hs.Hocvien)
+        //        .Include(kq => kq.Lop)
+        //            .ThenInclude(lh => lh != null ? lh.Khoahoc : null)
+        //        .Include(kq => kq.Hoso)
+        //            .ThenInclude(hs => hs.Hang)
+        //        .Where(kq => kq.Hoso != null && kq.Hoso.HocvienId == hocvienId)
+        //        .Select(kq => new KhoaHocViewModel
+        //        {
+        //            KetQuaHocTapId = kq.KetquaId,
+        //            TenKhoaHoc = kq.Lop != null && kq.Lop.Khoahoc != null ? kq.Lop.Khoahoc.Tenkhoahoc : "Không có khóa học",
+        //            TenLopHoc = kq.Lop != null ? kq.Lop.Tenlop : "Không có lớp",
+        //            HangGPLX = kq.Hoso != null && kq.Hoso.Hang != null ? kq.Hoso.Hang.Tenhang : "Không có hạng",
+        //            NgayHoc = kq.Lop != null && kq.Lop.Khoahoc != null ? kq.Lop.Khoahoc.Ngaybatdau.ToDateTime(TimeOnly.MinValue) : default,
+        //            NhanXet = kq.Nhanxet ?? "Chưa có nhận xét",
+        //            PhiDaoTao = kq.Hoso != null && kq.Hoso.Hang != null ? kq.Hoso.Hang.PhiDaotao ?? 0 : 0,
+        //            HoTenThiSinh = kq.Hoso != null && kq.Hoso.Hocvien != null ? kq.Hoso.Hocvien.Tenhocvien : "Không có học viên"
+        //        })
+        //        .ToListAsync();
+
+        //    _logger.LogInformation($"Số bản ghi KetQuaHocTap tìm thấy cho HocvienId {hocvienId}: {results.Count}");
+        //    if (!results.Any(r => r.NhanXet == "Chưa thanh toán khóa học"))
+        //    {
+        //        _logger.LogWarning($"Không tìm thấy khóa học chưa thanh toán cho HocvienId {hocvienId}.");
+        //    }
+
+        //    var viewModel = new KhoaHocPaymentViewModel
+        //    {
+        //        UnpaidKhoaHocs = results.Where(r => r.NhanXet?.Trim() == "Chưa thanh toán khóa học").ToList(),
+        //        PaidKhoaHocs = results.Where(r => r.NhanXet?.Trim() != "Chưa thanh toán khóa học").ToList()
+        //    };
+
+        //    return View(viewModel);
+        //}
+
+        [Authorize(Roles = "3")] // học viên
         public async Task<IActionResult> UserKhoaHoc()
         {
-            var hocvienIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(hocvienIdClaim, out var hocvienId))
-            {
-                _logger.LogError("Không tìm thấy HocvienId trong claims.");
-                return NotFound("Không tìm thấy thông tin học viên.");
-            }
+            var hocvienIdStr = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .LastOrDefault()?.Value;
 
-            _logger.LogInformation($"HocvienId: {hocvienId}");
+            if (string.IsNullOrEmpty(hocvienIdStr) || !int.TryParse(hocvienIdStr, out int hocvienId))
+            {
+                return Unauthorized();
+            }
 
             var results = await _context.KetQuaHocTaps
                 .Include(kq => kq.Hoso)
                     .ThenInclude(hs => hs.Hocvien)
                 .Include(kq => kq.Lop)
-                    .ThenInclude(lh => lh != null ? lh.Khoahoc : null)
+                    .ThenInclude(lh => lh.Khoahoc)
                 .Include(kq => kq.Hoso)
                     .ThenInclude(hs => hs.Hang)
-                .Where(kq => kq.Hoso != null && kq.Hoso.HocvienId == hocvienId)
+                .Where(kq => kq.Hoso.HocvienId == hocvienId)
                 .Select(kq => new KhoaHocViewModel
                 {
                     KetQuaHocTapId = kq.KetquaId,
@@ -525,19 +737,13 @@ namespace doan3.Controllers
                 })
                 .ToListAsync();
 
-            _logger.LogInformation($"Số bản ghi KetQuaHocTap tìm thấy cho HocvienId {hocvienId}: {results.Count}");
-            if (!results.Any(r => r.NhanXet == "Chưa thanh toán khóa học"))
-            {
-                _logger.LogWarning($"Không tìm thấy khóa học chưa thanh toán cho HocvienId {hocvienId}.");
-            }
-
             var viewModel = new KhoaHocPaymentViewModel
             {
                 UnpaidKhoaHocs = results.Where(r => r.NhanXet == "Chưa thanh toán khóa học").ToList(),
                 PaidKhoaHocs = results.Where(r => r.NhanXet != "Chưa thanh toán khóa học").ToList()
             };
 
-            return View(viewModel);
+            return View("UserKhoaHoc", viewModel); // dùng chung View nếu cần
         }
 
         // GET: Payment/KhoaHoc (Admin view only)
