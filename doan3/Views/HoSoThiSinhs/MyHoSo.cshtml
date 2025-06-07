@@ -6,6 +6,15 @@
     var hocVienInfo = ViewBag.HocVienInfo ?? new { Tenhocvien = "N/A", Socccd = "N/A", Gioitinh = "N/A", Ngaysinh = (DateTime?)null };
 }
 
+@{
+    bool daDuyet = (bool)ViewBag.DaDuocDuyet;
+    var cardClass = daDuyet ? "border-success" : "border-warning";
+    var headerClass = daDuyet ? "bg-success bg-opacity-25" : "bg-warning bg-opacity-25";
+    var icon = daDuyet ? "fas fa-check-circle text-success" : "fas fa-exclamation-circle text-warning";
+    var statusText = daDuyet ? "Hồ sơ đã được duyệt" : "Hồ sơ chưa được duyệt";
+    var statusSubText = daDuyet ? "" : "Vui lòng chờ quản trị viên xác nhận.";
+}
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -159,13 +168,20 @@
         <div class="shape"></div>
     </div>
 
-    @if (!Model.Any())
+    @if (!(bool)ViewBag.CoHoSo)
     {
         <div class="no-profile" id="noProfileMessage">
-            <i class="fas fa-info-circle me-2"></i>Bạn chưa có hồ sơ nào được duyệt.<br />
+            <i class="fas fa-info-circle me-2"></i>Bạn chưa có hồ sơ nào.<br />
             <a class="btn btn-create mt-3" asp-action="CreateUser" id="createBtn">
                 <i class="fas fa-plus me-2"></i>Thêm hồ sơ mới
             </a>
+        </div>
+    }
+    else if (!(bool)ViewBag.DaDuocDuyet)
+    {
+        <div class="no-profile" id="noProfileMessage">
+            <i class="fas fa-info-circle me-2"></i>Hồ sơ của bạn chưa được duyệt.<br />
+            <span class="text-muted">Vui lòng chờ quản trị viên xác nhận.</span>
         </div>
     }
     else

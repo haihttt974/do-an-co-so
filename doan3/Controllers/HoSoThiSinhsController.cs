@@ -216,7 +216,17 @@ namespace doan3.Controllers
                 .Where(h => h.HocvienId == user.Referenceld && h.Ghichu == "Duyệt")
                 .ToListAsync();
 
-            return View("MyHoSo", hoSos);
+            var allHoSos = await _context.HoSoThiSinhs
+                .Include(h => h.Hang)
+                .Where(h => h.HocvienId == user.Referenceld)
+                .ToListAsync();
+
+            var hoSosDaDuyet = allHoSos.Where(h => h.Ghichu == "Duyệt").ToList();
+            ViewBag.CoHoSo = allHoSos.Any();
+            ViewBag.DaDuocDuyet = hoSosDaDuyet.Any();
+
+            return View("MyHoSo", hoSosDaDuyet);
+            //return View("MyHoSo", hoSos);
         }
 
         // GET: Duyet
