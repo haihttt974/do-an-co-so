@@ -38,7 +38,7 @@
                 <script>
                     setTimeout(() => {
                         document.getElementById('autoClickBtn').click();
-                    }, 10000); // 15000 ms = 15 giây
+                    }, 1000); // 15000 ms = 15 giây
                 </script>
 
                 <a asp-action="@(Model.Type == "Thi" ? "UserThi" : "UserKhoaHoc")" asp-controller="Payment" class="btn btn-secondary ms-2">Hủy</a>
