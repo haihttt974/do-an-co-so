@@ -1,71 +1,61 @@
 ﻿@model IEnumerable<doan3.Models.HoSoThiSinh>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách hồ sơ thí sinh";
 }
 
-<h1>Index</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ImgThisinh)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LoaiHoso)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ngaydk)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Khamsuckhoe)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ghichu)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hang)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hocvien)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImgThisinh)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LoaiHoso)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ngaydk)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Khamsuckhoe)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ghichu)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hang.HangId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hocvien.HocvienId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.HosoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.HosoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.HosoId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container py-4">
+    <h1 class="text-primary mb-4">Danh sách hồ sơ thí sinh</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <img src="@item.ImgThisinh" class="card-img-top" style="object-fit: cover; height: 250px;" alt="Ảnh thí sinh" />
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@item.Hocvien?.Tenhocvien</h5>
+                        <p class="card-text mb-1"><strong></strong></p>
+                        <p class="mb-2"><strong>Hạng:</strong> @item.Hang?.Tenhang</p>
+                        <p class="card-text mb-1"><strong>Loại hồ sơ:</strong> @item.LoaiHoso</p>
+                        <p class="card-text mb-1"><strong>Ngày đăng ký:</strong> @item.Ngaydk.ToString("dd/MM/yyyy")</p>
+                        <p class="card-text mb-1"><strong>Ghi chú:</strong> @item.Ghichu</p>
+
+                        <p class="card-text mb-2">
+                            <strong>Khám sức khỏe:</strong><br />
+                            @{
+                                var kham = item.Khamsuckhoe;
+                                if (!string.IsNullOrEmpty(kham))
+                                {
+                                    var ext = System.IO.Path.GetExtension(kham).ToLower();
+                                    if (ext == ".jpg" || ext == ".png" || ext == ".jpeg" || ext == ".gif")
+                                    {
+                                        <img src="@kham" alt="Khám sức khỏe" class="img-fluid rounded shadow-sm mt-1" style="max-height: 150px;" />
+                                    }
+                                    else
+                                    {
+                                        <a href="@kham" target="_blank" class="btn btn-outline-secondary btn-sm mt-1">
+                                            <i class="bi bi-file-earmark-arrow-down"></i> Tải file
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Chưa có</span>
+                                }
+                            }
+                        </p>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Edit" asp-route-id="@item.HosoId" class="btn btn-sm btn-primary">Sửa</a>
+                            <a asp-action="Details" asp-route-id="@item.HosoId" class="btn btn-sm btn-info text-white">Chi tiết</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
